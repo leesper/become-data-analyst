@@ -29,58 +29,24 @@ def parse_file(datafile):
     # Remember that you can use xlrd.xldate_as_tuple(sometime, 0) to convert
     # Excel date to Python tuple of (year, month, day, hour, minute, second)
     dates = sheet.col_values(0)
-    coasts = sheet.col_values(1)
-    easts =  sheet.col_values(2)
-    farWests =  sheet.col_values(3)
-    norths =  sheet.col_values(4)
-    northcs = sheet.col_values(5)
-    southerns = sheet.col_values(6)
-    southcs = sheet.col_values(7)
-    wests = sheet.col_values(8)
     data = []
     data.append(['Station', 'Year', 'Month', 'Day', 'Hour', 'Max Load'])
 
-    s = [coasts[0]] + list(xlrd.xldate_as_tuple(dates[coasts.index(max(coasts[1:]))],0))
-    s.append(max(coasts[1:]))
-    data.append(s)
+    col_nums = [1, 2, 3, 4, 5, 6, 7, 8]
+    for col in col_nums:
+        region = sheet.col_values(col)
+        date_tuple = xlrd.xldate_as_tuple(dates[region.index(max(region[1:]))], 0)
+        item = [region[0]] + list(date_tuple)[:4]
+        item.append(max(region[1:]))
+        data.append(item)
 
-    s = [easts[0]] + list(xlrd.xldate_as_tuple(dates[easts.index(max(easts[1:]))],0))
-    s.append(max(easts[1:]))
-    data.append(s)
-
-    s = [farWests[0]] + list(xlrd.xldate_as_tuple(dates[farWests.index(max(farWests[1:]))],0))
-    s.append(max(farWests[1:]))
-    data.append(s)
-
-    s = [norths[0]] + list(xlrd.xldate_as_tuple(dates[norths.index(max(norths[1:]))],0))
-    s.append(max(norths[1:]))
-    data.append(s)
-
-    s = [northcs[0]] + list(xlrd.xldate_as_tuple(dates[northcs.index(max(northcs[1:]))],0))
-    s.append(max(northcs[1:]))
-    data.append(s)
-
-    s = [southerns[0]] + list(xlrd.xldate_as_tuple(dates[southerns.index(max(southerns[1:]))],0))
-    s.append(max(southerns[1:]))
-    data.append(s)
-
-    s = [southcs[0]] + list(xlrd.xldate_as_tuple(dates[southcs.index(max(southcs[1:]))],0))
-    s.append(max(southcs[1:]))
-    data.append(s)
-
-    s = [wests[0]] + list(xlrd.xldate_as_tuple(dates[wests.index(max(wests[1:]))],0))
-    s.append(max(wests[1:]))
-    data.append(s)
-
-    print(data)
     return data
 
 def save_file(data, filename):
     # YOUR CODE HERE
-    with open(filename, 'wb') as f:
+    with open(filename, 'w') as f:
         writer = csv.writer(f, delimiter='|')
         for item in data:
-	    print(item)
             writer.writerow(item)
 
     
