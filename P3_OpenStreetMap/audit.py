@@ -14,18 +14,26 @@ from collections import defaultdict
 import re
 import pprint
 
-OSMFILE = "example.osm"
+OSMFILE = "guiyang_china.osm"
 street_type_re = re.compile(r'\b\S+\.?$', re.IGNORECASE)
 
 
 expected = ["Street", "Avenue", "Boulevard", "Drive", "Court", "Place", "Square", "Lane", "Road", 
-            "Trail", "Parkway", "Commons"]
+            "Trail", "Parkway", "Commons", "Expressway"]
 
 # UPDATE THIS VARIABLE
-mapping = { "St": "Street",
-            "St.": "Street",
-            'Ave': 'Avenue',
-            'Rd.': 'Road',
+mapping = { r'\bSt\b': r'Street ',
+            r'\bSt.\b': r'Street ',
+            r'\bAve\b': r'Avenue',
+            r'\bRd.\b': r'Road',
+            r'\bRd\b': r'Road',
+            r'\bBlvd\b': r'Boulevard',
+            r'\bExpy\b': r'Expressway',
+            r'\bExpwy\b': r'Expressway',
+            r'\bN\b': r'North',
+            r'\bS\b': r'South',
+            r'\bW\b': r'West',
+            r'\bE\b': r'East',
             }
 
 
@@ -38,7 +46,7 @@ def audit_street_type(street_types, street_name):
 
 
 def is_street_name(elem):
-    return (elem.attrib['k'] == "addr:street")
+    return (elem.attrib['k'] == "name:en")
 
 
 def audit(osmfile):
@@ -55,30 +63,18 @@ def audit(osmfile):
 
 
 def update_name(name, mapping):
-
     for k, v in mapping.items():
-        index = name.find(k)
-        if index >= 0:
-            name = name[:index] + v
-            break
-
+        name = re.sub(k, v, name)
     return name
 
 
-def test():
-    st_types = audit(OSMFILE)
-    assert len(st_types) == 3
-    pprint.pprint(dict(st_types))
 
-    for st_type, ways in st_types.iteritems():
-        for name in ways:
-            better_name = update_name(name, mapping)
-            print name, "=>", better_name
-            if name == "West Lexington St.":
-                assert better_name == "West Lexington Street"
-            if name == "Baldwin Rd.":
-                assert better_name == "Baldwin Road"
+st_types = audit(OSMFILE)
+pprint.pprint(dict(st_types))
+
+for st_type, ways in st_types.iteritems():
+    for name in ways:
+        better_name = update_name(name, mapping)
+        print name, "=>", better_name
 
 
-if __name__ == '__main__':
-    test()
