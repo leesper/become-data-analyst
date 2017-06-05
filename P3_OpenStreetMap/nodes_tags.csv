@@ -324,7 +324,7 @@ id,key,value,type
 1176610360,highway,motorway_junction,regular
 1484559999,highway,motorway_junction,regular
 1484559999,name,铜仁/湄潭/毕节/仁怀/G56,regular
-1484559999,en,"Tongren, Meitan, Bijie, Renhuai, China National Expwy G56",name
+1484559999,en,"Tongren, Meitan, Bijie, Renhuai, China National Expressway G56",name
 1484559999,ref,593,regular
 1649451473,power,tower,regular
 1649451676,power,tower,regular
@@ -464,7 +464,7 @@ id,key,value,type
 3478062993,shop,convenience,regular
 3478151001,highway,motorway_junction,regular
 3478151001,name,X922/都匀西,regular
-3478151001,en,"X922, Duyun W",name
+3478151001,en,"X922, Duyun West",name
 3478151001,ref,7,regular
 3538669246,name,中国电信金科营业厅,regular
 3538669246,en,China Telecom,name

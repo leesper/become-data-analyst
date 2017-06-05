@@ -562,7 +562,7 @@ id,key,value,type
 217744422,lanes,4,regular
 217744422,maxspeed,120,regular
 217744422,name,沪昆高速 Shanghai-Kunming Expwy,regular
-217744422,en,Shanghai-Kunming Expwy,name
+217744422,en,Shanghai-Kunming Expressway,name
 217744422,zh,沪昆高速,name
 217744422,oneway,yes,regular
 217744422,ref,G60,regular
@@ -725,7 +725,7 @@ id,key,value,type
 259056282,source,GPS,regular
 259057364,highway,tertiary,regular
 259057364,name,合心北路,regular
-259057364,en,Hexin Rd N,name
+259057364,en,Hexin Road North,name
 259057364,source,bing,regular
 259061268,name,川黔铁路,regular
 259061268,railway,rail,regular
@@ -840,7 +840,7 @@ id,key,value,type
 282015754,int_name,Guiyang South Ring Expy,regular
 282015754,lanes,2,regular
 282015754,name,贵阳南环高速,regular
-282015754,en,Guiyang South Ring Expwy,name
+282015754,en,Guiyang South Ring Expressway,name
 282015754,oneway,yes,regular
 282015754,ref,G6001,regular
 282015754,source,mapbox,regular
@@ -920,7 +920,7 @@ id,key,value,type
 306366275,highway,unclassified,regular
 306384370,highway,secondary,regular
 306384370,name,开州大道,regular
-306384370,en,Kaizhou Blvd,name
+306384370,en,Kaizhou Boulevard,name
 307807128,highway,motorway,regular
 307807128,layer,1,regular
 307807128,name,杭瑞高速公路 Hangzhou-Ruili Expressway,regular
@@ -1022,20 +1022,20 @@ id,key,value,type
 330224350,name,世外桃园,regular
 330229786,highway,primary,regular
 330229786,name,石佛路 Shifo Rd,regular
-330229786,en,Shifo Rd,name
+330229786,en,Shifo Road,name
 330229786,zh,石佛路,name
 330229786,ref,G326,regular
 330245180,highway,residential,regular
 330344549,highway,secondary,regular
 330344549,name,东大街,regular
-330344549,en,Dongda St,name
+330344549,en,Dongda Street ,name
 330353123,highway,residential,regular
 330353123,name,罗家坝街 Luojiaba St,regular
-330353123,en,Luojiaba St,name
+330353123,en,Luojiaba Street ,name
 330353123,zh,罗家坝街,name
 330372039,highway,secondary,regular
 330372039,name,苟江大道,regular
-330372039,en,Goujiang Blvd,name
+330372039,en,Goujiang Boulevard,name
 330372039,oneway,yes,regular
 330463059,highway,primary,regular
 330463059,name,子尹隧道 Ziyin Tunnel,regular
@@ -1053,7 +1053,7 @@ id,key,value,type
 330512971,highway,residential,regular
 330512991,highway,residential,regular
 330512991,name,电厂路,regular
-330512991,en,Dianchang Rd,name
+330512991,en,Dianchang Road,name
 330520718,highway,residential,regular
 330521481,highway,residential,regular
 330539832,highway,residential,regular
@@ -1077,7 +1077,7 @@ id,key,value,type
 333987857,highway,residential,regular
 333997378,highway,tertiary,regular
 333997378,name,内环路,regular
-333997378,en,Neihuan Rd,name
+333997378,en,Neihuan Road,name
 334015707,amenity,school,regular
 334015707,name,清华中学,regular
 334015707,en,Qinghua Middle School,name
@@ -1168,12 +1168,12 @@ id,key,value,type
 349378016,highway,residential,regular
 349875492,highway,residential,regular
 349875492,name,柳堰路,regular
-349875492,en,Liuyan Rd,name
+349875492,en,Liuyan Road,name
 349879422,bridge,yes,regular
 349879422,highway,tertiary,regular
 349879422,layer,1,regular
 349879422,name,人民西路 Renmin W Rd,regular
-349879422,en,Renmin W Rd,name
+349879422,en,Renmin West Road,name
 349879422,zh,人民西路,name
 349882773,highway,residential,regular
 349882773,source,bing,regular
@@ -1182,7 +1182,7 @@ id,key,value,type
 351059101,name,太君骨科诊所,regular
 351310936,highway,tertiary,regular
 351310936,name,合心北路,regular
-351310936,en,Hexin Rd N,name
+351310936,en,Hexin Road North,name
 351310936,source,bing,regular
 351859090,building,school,regular
 351865670,building,residential,regular
@@ -1232,7 +1232,7 @@ id,key,value,type
 357113612,building,commercial,regular
 357394069,highway,motorway,regular
 357394069,name,安普高速,regular
-357394069,en,Anpu Expy,name
+357394069,en,Anpu Expressway,name
 357394069,oneway,yes,regular
 357394069,ref,S86,regular
 357809858,building,yes,regular
@@ -1337,7 +1337,7 @@ id,key,value,type
 388979325,highway,motorway,regular
 388979325,layer,1,regular
 388979325,name,安普高速,regular
-388979325,en,Anpu Expy,name
+388979325,en,Anpu Expressway,name
 388979325,oneway,yes,regular
 388979325,ref,S86,regular
 388992956,highway,motorway,regular
@@ -1544,7 +1544,7 @@ id,key,value,type
 426904163,highway,tertiary,regular
 435785841,highway,secondary,regular
 435785841,name,民主路 Minzhu Rd,regular
-435785841,en,Minzhu Rd,name
+435785841,en,Minzhu Road,name
 435785841,zh,民主路,name
 437278047,highway,tertiary,regular
 437278047,source,bing,regular
@@ -1557,7 +1557,7 @@ id,key,value,type
 437314541,int_name,Guiyang South Ring Expy,regular
 437314541,lanes,2,regular
 437314541,name,环城公路,regular
-437314541,en,Guiyang South Ring Expwy,name
+437314541,en,Guiyang South Ring Expressway,name
 437314541,oneway,yes,regular
 437314541,ref,G6001,regular
 437314541,source,mapbox,regular
@@ -1988,7 +1988,7 @@ id,key,value,type
 468023698,lanes,2,regular
 468023698,layer,-1,regular
 468023698,name,巷三公路 Xiangsan Rd,regular
-468023698,en,Xiangsan Rd,name
+468023698,en,Xiangsan Road,name
 468023698,zh,巷三公路,name
 468023698,oneway,yes,regular
 468023698,tunnel,yes,regular

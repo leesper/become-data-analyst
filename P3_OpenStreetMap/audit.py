@@ -46,7 +46,7 @@ def audit_street_type(street_types, street_name):
 
 
 def is_street_name(elem):
-    return (elem.attrib['k'] == "name:en")
+    return (elem.attrib['k'] == "name:en" or elem.attrib['k'] == 'addr:street')
 
 
 def audit(osmfile):
@@ -67,14 +67,5 @@ def update_name(name, mapping):
         name = re.sub(k, v, name)
     return name
 
-
-
-st_types = audit(OSMFILE)
-pprint.pprint(dict(st_types))
-
-for st_type, ways in st_types.iteritems():
-    for name in ways:
-        better_name = update_name(name, mapping)
-        print name, "=>", better_name
 
 

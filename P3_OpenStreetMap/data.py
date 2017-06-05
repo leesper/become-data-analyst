@@ -163,6 +163,7 @@ import xml.etree.cElementTree as ET
 import cerberus
 
 import schema
+import audit
 
 OSM_PATH = "sample_20.osm"
 
@@ -194,14 +195,17 @@ def shape_element(element, node_attr_fields=NODE_FIELDS, way_attr_fields=WAY_FIE
     way_nodes = []
     tags = []  # Handle secondary tags the same way for both node and way elements
 
-    # YOUR CODE HERE
     if element.tag == 'node':
+        # keep everything unchanged for keys in NODE_FIELDS
         for f in node_attr_fields:
             node_attribs[f] = element.attrib[f]
         for tag in element.iter('tag'):
+            if audit.is_street_name(tag):
+                tag.attrib['v'] = audit.update_name(tag.attrib['v'], audit.mapping)
             k = tag.attrib['k']
             if problem_chars.search(k) is not None:
                 continue
+            # if k contains ':' split it into type and key
             if k.find(':') >= 0:
                 tag_type, tag_key = k[:k.find(':')], k[k.find(':')+1:]
             else:
@@ -217,9 +221,12 @@ def shape_element(element, node_attr_fields=NODE_FIELDS, way_attr_fields=WAY_FIE
         for f in way_attr_fields:
             way_attribs[f] = element.attrib[f]
         for tag in element.iter('tag'):
+            if audit.is_street_name(tag):
+                tag.attrib['v'] = audit.update_name(tag.attrib['v'], audit.mapping)
             k = tag.attrib['k']
             if problem_chars.search(k) is not None:
                 continue
+            # if k contains ':' split it into type and key
             if k.find(':') >= 0:
                 tag_type, tag_key = k[:k.find(':')], k[k.find(':')+1:]
             else:
