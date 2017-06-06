@@ -21,7 +21,7 @@ street_type_re = re.compile(r'\b\S+\.?$', re.IGNORECASE)
 expected = ["Street", "Avenue", "Boulevard", "Drive", "Court", "Place", "Square", "Lane", "Road", 
             "Trail", "Parkway", "Commons", "Expressway"]
 
-# UPDATE THIS VARIABLE
+# a mapping for regular expression
 mapping = { r'\bSt\b': r'Street ',
             r'\bSt.\b': r'Street ',
             r'\bAve\b': r'Avenue',
@@ -30,6 +30,7 @@ mapping = { r'\bSt\b': r'Street ',
             r'\bBlvd\b': r'Boulevard',
             r'\bExpy\b': r'Expressway',
             r'\bExpwy\b': r'Expressway',
+            r'\bExprssway\b': r'Expressway',
             r'\bN\b': r'North',
             r'\bS\b': r'South',
             r'\bW\b': r'West',
@@ -46,14 +47,13 @@ def audit_street_type(street_types, street_name):
 
 
 def is_street_name(elem):
-    return (elem.attrib['k'] == "name:en" or elem.attrib['k'] == 'addr:street')
+    return elem.attrib['k'] in ['name', 'name:en', 'addr:street']
 
 
 def audit(osmfile):
     osm_file = open(osmfile, "r")
     street_types = defaultdict(set)
     for event, elem in ET.iterparse(osm_file, events=("start",)):
-
         if elem.tag == "node" or elem.tag == "way":
             for tag in elem.iter("tag"):
                 if is_street_name(tag):
@@ -67,5 +67,7 @@ def update_name(name, mapping):
         name = re.sub(k, v, name)
     return name
 
-
+if __name__ == '__main__':
+    street_types = audit(OSMFILE)
+    pprint.pprint(dict(street_types))
 

@@ -165,7 +165,7 @@ import cerberus
 import schema
 import audit
 
-OSM_PATH = "sample_20.osm"
+OSM_PATH = "guiyang_china.osm"
 
 NODES_PATH = "nodes.csv"
 NODE_TAGS_PATH = "nodes_tags.csv"
@@ -195,48 +195,37 @@ def shape_element(element, node_attr_fields=NODE_FIELDS, way_attr_fields=WAY_FIE
     way_nodes = []
     tags = []  # Handle secondary tags the same way for both node and way elements
 
+    # treatments are the same for the secondary 'tag' tags of both node and way elements
+    if element.tag in ['node', 'way']:
+        for tag in element.iter('tag'):
+            if audit.is_street_name(tag):
+                tag.attrib['v'] = audit.update_name(tag.attrib['v'], audit.mapping)
+            k = tag.attrib['k']
+            if problem_chars.search(k) is not None:
+                continue
+            # if k contains ':' split it into type and key
+            if k.find(':') >= 0:
+                tag_type, tag_key = k[:k.find(':')], k[k.find(':')+1:]
+            else:
+                tag_type, tag_key = default_tag_type, k
+            tags.append({
+                'id': element.attrib['id'],
+                'key': tag_key,
+                'type': tag_type,
+                'value': tag.attrib['v'],
+            })
+
     if element.tag == 'node':
         # keep everything unchanged for keys in NODE_FIELDS
         for f in node_attr_fields:
             node_attribs[f] = element.attrib[f]
-        for tag in element.iter('tag'):
-            if audit.is_street_name(tag):
-                tag.attrib['v'] = audit.update_name(tag.attrib['v'], audit.mapping)
-            k = tag.attrib['k']
-            if problem_chars.search(k) is not None:
-                continue
-            # if k contains ':' split it into type and key
-            if k.find(':') >= 0:
-                tag_type, tag_key = k[:k.find(':')], k[k.find(':')+1:]
-            else:
-                tag_type, tag_key = default_tag_type, k
-            tags.append({
-                'id': element.attrib['id'],
-                'key': tag_key,
-                'type': tag_type,
-                'value': tag.attrib['v'],
-            })
         return {'node': node_attribs, 'node_tags': tags}
     elif element.tag == 'way':
+        # keep everything unchanged for keys in WAY_FIELDS
         for f in way_attr_fields:
             way_attribs[f] = element.attrib[f]
-        for tag in element.iter('tag'):
-            if audit.is_street_name(tag):
-                tag.attrib['v'] = audit.update_name(tag.attrib['v'], audit.mapping)
-            k = tag.attrib['k']
-            if problem_chars.search(k) is not None:
-                continue
-            # if k contains ':' split it into type and key
-            if k.find(':') >= 0:
-                tag_type, tag_key = k[:k.find(':')], k[k.find(':')+1:]
-            else:
-                tag_type, tag_key = default_tag_type, k
-            tags.append({
-                'id': element.attrib['id'],
-                'key': tag_key,
-                'type': tag_type,
-                'value': tag.attrib['v'],
-            })
+
+        #special treatment for way nodes
         pos = 0
         for nd in element.iter('nd'):
             way_nodes.append({
