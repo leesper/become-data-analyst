@@ -195,6 +195,7 @@ def shape_element(element, node_attr_fields=NODE_FIELDS, way_attr_fields=WAY_FIE
     way_nodes = []
     tags = []  # Handle secondary tags the same way for both node and way elements
 
+    elem_id = element.attrib['id']
     # treatments are the same for the secondary 'tag' tags of both node and way elements
     if element.tag in ['node', 'way']:
         for tag in element.iter('tag'):
@@ -209,7 +210,7 @@ def shape_element(element, node_attr_fields=NODE_FIELDS, way_attr_fields=WAY_FIE
             else:
                 tag_type, tag_key = default_tag_type, k
             tags.append({
-                'id': element.attrib['id'],
+                'id': elem_id,
                 'key': tag_key,
                 'type': tag_type,
                 'value': tag.attrib['v'],
@@ -218,7 +219,10 @@ def shape_element(element, node_attr_fields=NODE_FIELDS, way_attr_fields=WAY_FIE
     if element.tag == 'node':
         # keep everything unchanged for keys in NODE_FIELDS
         for f in node_attr_fields:
-            node_attribs[f] = element.attrib[f]
+            if f in ['lat', 'lon']:
+                node_attribs[f] = float(element.attrib[f])
+            else:
+                node_attribs[f] = element.attrib[f]
         return {'node': node_attribs, 'node_tags': tags}
     elif element.tag == 'way':
         # keep everything unchanged for keys in WAY_FIELDS
@@ -229,7 +233,7 @@ def shape_element(element, node_attr_fields=NODE_FIELDS, way_attr_fields=WAY_FIE
         pos = 0
         for nd in element.iter('nd'):
             way_nodes.append({
-                'id': element.attrib['id'],
+                'id': elem_id,
                 'node_id': nd.attrib['ref'],
                 'position': pos,
             })
@@ -318,5 +322,5 @@ def process_map(file_in, validate):
 if __name__ == '__main__':
     # Note: Validation is ~ 10X slower. For the project consider using a small
     # sample of the map when validating.
-    process_map(OSM_PATH, validate=True)
+    process_map(OSM_PATH, validate=False)
 

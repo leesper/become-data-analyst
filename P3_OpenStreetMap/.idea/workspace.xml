@@ -12,10 +12,10 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="samplek.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="samplek.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/samplek.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
+            <state relative-caret-position="252">
               <caret line="14" column="47" lean-forward="false" selection-start-line="14" selection-start-column="47" selection-end-line="14" selection-end-column="47" />
               <folding />
             </state>
@@ -25,8 +25,56 @@
       <file leaf-file-name="data.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="87">
-              <caret line="158" column="13" lean-forward="true" selection-start-line="158" selection-start-column="13" selection-end-line="158" selection-end-column="13" />
+            <state relative-caret-position="333">
+              <caret line="224" column="30" lean-forward="false" selection-start-line="224" selection-start-column="30" selection-end-line="224" selection-end-column="30" />
+              <folding>
+                <element signature="e#6224#6234#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="mapparser.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/mapparser.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="234">
+              <caret line="13" column="13" lean-forward="true" selection-start-line="12" selection-start-column="0" selection-end-line="13" selection-end-column="13" />
+              <folding>
+                <element signature="e#510#545#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="tags.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tags.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="522">
+              <caret line="29" column="60" lean-forward="true" selection-start-line="27" selection-start-column="0" selection-end-line="29" selection-end-column="60" />
+              <folding>
+                <element signature="e#46#81#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="users.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/users.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="216">
+              <caret line="12" column="0" lean-forward="true" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+              <folding>
+                <element signature="e#46#81#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="data_wrangling_schema.sql" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/data_wrangling_schema.sql">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -47,8 +95,8 @@
       <file leaf-file-name="check_latlon.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/check_latlon.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="23" column="46" lean-forward="true" selection-start-line="23" selection-start-column="46" selection-end-line="23" selection-end-column="46" />
+            <state relative-caret-position="198">
+              <caret line="11" column="36" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="48" selection-end-column="147" />
               <folding>
                 <element signature="e#0#35#0" expanded="true" />
               </folding>
@@ -95,7 +143,11 @@
         <option value="$PROJECT_DIR$/nodes_tags.csv" />
         <option value="$PROJECT_DIR$/audit.py" />
         <option value="$PROJECT_DIR$/check_name.py" />
+        <option value="$PROJECT_DIR$/check_id.py" />
         <option value="$PROJECT_DIR$/data.py" />
+        <option value="$PROJECT_DIR$/tags.py" />
+        <option value="$PROJECT_DIR$/users.py" />
+        <option value="$PROJECT_DIR$/mapparser.py" />
       </list>
     </option>
   </component>
@@ -172,24 +224,6 @@
       <option name="EMULATE_TERMINAL" value="false" />
       <method />
     </configuration>
-    <configuration default="false" name="check_latlon" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="P3_OpenStreetMap" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/check_latlon.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <method />
-    </configuration>
     <configuration default="false" name="Unittests in audit.py" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -236,6 +270,24 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="P3_OpenStreetMap" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/check_name.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="check_id" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="P3_OpenStreetMap" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/check_id.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -307,18 +359,18 @@
     </configuration>
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.data" />
-      <item index="1" class="java.lang.String" itemvalue="Python.check_latlon" />
-      <item index="2" class="java.lang.String" itemvalue="Python tests.Unittests in audit.py" />
-      <item index="3" class="java.lang.String" itemvalue="Python.audit" />
-      <item index="4" class="java.lang.String" itemvalue="Python.check_name" />
+      <item index="1" class="java.lang.String" itemvalue="Python tests.Unittests in audit.py" />
+      <item index="2" class="java.lang.String" itemvalue="Python.audit" />
+      <item index="3" class="java.lang.String" itemvalue="Python.check_name" />
+      <item index="4" class="java.lang.String" itemvalue="Python.check_id" />
     </list>
     <recent_temporary>
       <list size="5">
         <item index="0" class="java.lang.String" itemvalue="Python.data" />
-        <item index="1" class="java.lang.String" itemvalue="Python.check_name" />
-        <item index="2" class="java.lang.String" itemvalue="Python.audit" />
-        <item index="3" class="java.lang.String" itemvalue="Python tests.Unittests in audit.py" />
-        <item index="4" class="java.lang.String" itemvalue="Python.check_latlon" />
+        <item index="1" class="java.lang.String" itemvalue="Python.check_id" />
+        <item index="2" class="java.lang.String" itemvalue="Python.check_name" />
+        <item index="3" class="java.lang.String" itemvalue="Python.audit" />
+        <item index="4" class="java.lang.String" itemvalue="Python tests.Unittests in audit.py" />
       </list>
     </recent_temporary>
   </component>
@@ -342,11 +394,12 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1440" y="28" width="1920" height="1138" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18091762" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.35" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.35" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -399,7 +452,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3762">
           <caret line="218" column="43" lean-forward="false" selection-start-line="218" selection-start-column="43" selection-end-line="218" selection-end-column="43" />
-          <folding />
+          <folding>
+            <element signature="e#6224#6234#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -459,7 +514,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5724">
           <caret line="318" column="61" lean-forward="true" selection-start-line="318" selection-start-column="61" selection-end-line="318" selection-end-column="61" />
-          <folding />
+          <folding>
+            <element signature="e#6224#6234#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -529,16 +586,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/check_latlon.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="23" column="46" lean-forward="true" selection-start-line="23" selection-start-column="46" selection-end-line="23" selection-end-column="46" />
-          <folding>
-            <element signature="e#0#35#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/check_name.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="270">
@@ -546,14 +593,6 @@
           <folding>
             <element signature="e#24#59#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/data.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="87">
-          <caret line="158" column="13" lean-forward="true" selection-start-line="158" selection-start-column="13" selection-end-line="158" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -567,35 +606,77 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mapparser.py">
+    <entry file="file://$PROJECT_DIR$/check_latlon.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-243">
+        <state relative-caret-position="198">
+          <caret line="11" column="36" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="48" selection-end-column="147" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/samplek.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="14" column="47" lean-forward="false" selection-start-line="14" selection-start-column="47" selection-end-line="14" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data_wrangling_schema.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="333">
+          <caret line="224" column="30" lean-forward="false" selection-start-line="224" selection-start-column="30" selection-end-line="224" selection-end-column="30" />
+          <folding>
+            <element signature="e#6224#6234#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mapparser.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="13" column="13" lean-forward="true" selection-start-line="12" selection-start-column="0" selection-end-line="13" selection-end-column="13" />
+          <folding>
+            <element signature="e#510#545#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/tags.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-711">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="522">
+          <caret line="29" column="60" lean-forward="true" selection-start-line="27" selection-start-column="0" selection-end-line="29" selection-end-column="60" />
+          <folding>
+            <element signature="e#46#81#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/check_id.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="378">
+          <caret line="21" column="74" lean-forward="false" selection-start-line="21" selection-start-column="74" selection-end-line="21" selection-end-column="74" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/users.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-117">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/samplek.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="14" column="47" lean-forward="false" selection-start-line="14" selection-start-column="47" selection-end-line="14" selection-end-column="47" />
-          <folding />
+        <state relative-caret-position="216">
+          <caret line="12" column="0" lean-forward="true" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <folding>
+            <element signature="e#46#81#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

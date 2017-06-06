@@ -1,4 +1,3 @@
-id,key,value,type
 244075947,ADM1,18,gns
 244075947,DSG,ADM2,gns
 244075947,UFI,-1896788,gns
@@ -8817,8 +8816,8 @@ id,key,value,type
 3374791336,amenity,fast_food,regular
 3374791336,cuisine,chicken,regular
 3374791336,name,KFC,regular
-3374791336,en,KFC,name
-3374791336,zh,肯德基星力城餐厅,name
+3374791336,en,肯德基星力城餐厅,name
+3374791336,zh,肯德基,name
 3374791346,name,海湾购物中心,regular
 3374791346,shop,mall,regular
 3374791533,amenity,parking,regular
@@ -17135,10 +17134,10 @@ id,key,value,type
 4796227535,operator,中国石油 PetroChina,regular
 4802596223,amenity,restaurant,regular
 4802596223,name,Liu YiShou TeSe KaoYu (QingYun Road),regular
-4802596223,phone,8518661588,regular
+4802596223,phone,08518661588,regular
 4802609821,amenity,restaurant,regular
 4802609821,name,Laokaili Fish in Sour Soup (Shengfu Shop),regular
-4802609821,phone,8515843665,regular
+4802609821,phone,08515843665,regular
 4802933650,name,打鱼乡,regular
 4802933650,en,Dayu Town,name
 4802933650,place,town,regular
