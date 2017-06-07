@@ -67,6 +67,32 @@ def update_name(name, mapping):
         name = re.sub(k, v, name)
     return name
 
+def is_phone_number(elem):
+    return elem.attrib['k'] == 'phone'
+
+def update_phone(phone):
+    if phone.startswith('86') or phone.startswith('+86'):
+        parts = phone.strip().split(' ')
+        if len(parts) >= 2 and parts[1].startswith('8'):
+            # a telephone number
+            parts[1] = '0' + parts[1]
+            return ''.join(parts[1:])
+        elif len(parts) >= 2 and parts[1].startswith('1'):
+            # a mobile phone number
+            return ''.join(parts[1:])
+    return phone
+
+def is_house_number(elem):
+    return elem.attrib['k'] == 'addr:housenumber'
+
+numre = re.compile(r'\d+')
+def update_house_number(house_number):
+    m = numre.search(house_number)
+    if m:
+        return m.group()
+    return house_number
+
+
 if __name__ == '__main__':
     street_types = audit(OSMFILE)
     pprint.pprint(dict(street_types))

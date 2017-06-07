@@ -1,3 +1,4 @@
+id,key,value,type
 24424921,SWBD_facc_code,bh080,regular
 24424921,ele,1517.0,regular
 24424921,natural,water,regular
@@ -21716,7 +21717,7 @@
 330496194,amenity,school,regular
 330496194,name,遵义第四中学,regular
 330496194,en,Zunyi No 4 Middle School,name
-330496194,phone,+86 851 2822 3172,regular
+330496194,phone,085128223172,regular
 330496196,bicycle,yes,regular
 330496196,highway,pedestrian,regular
 330496196,horse,yes,regular
@@ -23324,7 +23325,7 @@
 340393689,highway,residential,regular
 340393690,amenity,school,regular
 340393690,name,惠民驾校,regular
-340393690,phone,+86 851 2733 2266,regular
+340393690,phone,085127332266,regular
 340559712,highway,trunk,regular
 340559712,lanes,3,regular
 340559712,name,龙洞堡大道,regular
@@ -23632,7 +23633,7 @@
 344635931,amenity,school,regular
 344635931,name,工农小学,regular
 344635931,en,Gongnong Primary School,name
-344635931,phone,+86 852 2756 0045,regular
+344635931,phone,085227560045,regular
 344640326,highway,residential,regular
 344640823,highway,service,regular
 344640824,highway,secondary,regular
@@ -24067,7 +24068,7 @@
 347535459,office,government,regular
 347535461,building,hotel,regular
 347535461,name,遵义新航宾馆,regular
-347535461,phone,+86 851 2733 1088,regular
+347535461,phone,085127331088,regular
 347535464,building,hospital,regular
 347535464,name,遵义县阳光医院虾子分院,regular
 347546303,building,residential,regular
@@ -25335,7 +25336,7 @@
 353415469,building,residential,regular
 353415469,name,正久·民和天地,regular
 353415470,city,遵义县,addr
-353415470,housenumber,140号,addr
+353415470,housenumber,140,addr
 353415470,street,西大街南段,addr
 353415470,landuse,residential,regular
 353415470,name,扬州恬苑,regular
@@ -26487,7 +26488,7 @@
 371075672,building,yes,regular
 371075672,name,DoubleTree by Hilton Hotel Anshun,regular
 371075672,operator,Hilton Worldwide,regular
-371075672,phone,+86 851 3366 9666,regular
+371075672,phone,085133669666,regular
 371075672,tourism,hotel,regular
 371075672,website,http://doubletree3.hilton.com/en/hotels/china/doubletree-by-hilton-hotel-anshun-AVAHSDI/index.html?WT.mc_id=zELWAKN0APAC1DT2DMH3LocalSearch4DGGenericx6AVAHSDI,regular
 371075672,wheelchair,yes,regular

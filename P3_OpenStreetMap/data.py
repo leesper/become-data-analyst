@@ -199,11 +199,15 @@ def shape_element(element, node_attr_fields=NODE_FIELDS, way_attr_fields=WAY_FIE
     # treatments are the same for the secondary 'tag' tags of both node and way elements
     if element.tag in ['node', 'way']:
         for tag in element.iter('tag'):
-            if audit.is_street_name(tag):
-                tag.attrib['v'] = audit.update_name(tag.attrib['v'], audit.mapping)
             k = tag.attrib['k']
             if problem_chars.search(k) is not None:
                 continue
+            if audit.is_street_name(tag):
+                tag.attrib['v'] = audit.update_name(tag.attrib['v'], audit.mapping)
+            if audit.is_phone_number(tag):
+                tag.attrib['v'] = audit.update_phone(tag.attrib['v'])
+            if audit.is_house_number(tag):
+                tag.attrib['v'] = audit.update_house_number(tag.attrib['v'])
             # if k contains ':' split it into type and key
             if k.find(':') >= 0:
                 tag_type, tag_key = k[:k.find(':')], k[k.find(':')+1:]

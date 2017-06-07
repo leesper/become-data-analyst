@@ -1,3 +1,4 @@
+id,key,value,type
 244075947,ADM1,18,gns
 244075947,DSG,ADM2,gns
 244075947,UFI,-1896788,gns
@@ -8793,7 +8794,7 @@
 3374790810,shop,mall,regular
 3374790811,amenity,police,regular
 3374790811,name,遵义市公安局红花岗区分局,regular
-3374790811,phone,+86 851 2860 5512,regular
+3374790811,phone,085128605512,regular
 3374790812,amenity,police,regular
 3374790812,name,遵义市老城派出所,regular
 3374790813,amenity,atm,regular
@@ -8985,7 +8986,7 @@
 3399971964,amenity,toilets,regular
 3399971965,amenity,restaurant,regular
 3399971965,name,穆恩二香辣鱼庄,regular
-3399971965,phone,+86 137 6511 4543,regular
+3399971965,phone,13765114543,regular
 3399971965,takeaway,yes,regular
 3399971966,amenity,restaurant,regular
 3399971966,name,紫江渔村,regular
@@ -9029,7 +9030,7 @@
 3410651138,amenity,restaurant,regular
 3410651138,cuisine,chinese,regular
 3410651138,name,外婆家鼎罐,regular
-3410651138,phone,+86 851 2827 7345,regular
+3410651138,phone,085128277345,regular
 3410651138,smoking,yes,regular
 3410651138,takeaway,yes,regular
 3410651139,amenity,social_facility,regular
@@ -9059,7 +9060,7 @@
 3410699670,name,春生彼岸,regular
 3410699675,name,半岛酒店,regular
 3410699675,en,Penisula Hotel,name
-3410699675,phone,+86 851 2313 6888,regular
+3410699675,phone,085123136888,regular
 3410699675,tourism,hotel,regular
 3410699690,amenity,restaurant,regular
 3410699690,cuisine,chinese,regular
@@ -9480,7 +9481,7 @@
 3534751767,en,Postal Saving Bank of China,name
 3534751768,name,遵义市舟水法律事务所,regular
 3534751768,office,lawyer,regular
-3534751768,phone,+86 851 2842 2702,regular
+3534751768,phone,085128422702,regular
 3534751769,name,电信便民服务站,regular
 3534751769,en,China Telecom,name
 3534751769,office,telecommunication,regular
@@ -9507,7 +9508,7 @@
 3538143936,housenumber,33,addr
 3538143936,street,北街,addr
 3538143936,name,遵义家佳酒店,regular
-3538143936,phone,+86 851 2733 8008,regular
+3538143936,phone,085127338008,regular
 3538143936,tourism,hotel,regular
 3538143937,name,邹记吉祥住宿,regular
 3538143937,tourism,hotel,regular
@@ -9557,7 +9558,7 @@
 3538669247,shop,clothes,regular
 3538669251,amenity,police,regular
 3538669251,name,遵义县虾子派出所,regular
-3538669251,phone,+86 851 2733 1177,regular
+3538669251,phone,085127331177,regular
 3538669252,name,风采服饰广场虾子分店,regular
 3538669252,shop,clothes,regular
 3538669253,amenity,bank,regular
@@ -9798,7 +9799,7 @@
 3567731011,name,彩票销售点,regular
 3567731011,shop,lottery,regular
 3570885271,name,西环便民店,regular
-3570885271,phone,+86 147 8575 9068,regular
+3570885271,phone,14785759068,regular
 3570885271,shop,convenience,regular
 3570885273,name,黔北酒坊,regular
 3570885273,shop,wine,regular
@@ -10177,16 +10178,16 @@
 3591738085,amenity,restaurant,regular
 3591738085,name,金冠饼屋,regular
 3591738086,name,今世家电,regular
-3591738086,phone,+86 137 6597 9417,regular
+3591738086,phone,13765979417,regular
 3591738086,shop,electronics,regular
 3591738087,name,男孩の女孩,regular
-3591738087,phone,+86 187 9868 0606,regular
+3591738087,phone,18798680606,regular
 3591738087,shop,yes,regular
 3591738088,name,罗氏家具广场,regular
-3591738088,phone,+86 130 9676 8226,regular
+3591738088,phone,13096768226,regular
 3591738088,shop,furniture,regular
 3591738089,name,港都家私,regular
-3591738089,phone,+86 133 1230 6543,regular
+3591738089,phone,13312306543,regular
 3591738089,shop,furniture,regular
 3591738090,name,诚信寄卖行,regular
 3591738090,shop,yes,regular
@@ -10211,7 +10212,7 @@
 3591757547,amenity,restaurant,regular
 3591757547,name,贵阳肠旺面,regular
 3591757548,name,金阳旅社,regular
-3591757548,phone,+86 851 2788 1379,regular
+3591757548,phone,085127881379,regular
 3591757548,tourism,hotel,regular
 3591757549,name,易捷,regular
 3591757549,en,Easyjoy,name
@@ -10221,7 +10222,7 @@
 3591757551,amenity,hospital,regular
 3591757551,emergency,yes,regular
 3591757551,name,白龙综合门诊部,regular
-3591757551,phone,+86 139 8495 2598,regular
+3591757551,phone,13984952598,regular
 3591757571,name,蜕变精品女装,regular
 3591757571,shop,clothes,regular
 3591757572,name,转角床上用品,regular
@@ -10275,7 +10276,7 @@
 3591800943,name,南方家具老店,regular
 3591800943,shop,furniture,regular
 3591800944,name,梦月旅社,regular
-3591800944,phone,+86 851 2788 1466,regular
+3591800944,phone,085127881466,regular
 3591800944,tourism,hotel,regular
 3591800945,name,诚信通讯,regular
 3591800945,shop,mobile_phone,regular
@@ -10285,12 +10286,12 @@
 3591800951,shop,yes,regular
 3591800952,amenity,childcare,regular
 3591800952,name,遵义县实验幼儿园,regular
-3591800952,phone,+86 851 2321 9899,regular
+3591800952,phone,085123219899,regular
 3591800953,name,遵义县南白镇 加州旅馆,regular
-3591800953,phone,+86 185 8533 0964,regular
+3591800953,phone,18585330964,regular
 3591800953,tourism,hotel,regular
 3591800954,name,遵义县南白商贸城 移民旅社,regular
-3591800954,phone,+86 182 0844 0177,regular
+3591800954,phone,18208440177,regular
 3591800954,tourism,hotel,regular
 3591800955,name,遵义县南白镇 鸿运旅馆,regular
 3591800955,tourism,hotel,regular
@@ -10480,7 +10481,7 @@
 3624656484,bicycle:chain_tool,yes,service
 3624656484,bicycle:pump,yes,service
 3624656485,name,快乐购物,regular
-3624656485,phone,+86 133 1042 9508,regular
+3624656485,phone,13310429508,regular
 3624656485,shop,convenience,regular
 3624746396,amenity,restaurant,regular
 3624746396,name,兄弟烤鱼,regular
@@ -10519,7 +10520,7 @@
 3629227582,en,Surfing,name
 3629227582,shop,mobile_phone,regular
 3629227586,city,遵义县,addr
-3629227586,housenumber,271号,addr
+3629227586,housenumber,271,addr
 3629227586,street,西大街南段,addr
 3629227586,name,大自然 棕床垫,regular
 3629227586,shop,furniture,regular
@@ -10570,10 +10571,10 @@
 3629279987,amenity,restaurant,regular
 3629279987,name,宾王清炖鹅肉粉 西大街南段店,regular
 3629279988,city,遵义县,addr
-3629279988,housenumber,130号,addr
+3629279988,housenumber,130,addr
 3629279988,street,西大街南段,addr
 3629279988,name,洁丰干洗,regular
-3629279988,phone,+86 851 2722 8963,regular
+3629279988,phone,085127228963,regular
 3629279988,shop,laundry,regular
 3639269900,highway,motorway_junction,regular
 3639269900,ref,508,regular
@@ -10987,7 +10988,7 @@
 3910243127,amenity,fast_food,regular
 3910243127,cuisine,chinese,regular
 3910243127,name,八方客 BFK,regular
-3910243127,phone,+86 851 2314 0059,regular
+3910243127,phone,085123140059,regular
 3910243128,amenity,restaurant,regular
 3910243128,cuisine,regional,regular
 3910243128,name,名城豆花面,regular
@@ -14425,7 +14426,7 @@
 4583608991,housenumber,6,addr
 4583608991,street,Beijing East Road,addr
 4583608991,name,Guotai Hotel,regular
-4583608991,phone,86 855 826 9818,regular
+4583608991,phone,08558269818,regular
 4583608991,tourism,hotel,regular
 4597045398,power,tower,regular
 4597045399,power,tower,regular
