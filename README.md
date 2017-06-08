@@ -6,3 +6,4 @@
 2. [斯特鲁普效应分析报告](https://nbviewer.jupyter.org/github/leesper/become-data-analyst/blob/master/P1_StroopEffectAnalysis/P1_StroopEffectAnalysis.ipynb)
 3. [泰坦尼克号乘客分析报告](https://nbviewer.jupyter.org/github/leesper/become-data-analyst/blob/master/P2_investigate_dataset/P2investivate_dataset.ipynb)
 4. [优达学城A/B测试试验分析报告](https://nbviewer.jupyter.org/github/leesper/become-data-analyst/blob/master/P7_ABTest/P7_AB_test.ipynb)
+5. [贵阳市地图数据清洗与分析报告（OpenStreetMap）](https://nbviewer.jupyter.org/github/leesper/become-data-analyst/blob/master/P3_OpenStreetMap/P3_open_street_map.ipynb)
