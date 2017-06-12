@@ -59,6 +59,7 @@ qplot(x = www_likes, data = subset(pf, !is.na(gender)),
   scale_x_continuous() +
   scale_x_log10()
 
+by(pf$www_likes, pf$gender, sum)
 
 
 
