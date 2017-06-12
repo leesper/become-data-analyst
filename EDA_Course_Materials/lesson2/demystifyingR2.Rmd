@@ -165,6 +165,9 @@ answer a question to continue on in Lesson 2.
 Which car(s) have an mpg (miles per gallon) greater than or equal to 30
 OR hp (horsepower) less than 60? Create an R chunk of code to answer the question.
 
+```{r}
+mtcars[mtcars$mpg >= 30.0 | mtcars$hp < 60.0,]
+```
 
 
 Once you have the answer, go the [Udacity website](https://www.udacity.com/course/viewer#!/c-ud651/l-729069797/e-804129319/m-811719066) to continue with Lesson 2.
