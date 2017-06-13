@@ -1,5 +1,5 @@
 getwd()
-setwd('/home/leesper/become-data-analyst/EDA_Course_Materials/lesson3/')
+setwd('/home/likejun/become-data-analyst/EDA_Course_Materials/lesson3/')
 pf = read.csv('pseudo_facebook.tsv', sep='\t')
 
 library(ggplot2)
@@ -60,6 +60,30 @@ qplot(x = www_likes, data = subset(pf, !is.na(gender)),
   scale_x_log10()
 
 by(pf$www_likes, pf$gender, sum)
+
+qplot(x = gender, y = friend_count, 
+      data = subset(pf, !is.na(gender)), 
+      geom = 'boxplot') + 
+  coord_cartesian(ylim = c(0, 1000))
+
+
+qplot(x = gender, y = friend_count, 
+      data = subset(pf, !is.na(gender)), 
+      geom = 'boxplot') + 
+  coord_cartesian(ylim = c(0, 250))
+
+by(pf$friend_count, pf$gender, summary)
+
+
+qplot(x = gender, y = friendships_initiated, 
+      data = subset(pf, !is.na(gender)), 
+      geom = 'boxplot') + 
+  coord_cartesian(ylim = c(0, 250))
+
+by(pf$friendships_initiated, pf$gender, summary)
+
+
+
 
 
 
