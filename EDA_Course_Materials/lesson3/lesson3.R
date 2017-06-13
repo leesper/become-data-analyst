@@ -1,5 +1,5 @@
 getwd()
-setwd('/home/likejun/become-data-analyst/EDA_Course_Materials/lesson3/')
+setwd('/home/leesper/become-data-analyst/EDA_Course_Materials/lesson3/')
 pf = read.csv('pseudo_facebook.tsv', sep='\t')
 
 library(ggplot2)
