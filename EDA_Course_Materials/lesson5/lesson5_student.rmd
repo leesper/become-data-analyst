@@ -15,6 +15,14 @@ Notes:
 Notes:
 
 ```{r Third Qualitative Variable}
+pf.fc_by_age_gender <- pf %>%
+  filter(!is.na(gender)) %>%
+  group_by(age, gender) %>%
+  summarise(mean_friend_count = mean(friend_count),
+            median_friend_count = median(friend_count),
+            n = n()) %>%
+  ungroup(age) %>%
+  arrange(age)
 ggplot(aes(x = gender, y = age),
        data = subset(pf, !is.na(gender))) + geom_histogram()
 ```
