@@ -78,7 +78,7 @@ ggplot(data = pf.fc_by_age_gender.wide, aes(x=age, y=female/male)) + geom_line()
 Notes:
 
 ```{r Third Quantitative Variable}
-
+pf$year_joined <- floor(2014 - pf$tenure / 365)
 ```
 
 ***
@@ -87,7 +87,7 @@ Notes:
 Notes:
 
 ```{r Cut a Variable}
-
+pf$year_joined.bucket <- cut(pf$year_joined, breaks = c(2004, 2009, 2011, 2012, 2014))
 ```
 
 ***
@@ -106,6 +106,9 @@ ggplot(data=subset(pf, !is.na(year_joined.bucket)), aes(x=age, y=friend_count)) 
 Notes:
 
 ```{r Plot the Grand Mean}
+ggplot(data=subset(pf, !is.na(year_joined.bucket)), aes(x=age, y=friend_count)) + 
+    geom_line(aes(color=year_joined.bucket), stat='summary', fun.y=mean) + 
+    geom_line(stat='summary', fun.y=mean, linetype=2)
 
 ```
 
@@ -115,7 +118,7 @@ Notes:
 Notes:
 
 ```{r Friending Rate}
-
+with(subset(pf, pf$tenure > 0), summary(friend_count/tenure))
 ```
 
 ***
@@ -128,7 +131,7 @@ What is the median friend rate?
 What is the maximum friend rate?
 
 ```{r Friendships Initiated}
-
+ggplot(data = subset(pf, tenure > 0), aes(x=tenure, y=friendships_initiated/tenure)) + geom_line(aes(color = year_joined.bucket), stat='summary', fun.y = mean)
 ```
 
 ***
@@ -140,27 +143,25 @@ Notes:
 
 ggplot(aes(x = tenure, y = friendships_initiated / tenure),
        data = subset(pf, tenure >= 1)) +
-  geom_line(aes(color = year_joined.bucket),
-            stat = 'summary',
-            fun.y = mean)
+  geom_smooth(aes(color = year_joined.bucket))
 
-ggplot(aes(x = 7 * round(tenure / 7), y = friendships_initiated / tenure),
-       data = subset(pf, tenure > 0)) +
-  geom_line(aes(color = year_joined.bucket),
-            stat = "summary",
-            fun.y = mean)
+#ggplot(aes(x = 7 * round(tenure / 7), y = friendships_initiated / tenure),
+#       data = subset(pf, tenure > 0)) +
+#  geom_line(aes(color = year_joined.bucket),
+#            stat = "summary",
+#            fun.y = mean)
 
-ggplot(aes(x = 30 * round(tenure / 30), y = friendships_initiated / tenure),
-       data = subset(pf, tenure > 0)) +
-  geom_line(aes(color = year_joined.bucket),
-            stat = "summary",
-            fun.y = mean)
+#ggplot(aes(x = 30 * round(tenure / 30), y = friendships_initiated / tenure),
+#       data = subset(pf, tenure > 0)) +
+#  geom_line(aes(color = year_joined.bucket),
+#            stat = "summary",
+#            fun.y = mean)
 
-ggplot(aes(x = 90 * round(tenure / 90), y = friendships_initiated / tenure),
-       data = subset(pf, tenure > 0)) +
-  geom_line(aes(color = year_joined.bucket),
-            stat = "summary",
-            fun.y = mean)
+#ggplot(aes(x = 90 * round(tenure / 90), y = friendships_initiated / tenure),
+#       data = subset(pf, tenure > 0)) +
+#  geom_line(aes(color = year_joined.bucket),
+#            stat = "summary",
+#            fun.y = mean)
 
 ```
 
