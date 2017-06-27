@@ -96,7 +96,8 @@ Notes:
 Notes:
 
 ```{r Plotting it All Together}
-
+ggplot(data=subset(pf, !is.na(year_joined.bucket)), aes(x=age, y=friend_count)) + 
+    geom_line(aes(color=year_joined.bucket), stat='summary', fun.y=median)
 ```
 
 ***
