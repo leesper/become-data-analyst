@@ -181,7 +181,15 @@ Notes:
 Notes:
 
 ```{r Histograms Revisited}
+yo <- read.csv('yogurt.csv')
+#str(yo)
 
+yo$id <- factor(yo$id)
+str(yo)
+summary(yo$price)
+
+library(ggplot2)
+ggplot(data=yo, aes(x=price)) + geom_histogram()
 ```
 
 ***
@@ -190,7 +198,7 @@ Notes:
 Notes:
 
 ```{r Number of Purchases}
-
+yo <- transform(yo, all.purchases = strawberry + blueberry + pina.colada + plain + mixed.berry)
 ```
 
 ***

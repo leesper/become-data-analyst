@@ -9,7 +9,13 @@ Notes:
 ### Scatterplot Review
 
 ```{r Scatterplot Review}
+library(ggplot2)
+data(diamonds)
 
+p1 <- ggplot(data=diamonds, aes(x=carat, y=price))
+p1 + geom_point(fill=I('#F79420'), color=I('black'), shape=21) +
+  xlim(0, quantile(diamonds$carat, prob = .99)) +
+  ylim(0, quantile(diamonds$price, prob = .99))
 ```
 
 ***
@@ -22,7 +28,7 @@ Response:
 ### Frances Gerety
 Notes:
 
-#### A diamonds is
+#### A diamonds is FOREVER
 
 
 ***
@@ -67,7 +73,16 @@ Response:
 Notes:
 
 ```{r The Demand of Diamonds}
+library(gridExtra)
 
+plot1 <- qplot(x=price, data=diamonds, binwidth=100) + 
+  ggtitle('Price')
+
+plot2 <- qplot(x=price, data=diamonds, binwidth=0.01) +
+  ggtitle('Price (log10)') +
+  scale_x_log10()
+
+grid.arrange(plot1, plot2, ncol=2)
 ```
 
 ***
@@ -113,7 +128,7 @@ ggplot(aes(carat, price), data = diamonds) +
 
 ```{r Overplotting Revisited}
 ggplot(aes(carat, price), data = diamonds) + 
-  geom_point() + 
+  geom_point(position='jitter', alpha=0.5, size=.75) + 
   scale_x_continuous(trans = cuberoot_trans(), limits = c(0.2, 3),
                      breaks = c(0.2, 0.5, 1, 2, 3)) + 
   scale_y_continuous(trans = log10_trans(), limits = c(350, 15000),
@@ -137,7 +152,7 @@ install.packages('RColorBrewer')
 library(RColorBrewer)
 
 ggplot(aes(x = carat, y = price), data = diamonds) + 
-  geom_point(alpha = 0.5, size = 1, position = 'jitter') +
+  geom_point(aes(color=clarity), alpha = 0.5, size = 1, position = 'jitter') +
   scale_color_brewer(type = 'div',
     guide = guide_legend(title = 'Clarity', reverse = T,
     override.aes = list(alpha = 1, size = 2))) +  
@@ -159,16 +174,16 @@ Response:
 
 Alter the code below.
 ```{r Price vs. Carat and Cut}
-ggplot(aes(x = carat, y = price, color = clarity), data = diamonds) + 
+ggplot(aes(x = carat, y = price, color = cut), data = diamonds) + 
   geom_point(alpha = 0.5, size = 1, position = 'jitter') +
   scale_color_brewer(type = 'div',
-                     guide = guide_legend(title = 'Clarity', reverse = T,
+                     guide = guide_legend(title = 'Cut', reverse = T,
                                           override.aes = list(alpha = 1, size = 2))) +  
   scale_x_continuous(trans = cuberoot_trans(), limits = c(0.2, 3),
                      breaks = c(0.2, 0.5, 1, 2, 3)) + 
   scale_y_continuous(trans = log10_trans(), limits = c(350, 15000),
                      breaks = c(350, 1000, 5000, 10000, 15000)) +
-  ggtitle('Price (log10) by Cube-Root of Carat and Clarity')
+  ggtitle('Price (log10) by Cube-Root of Carat and Cut')
 ```
 
 ***
