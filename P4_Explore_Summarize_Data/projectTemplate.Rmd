@@ -1,5 +1,8 @@
-TITLE by YOUR_NAME_HERE
+Prosper Data Analysis
 ========================================================
+
+https://www.creditsesame.com/blog/credit/credit-score-range-for-experian-transunion-equifax/
+https://help.prosper.com/2008/01/17/the-five-cs-of-credit-and-your-lending-strategy-on-prosper/
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
 # Load all of the packages that you end up using
@@ -16,6 +19,7 @@ library(dplyr)
 ```{r echo=FALSE, Load_the_Data}
 # Load the Data
 prosperData <- read.csv('prosperLoanData.csv', na.strings = c('', 'NA'))
+prosperDataSet <- select(prosperData, ListingKey, TradesNeverDelinquent..percentage., CreditScoreRangeLower, CreditScoreRangeUpper, TotalInquiries, PublicRecordsLast10Years, BankcardUtilization, DebtToIncomeRatio, IsBorrowerHomeowner, LoanStatus, Occupation, ProsperScore, BorrowerState, ListingCategory..numeric., EmploymentStatus, EmploymentStatusDuration, LoanOriginationQuarter)
 ```
 
 # Univariate Plots Section
