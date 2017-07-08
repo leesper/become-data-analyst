@@ -26,7 +26,12 @@ prosperData$CreditScoreAverage <- (prosperData$CreditScoreRangeUpper + prosperDa
 # converting listing categories to factors
 listingCategories <- c('Not Available', 'Debt Consolidation', 'Home Improvement', 'Business', 'Personal Loan', 'Student Use', 'Auto', 'Other', 'Baby&Adoption', 'Boat', 'Cosmetic Procedure', 'Engagement Ring', 'Green Loans', 'Household Expenses', 'Large Purchases', 'Medical/Dental', 'Motorcycle', 'RV', 'Taxes', 'Vacation', 'Wedding Loans')
 
-prosperData$ListingCategory <- factor(listingCategories[prosperData$ListingCategory..numeric. + 1])
+listingLevels <- c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)
+
+prosperData$ListingCategory <- factor(prosperData$ListingCategory..numeric.,
+                                      levels = listingLevels,
+                                      labels = listingCategories)
+
 prosperData$IsBorrowerHomeowner <- as.logical(prosperData$IsBorrowerHomeowner)
 
 # select variables interested
