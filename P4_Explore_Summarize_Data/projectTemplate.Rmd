@@ -19,7 +19,18 @@ library(dplyr)
 ```{r echo=FALSE, Load_the_Data}
 # Load the Data
 prosperData <- read.csv('prosperLoanData.csv', na.strings = c('', 'NA'))
-prosperDataSet <- select(prosperData, ListingKey, TradesNeverDelinquent..percentage., CreditScoreRangeLower, CreditScoreRangeUpper, TotalInquiries, PublicRecordsLast10Years, BankcardUtilization, DebtToIncomeRatio, IsBorrowerHomeowner, LoanStatus, Occupation, ProsperScore, BorrowerState, ListingCategory..numeric., EmploymentStatus, EmploymentStatusDuration, LoanOriginationQuarter)
+
+# calculate the average credit score
+prosperData$CreditScoreAverage <- (prosperData$CreditScoreRangeUpper + prosperData$CreditScoreRangeUpper) / 2
+
+# converting listing categories to factors
+listingCategories <- c('Not Available', 'Debt Consolidation', 'Home Improvement', 'Business', 'Personal Loan', 'Student Use', 'Auto', 'Other', 'Baby&Adoption', 'Boat', 'Cosmetic Procedure', 'Engagement Ring', 'Green Loans', 'Household Expenses', 'Large Purchases', 'Medical/Dental', 'Motorcycle', 'RV', 'Taxes', 'Vacation', 'Wedding Loans')
+
+prosperData$ListingCategory <- factor(listingCategories[prosperData$ListingCategory..numeric. + 1])
+prosperData$IsBorrowerHomeowner <- as.logical(prosperData$IsBorrowerHomeowner)
+
+# select variables interested
+prosperDataSet <- select(prosperData, TradesNeverDelinquent..percentage., CreditScoreAverage, TotalInquiries, PublicRecordsLast10Years, BankcardUtilization, DebtToIncomeRatio, IsBorrowerHomeowner, LoanStatus, Occupation, ProsperScore, BorrowerState, ListingCategory, EmploymentStatus, EmploymentStatusDuration, LoanOriginationQuarter)
 ```
 
 # Univariate Plots Section
