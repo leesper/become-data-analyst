@@ -35,7 +35,7 @@ prosperData$ListingCategory <- factor(prosperData$ListingCategory..numeric.,
 prosperData$IsBorrowerHomeowner <- as.logical(prosperData$IsBorrowerHomeowner)
 
 # select variables interested
-prosperDataSet <- select(prosperData, TradesNeverDelinquent..percentage., CreditScoreAverage, TotalInquiries, PublicRecordsLast10Years, BankcardUtilization, DebtToIncomeRatio, IsBorrowerHomeowner, LoanStatus, Occupation, ProsperScore, BorrowerState, ListingCategory, EmploymentStatus, EmploymentStatusDuration, LoanOriginationQuarter)
+prosperDataSet <- select(prosperData, TradesNeverDelinquent..percentage., CreditScoreAverage, TotalInquiries, PublicRecordsLast10Years, BankcardUtilization, DebtToIncomeRatio, IsBorrowerHomeowner, LoanStatus, Occupation, ProsperScore, BorrowerState, ListingCategory, EmploymentStatus, EmploymentStatusDuration)
 ```
 
 # Univariate Plots Section
