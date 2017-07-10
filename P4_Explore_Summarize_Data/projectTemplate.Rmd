@@ -2,8 +2,10 @@ Prosper Exploration Data Analysis
 ========================================================
 
 [Prosper](prosper.com) is one of the largest financial company who operates P2P lending business. It allows individuals to both invest in personal loans and request to borrow money. For borrowers you just log in and apply for a request on the website telling how much money you want to borrow. Then Soon after Prosper will list your request with some of your extra personal credit information on the website. Investors will see all the listings from borrowers and finally determine whether to invest or not based on the information posted.
-The original data from Prosper contains about 110000 observations and 81 variables. This is quite a huge information.
-This is an EDA report that performs an exploration of data from Prosper.com with about 110000 observations.
+
+![Investor Dashboard](./prosper_dashboard.png)
+
+The original data from Prosper contains about 110000 observations and 81 variables. This is quite a huge information. After a lot googling and looking at investor's dashboard at Prosper, I carefully select 12 variables that an investor might be interested in making a judgement about whether a listing is worth investing or not, and come up with an EDA report that performs an exploration of data from Prosper.com with about 110000 observations.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
 # Load all of the packages that you end up using
@@ -49,7 +51,17 @@ str(prosperDataSet)
 ```{r echo=FALSE, Univariate_Plots}
 summary(prosperDataSet)
 ```
+There are 12 variables to be explored, and the basic summaries are displayed above.
 
+```{r echo=FALSE, Univariate_Plots}
+# histograms for trades never delinquent percentage
+ggplot(data = prosperDataSet, aes(x=TradesNeverDelinquent..percentage.)) + geom_histogram(bins = 10)
+```
+Most borrowers have a percentage of "trades never delinquent/total trades"" above 60%, this shows a better credit character in one aspect.
+
+```{r echo=FALSE, Univariate_Plots}
+# histogram for credit score average
+```
 
 # Univariate Analysis
 
