@@ -87,7 +87,7 @@ ggplot(data=prosperDataSet, aes(x=LoanStatus)) +
   geom_bar() + 
   theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
 ```
-Most listings are in status of "current"" and "completed"", then "charged off"" and "defaulted". There are a tiny amount of past-due listings. 
+There are nearly 50000 listings in status of "current", nearly 40000 in status of "completed", nearly 10000 in status of "charged off", nearly 5000 in status of "defaulted".There are some amount of past-due listings. 
 
 ```{r echo=FALSE, Univariate_Plots}
 ggplot(data=prosperDataSet, aes(x=Occupation)) + 
@@ -95,18 +95,52 @@ ggplot(data=prosperDataSet, aes(x=Occupation)) +
   theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
 ```
 Almost 30000 borrowers are not willing to tell their occupations. And "professional" has the most number of borrowers among known occupations.
+```{r echo=FALSE, Univariate_Plots}
+ggplot(data=prosperDataSet, aes(x=ProsperScore)) + geom_histogram(bins=30)
+```
+Most borrowers' prosper score are between 3 and 9.
+```{r echo=FALSE, Univariate_Plots}
+ggplot(data=prosperDataSet, aes(x=BorrowerState)) + 
+  geom_bar() +
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+```
+Nearly 15000 borrowers come for California.
+
+```{r echo=FALSE, Univariate_Plots}
+ggplot(data=prosperDataSet, aes(x=ListingCategory)) + 
+  geom_bar() + 
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+```
+Among all the listing categories, the count of borrowings for debt consolidation is the biggest, it has about 60000.
+
+```{r echo=FALSE, Univariate_Plots}
+pEmployment <- ggplot(data=prosperDataSet, aes(x=EmploymentStatus)) + geom_bar() + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+pEmploymentStatus <- ggplot(data=prosperDataSet, aes(x=EmploymentStatusDuration)) + geom_histogram()
+grid.arrange(pEmployment, pEmploymentStatus, ncol=2)
+```
+Among all the borrowers, there are more than 60000 are employees, and there are nearly 25000 full-time staffs. The distribution of employment status duration tells us that the most duration are under 200 months.
+
 # Univariate Analysis
 
 ### What is the structure of your dataset?
+My dataset contains 11 variables. Among them there are 4 numeric variables: CreditScoreAverage, DebtToIncomeRatio, ProsperScore, EmploymentStatusDuration, 6 factor variables: LoanStatus, Occupation, BorrowerState, ListingCategory, EmploymentStatus and 1 logic variable: IsBorrowerHomeowner.
+
+LoanStatus: Cancelled, Chargedoff, Completed, Current, Defaulted, FinalPaymentInProgress, PastDues of various days;
+Occupation: different kinds of jobs of borrowers;
+BorrowerState: states of US that borrowers come from;
+ListringCategory: different purposes that the borrowers borrow money for.
 
 ### What is/are the main feature(s) of interest in your dataset?
+"LoanStatus" is the main feature of interest in my dataset. I want to explore how other features affect the status of loans, especially the loan in complete/default/chargedoff/past due. Are there any patterns existed in them respectively? How do investors selectively assess different features in dashboard when planning to invest some loans?
 
 ### What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
+After researching on the article [The Five C’s of Credit and Your Lending Strategy on Prosper](https://help.prosper.com/2008/01/17/the-five-cs-of-credit-and-your-lending-strategy-on-prosper/), I think credit score, DTI ratio, prosper score and listing categories likely contribute to the status of loan, and maybe the employment status and duration are important factors to consider. 
 
 ### Did you create any new variables from existing variables in the dataset?
+Yes, since the original data gives credit score as a range value, I simply take the average of them to make a new variable called "CreditScoreAverage", this may simplifies the following analysis.
 
 ### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
-
+Yes, the distribution of debt to income ratio is highly left-skewed, thus hard to analyze. So I perform a log scale transform on x axis, makes it more easier to figure out whar are the most common DTI ratios among all the borrowers.
 
 
 # Bivariate Plots Section
