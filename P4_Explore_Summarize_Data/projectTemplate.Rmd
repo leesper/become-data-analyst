@@ -1,8 +1,9 @@
-Prosper Data Analysis
+Prosper Exploration Data Analysis
 ========================================================
 
-https://www.creditsesame.com/blog/credit/credit-score-range-for-experian-transunion-equifax/
-https://help.prosper.com/2008/01/17/the-five-cs-of-credit-and-your-lending-strategy-on-prosper/
+[Prosper](prosper.com) is one of the largest financial company who operates P2P lending business. It allows individuals to both invest in personal loans and request to borrow money. For borrowers you just log in and apply for a request on the website telling how much money you want to borrow. Then Soon after Prosper will list your request with some of your extra personal credit information on the website. Investors will see all the listings from borrowers and finally determine whether to invest or not based on the information posted.
+The original data from Prosper contains about 110000 observations and 81 variables. This is quite a huge information.
+This is an EDA report that performs an exploration of data from Prosper.com with about 110000 observations.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
 # Load all of the packages that you end up using
@@ -35,13 +36,20 @@ prosperData$ListingCategory <- factor(prosperData$ListingCategory..numeric.,
 prosperData$IsBorrowerHomeowner <- as.logical(prosperData$IsBorrowerHomeowner)
 
 # select variables interested
-prosperDataSet <- select(prosperData, TradesNeverDelinquent..percentage., CreditScoreAverage, TotalInquiries, PublicRecordsLast10Years, BankcardUtilization, DebtToIncomeRatio, IsBorrowerHomeowner, LoanStatus, Occupation, ProsperScore, BorrowerState, ListingCategory, EmploymentStatus, EmploymentStatusDuration)
+prosperDataSet <- select(prosperData, TradesNeverDelinquent..percentage., CreditScoreAverage, BankcardUtilization, DebtToIncomeRatio, IsBorrowerHomeowner, LoanStatus, Occupation, ProsperScore, BorrowerState, ListingCategory, EmploymentStatus, EmploymentStatusDuration)
 ```
 
 # Univariate Plots Section
 ```{r echo=FALSE, Univariate_Plots}
-
+dim(prosperDataSet)
 ```
+```{r echo=FALSE, Univariate_Plots}
+str(prosperDataSet)
+```
+```{r echo=FALSE, Univariate_Plots}
+summary(prosperDataSet)
+```
+
 
 # Univariate Analysis
 
