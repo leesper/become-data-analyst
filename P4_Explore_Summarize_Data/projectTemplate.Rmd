@@ -5,7 +5,7 @@ Prosper Exploration Data Analysis
 
 ![Investor Dashboard](./prosper_dashboard.png)
 
-The original data from Prosper contains about 110000 observations and 81 variables. This is quite a huge information. After a lot googling and looking at investor's dashboard at Prosper, I carefully select 12 variables that an investor might be interested in making a judgement about whether a listing is worth investing or not, and come up with an EDA report that performs an exploration of data from Prosper.com with about 110000 observations.
+The original data from Prosper contains about 110000 observations and 81 variables. This is quite a huge information. After a lot googling and looking at investor's dashboard at Prosper, I carefully select 11 variables that an investor might be interested in making a judgement about whether a listing is worth investing or not, and come up with an EDA report that performs an exploration of data from Prosper.com with about 110000 observations.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
 # Load all of the packages that you end up using
@@ -17,6 +17,7 @@ The original data from Prosper contains about 110000 observations and 81 variabl
 
 library(ggplot2)
 library(dplyr)
+library(gridExtra)
 ```
 
 ```{r echo=FALSE, Load_the_Data}
@@ -38,7 +39,7 @@ prosperData$ListingCategory <- factor(prosperData$ListingCategory..numeric.,
 prosperData$IsBorrowerHomeowner <- as.logical(prosperData$IsBorrowerHomeowner)
 
 # select variables interested
-prosperDataSet <- select(prosperData, TradesNeverDelinquent..percentage., CreditScoreAverage, BankcardUtilization, DebtToIncomeRatio, IsBorrowerHomeowner, LoanStatus, Occupation, ProsperScore, BorrowerState, ListingCategory, EmploymentStatus, EmploymentStatusDuration)
+prosperDataSet <- select(prosperData, TradesNeverDelinquent..percentage., CreditScoreAverage, DebtToIncomeRatio, IsBorrowerHomeowner, LoanStatus, Occupation, ProsperScore, BorrowerState, ListingCategory, EmploymentStatus, EmploymentStatusDuration)
 ```
 
 # Univariate Plots Section
@@ -57,12 +58,43 @@ There are 12 variables to be explored, and the basic summaries are displayed abo
 # histograms for trades never delinquent percentage
 ggplot(data = prosperDataSet, aes(x=TradesNeverDelinquent..percentage.)) + geom_histogram(bins = 10)
 ```
-Most borrowers have a percentage of "trades never delinquent/total trades"" above 60%, this shows a better credit character in one aspect.
+Most borrowers have a percentage of "trades never delinquent/total trades"" above 60%, this shows a nice credit character in one aspect.
 
 ```{r echo=FALSE, Univariate_Plots}
 # histogram for credit score average
+pAvgCreditBox <- ggplot(data = prosperDataSet, aes(x='Avg Credit', y=CreditScoreAverage)) + geom_boxplot()
+pAvgCreditHist <- ggplot(data=prosperDataSet, aes(x=CreditScoreAverage)) + geom_histogram(bins=20)
+grid.arrange(pAvgCreditBox, pAvgCreditHist, ncol=2)
 ```
+From the histogram we can see that most average credit scores are between 500 and 899. But there is an outlier with about 19 score from the box plot. It is strange that an individual has such a tiny score.
 
+```{r echo=FALSE, Univariate_Plots}
+pDTI <- ggplot(data=prosperDataSet, aes(x=DebtToIncomeRatio)) + geom_histogram(bins=50)
+pDTIScaled <- ggplot(data=prosperDataSet, aes(x=DebtToIncomeRatio)) + geom_histogram(bins=50) + scale_x_log10()
+grid.arrange(pDTI, pDTIScaled, ncol=2)
+```
+Because the DTI-ratio historgram is very left-skewed, I make another log-transformed plot to better analyse the distribution of DTI ratios. Almost all DTI ratios are among 0.5 and 0.8.
+
+```{r echo=FALSE, Univariate_Plots}
+ggplot(data=prosperDataSet, aes(x='Is Borrower Homeowner', fill=IsBorrowerHomeowner)) + 
+  geom_bar(width = 1) +
+  coord_polar(theta = 'y')
+```
+The pie chart tells us that almost a half of borrowers are home owners.
+
+```{r echo=FALSE, Univariate_Plots}
+ggplot(data=prosperDataSet, aes(x=LoanStatus)) + 
+  geom_bar() + 
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+```
+Most listings are in status of "current"" and "completed"", then "charged off"" and "defaulted". There are a tiny amount of past-due listings. 
+
+```{r echo=FALSE, Univariate_Plots}
+ggplot(data=prosperDataSet, aes(x=Occupation)) + 
+  geom_bar() +
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+```
+Almost 30000 borrowers are not willing to tell their occupations. And "professional" has the most number of borrowers among known occupations.
 # Univariate Analysis
 
 ### What is the structure of your dataset?
