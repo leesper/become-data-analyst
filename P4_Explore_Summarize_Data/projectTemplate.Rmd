@@ -1,11 +1,7 @@
-Prosper Exploration Data Analysis
+Wine Exploration Data Analysis
 ========================================================
 
-[Prosper](prosper.com) is one of the largest financial company who operates on P2P lending business. It allows individuals to both invest in personal loans and request to borrow money. For borrowers you just log in and apply for a request on the website telling how much money you want to borrow. Then Soon after Prosper will list your request with some of your extra personal credit information on the website. Investors will see all the listings from borrowers and finally determine whether to invest or not based on the information posted. Investors can invest a portfolio of different loans to lower the risk. As the saying goes, "Do not put all your eggs in one basket".
-
-![Investor Dashboard](./prosper_dashboard.png)
-
-This is a loan dashboard that an investor can see on Prosper website. It displays many aspects of information about the borrower. The original data to explore contains about 110000 observations and 81 variables. This is quite a huge information. It is not so easy for an investor to learn from such and finally determine which loan to invest. My goal is to explore the data and come up with an EDA report trying to figure out whether a loan is worth investing or not. Both investors and borrowers will benefit from it.
+I choose the white wine dataset to perform exploration data analysis. There are 12 variables in the original data. All about chemical compositions except one output variable: the quality scored by at least three wine specialists. I want to figure out the key compositions that affect the taste of white wine.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
 # Load all of the packages that you end up using
@@ -18,150 +14,135 @@ This is a loan dashboard that an investor can see on Prosper website. It display
 library(ggplot2)
 library(dplyr)
 library(gridExtra)
+library(GGally)
 ```
-
 ```{r echo=FALSE, Load_the_Data}
 # Load the Data
-prosperData <- read.csv('prosperLoanData.csv', na.strings = c('', 'NA'))
+wineData <- read.csv('wineQualityWhites.csv', na.strings = c('', 'NA'))
 
-# create three new variables: CreditScoreAverage, PrincipalPaymentsPercentage and YieldPercentage
-prosperData$CreditScoreAverage <- (prosperData$CreditScoreRangeUpper + prosperData$CreditScoreRangeUpper) / 2
-prosperData$PrincipalPaymentsPercentage <- prosperData$LP_CustomerPrincipalPayments / prosperData$LoanOriginalAmount
-prosperData$YieldPercentage <- prosperData$PrincipalPaymentsPercentage * prosperData$LenderYield
+# create a new variable called sugar.acidity to represent the ratio between residual sugar and total acidity
+wineData$sugar.acidity <- (wineData$fixed.acidity + wineData$volatile.acidity + wineData$citric.acid) / wineData$residual.sugar
 
-# converting listing categories to factors
-listingCategories <- c('Not Available', 'Debt Consolidation', 'Home Improvement', 'Business', 'Personal Loan', 'Student Use', 'Auto', 'Other', 'Baby&Adoption', 'Boat', 'Cosmetic Procedure', 'Engagement Ring', 'Green Loans', 'Household Expenses', 'Large Purchases', 'Medical/Dental', 'Motorcycle', 'RV', 'Taxes', 'Vacation', 'Wedding Loans')
+# create a new variable called bound.sulfur.dioxide
+wineData$bound.sulfur.dioxide <- wineData$total.sulfur.dioxide - wineData$free.sulfur.dioxide
 
-listingLevels <- c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)
-
-prosperData$ListingCategory <- factor(prosperData$ListingCategory..numeric.,
-                                      levels = listingLevels,
-                                      labels = listingCategories)
-
-# converting prosper rating to ordered factors
-prosperData$ProsperRating..Alpha. <- factor(prosperData$ProsperRating..Alpha., ordered = TRUE, levels = c('HR', 'E', 'D', 'C', 'B', 'A', 'AA'))
-
-# converting IsBorrowerHomeOwner to booleans
-prosperData$IsBorrowerHomeowner <- as.logical(prosperData$IsBorrowerHomeowner)
-
-# select variables interested
-prosperDataSet <- select(prosperData, YieldPercentage, LoanStatus, CreditScoreAverage, ProsperRating..Alpha., PublicRecordsLast10Years, InquiriesLast6Months, TradesNeverDelinquent..percentage., DebtToIncomeRatio, IsBorrowerHomeowner, ListingCategory, Occupation, EmploymentStatus, EmploymentStatusDuration)
+# select and rearrange variables
+wineData <- select(wineData, quality, fixed.acidity, volatile.acidity, citric.acid, residual.sugar, sugar.acidity, chlorides, free.sulfur.dioxide, bound.sulfur.dioxide, sulphates, density, pH, alcohol)
 ```
 
 # Univariate Plots Section
 ```{r echo=FALSE, Univariate_Plots}
-dim(prosperDataSet)
+dim(wineData)
 ```
 ```{r echo=FALSE, Univariate_Plots}
-str(prosperDataSet)
+summary(wineData)
 ```
-```{r echo=FALSE, Univariate_Plots}
-summary(prosperDataSet)
-```
-There are 13 variables to be explored, and the basic summaries are displayed above.
-```{r echo=FALSE, Univariate_Plots}
-ggplot(data=prosperDataSet, aes(x=YieldPercentage)) + geom_histogram(bins=60)
-```
-It seems that most of the YieldPercentage are in range 0.0 ~ 0.1.
+There are 4898 observations, 13 variables to be explored, and the basic summaries are displayed above.
 
 ```{r echo=FALSE, Univariate_Plots}
-ggplot(data=prosperDataSet, aes(x=LoanStatus)) + 
-  geom_bar() + 
-  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+# histogram of quality scores
+ggplot(data=wineData, aes(x=quality)) + geom_bar()
 ```
-There are nearly 50000 listings in status of "current", nearly 40000 in status of "completed", nearly 10000 in status of "charged off", nearly 5000 in status of "defaulted".The rest are a tiny amount of past-due listings.
+The quality score is the variable most interested in. There are six kinds of quality scores in the dataset. Most of the white wine has a score of 6.
 
 ```{r echo=FALSE, Univariate_Plots}
-# histogram for credit score average
-pAvgCreditBox <- ggplot(data = prosperDataSet, aes(x='Avg Credit', y=CreditScoreAverage)) + geom_boxplot()
-pAvgCreditHist <- ggplot(data=prosperDataSet, aes(x=CreditScoreAverage)) + geom_histogram(bins=20)
-grid.arrange(pAvgCreditBox, pAvgCreditHist, ncol=2)
+# histogram of fixed acidity
+ggplot(data=wineData, aes(x=fixed.acidity)) + geom_histogram()
 ```
-From the histogram we can see that most average credit scores are between 500 and 800. But there is an outlier with about 19 score from the box plot. It is strange that an individual has such a bad credit score.
+Most of the white wine has a fixed acidity between 6 and 8 $g/dm^3$. About 1000 white wine has a fixed acidity of nearly 7 $g/dm^3$.
 
 ```{r echo=FALSE, Univariate_Plots}
-ggplot(data=subset(prosperDataSet, !is.na(ProsperRating..Alpha.)), aes(x=ProsperRating..Alpha.)) + geom_bar()
+# histogram of volatile acidity
+ggplot(data=wineData, aes(x=volatile.acidity)) + geom_histogram()
 ```
-Nearly 20000 borrowers are in proper rating "C". Rating "D", "B" and "A" contains nearly 15000 borrowers respectively. There are about 10000 borrowers in rating "E". Borrowers in high risk(HR) and best("AA") are all below 10000.
+Most of the white wine has a volatile acidity between 0.15 and 0.31 $g/dm^3$ approximately. The number of wine with volatile acdity about 0.27 $g/dm^3$ is nearly 1000.
 
 ```{r echo=FALSE, Univariate_Plots}
-# histograms for trades never delinquent percentage
-ggplot(data = prosperDataSet, aes(x=TradesNeverDelinquent..percentage.)) + geom_histogram(bins = 10)
+# histogram of citric acidity
+ggplot(data=wineData, aes(x=citric.acid)) + geom_histogram()
 ```
-Most borrowers have a percentage of "trades never delinquent/total trades"" above 60%, this shows a nice credit character in one aspect.
-
-
+Most of the white wine has a citric acidity between 0.25 and 0.4 $g/dm^3$. From all the three plots above we can see that the distribution of acidity in wine is somewhat normal.
 
 ```{r echo=FALSE, Univariate_Plots}
-pDTI <- ggplot(data=prosperDataSet, aes(x=DebtToIncomeRatio)) + geom_histogram(bins=50)
-pDTIScaled <- ggplot(data=prosperDataSet, aes(x=DebtToIncomeRatio)) + geom_histogram(bins=50) + scale_x_log10()
-grid.arrange(pDTI, pDTIScaled, ncol=2)
+# histogram and boxplot of residual sugar
+pSugarHist <- ggplot(data=wineData, aes(x=residual.sugar)) + geom_histogram(bins=100)
+pSugarHistScaled <- ggplot(data=wineData, aes(x=residual.sugar)) + geom_histogram(bins=100) + scale_x_log10()
+pSugarBox <- ggplot(data=wineData, aes(x='residual sugar', y=residual.sugar)) + geom_boxplot()
+grid.arrange(pSugarHist, pSugarHistScaled, pSugarBox, ncol=3)
 ```
-Because the DTI-ratio historgram is very left-skewed, I make another log-transformed plot to better analyse the distribution of DTI ratios. Almost all DTI ratios are among 0.5 and 0.8.
+Because the histogram is highly left-skewed, I create a log-transformed version in middle. And we can see from the log-tranformed histogram that the residual sugar of most white wine is below 15 $g/dm^3$. But from the boxplot there are some outliers with high value above 60 $g/dm^3$, that's too sweet.
 
 ```{r echo=FALSE, Univariate_Plots}
-ggplot(data=prosperDataSet, aes(x='Is Borrower Homeowner', fill=IsBorrowerHomeowner)) + 
-  geom_bar(width = 1) +
-  coord_polar(theta = 'y')
+# histogram of sugar-acidity ratio
+ggplot(data=wineData, aes(x=sugar.acidity)) + geom_histogram(bins=60)
 ```
-The pie chart tells us that almost a half of borrowers are home owners.
-
- 
+This shows the distribution of sugar/acidity ratio. Most of the white wine has a ratio between 0 and 2.5.
 
 ```{r echo=FALSE, Univariate_Plots}
-ggplot(data=prosperDataSet, aes(x=Occupation)) + 
-  geom_bar() +
-  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+# histogram of salt
+ggplot(data=wineData, aes(x=chlorides)) + geom_histogram(bins=200)
 ```
-Almost 30000 borrowers are not willing to tell their occupations. And "professional" has the most number of borrowers among known occupations.
+Most of the white wine has chlorides between 0.01 and 0.05 $g/dm^3$, this is the amount of salt in wine. A too high value may lead the wine too salty.
 
 ```{r echo=FALSE, Univariate_Plots}
-ggplot(data=prosperDataSet, aes(x=BorrowerState)) + 
-  geom_bar() +
-  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+# histograms about free, bound sulfur dioxide and sulphates
+pFreeSulfur <- ggplot(data=wineData, aes(x=free.sulfur.dioxide)) + geom_histogram()
+pBoundSulfur <- ggplot(data=wineData, aes(x=bound.sulfur.dioxide)) + geom_histogram()
+pSulphates <- ggplot(data=wineData, aes(x=sulphates)) + geom_histogram()
+grid.arrange(pFreeSulfur, pBoundSulfur, pSulphates, ncol=3)
 ```
-Nearly 15000 borrowers come for California.
+The chemical composition of sulfur dioxide can prevent microbial growth and oxidation of wine. But it is somewhat harmful so the amount has to be limited. Most of the wine has a free sulfur dioxide below 100 $mg/dm^3$, a bound one between 50 - 150 $mg/dm^3$. Sulphates is an wine additive that can keep sulfur dioxide levels, most wine has about 0.3 - 0.6 $mg/dm^3$
 
 ```{r echo=FALSE, Univariate_Plots}
-ggplot(data=prosperDataSet, aes(x=ListingCategory)) + 
-  geom_bar() + 
-  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+# histogram of density
+ggplot(data=wineData, aes(x=density)) + geom_histogram(bins=100)
 ```
-Among all the listing categories, the count of borrowings for debt consolidation is the biggest, it has about 60000.
+Most wine has a density around 1.00 $g/cm^3$.
 
 ```{r echo=FALSE, Univariate_Plots}
-pEmployment <- ggplot(data=prosperDataSet, aes(x=EmploymentStatus)) + geom_bar() + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
-pEmploymentStatus <- ggplot(data=prosperDataSet, aes(x=EmploymentStatusDuration)) + geom_histogram()
-grid.arrange(pEmployment, pEmploymentStatus, ncol=2)
+# histogram of pH
+ggplot(data=wineData, aes(x=pH)) + geom_histogram()
 ```
-Among all the borrowers, there are more than 60000 are employees, and there are nearly 25000 full-time staffs. The distribution of employment status duration tells us that the most duration are under 200 months.
+All the wine is naturally acidic. And most of them are in pH 3.0 - 3.3.
+
+```{r echo=FALSE, Univariate_Plots}
+# histograms of alcohol
+ggplot(data=wineData, aes(x=alcohol)) + geom_histogram(bins=60)
+```
+White wine is a kind of low-alcohol drink. Most of them has alcohol range from 9% to 12% by volume.
 
 # Univariate Analysis
 
 ### What is the structure of your dataset?
-My dataset contains 11 variables. Among them there are 4 numeric variables: CreditScoreAverage, DebtToIncomeRatio, ProsperScore, EmploymentStatusDuration, 6 factor variables: LoanStatus, Occupation, BorrowerState, ListingCategory, EmploymentStatus and 1 logic variable: IsBorrowerHomeowner.
-
-LoanStatus: Cancelled, Chargedoff, Completed, Current, Defaulted, FinalPaymentInProgress, PastDues of various days;
-Occupation: different kinds of jobs of borrowers;
-BorrowerState: states of US that borrowers come from;
-ListringCategory: different purposes that the borrowers borrow money for.
+```{r echo=FALSE, Univariate_Plots}
+str(prosperDataSet)
+```
+My dataset contains 13 variables. "ProsperRating..Alpha." is an ordered factor indicating borrower's rating: 
+worst -----------------------> best
+HR -> E -> D -> C -> B -> A -> AA
 
 ### What is/are the main feature(s) of interest in your dataset?
-"LoanStatus" is the main feature of interest in my dataset. I want to explore how other features affect the status of loans, especially the loan in complete/default/chargedoff/past due. Are there any patterns existed in them respectively? How do investors selectively assess different features in dashboard when planning to invest some loans?
+"YieldPercentage" is the main feature of interest in my dataset, it is defined as "YieldPercentage = LenderYield * LP_CustomerPrincipalPayments / LoanOriginalAmount". An investor is likely to benefit from the loan if the corresponding yield percentage is high. I want to figure out how other features affect it. Especially how do investors assess different features when planning to invest some loans?
 
 ### What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
-After researching on the article [The Five C’s of Credit and Your Lending Strategy on Prosper](https://help.prosper.com/2008/01/17/the-five-cs-of-credit-and-your-lending-strategy-on-prosper/), I think credit score, DTI ratio, prosper score and listing categories likely contribute to the status of loan, and maybe the employment status and duration are important factors to consider. 
+I think average credit score, DTI ratio, prosper ratings and listing categories likely contribute to the yield percentage of loan, and maybe the occupation, employment status and duration are important factors to consider. 
 
 ### Did you create any new variables from existing variables in the dataset?
-Yes, since the original data gives credit score as a range value, I simply take the average of them to make a new variable called "CreditScoreAverage", this may simplifies the following analysis.
+Yes, I create a new variable called "YieldPercentage" as a somewhat quantified indicator of the investor's yield, and since the original data gives credit score as a range, I simply take the average value of upper and lower bound to make a new variable called "CreditScoreAverage", this may simplifies the following analysis.
 
 ### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
 Yes, the distribution of debt to income ratio is highly left-skewed, thus hard to analyze. So I perform a log scale transform on x axis, makes it more easier to figure out whar are the most common DTI ratios among all the borrowers.
 
 
 # Bivariate Plots Section
-```{r echo=FALSE, Bivariate_Plots}
+```{r echo=FALSE, warning=FALSE, Bivariate_Plots}
+prosperSub <- select(prosperDataSet, YieldPercentage, CreditScoreAverage, PublicRecordsLast10Years, InquiriesLast6Months, TradesNeverDelinquent..percentage., DebtToIncomeRatio, EmploymentStatusDuration)
 
+set.seed(8341)
+ggpairs(prosperSub[sample.int(nrow(prosperSub), 5000), ])
+```
+Based on the scatter plot matrix, there are no strong correlations existed.
+```{r echo=FALSE, Bivariate_Plots}
 ```
 
 # Bivariate Analysis
