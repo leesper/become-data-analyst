@@ -115,34 +115,31 @@ White wine is a kind of low-alcohol drink. Most of them has alcohol range from 9
 
 ### What is the structure of your dataset?
 ```{r echo=FALSE, Univariate_Plots}
-str(prosperDataSet)
+str(wineData)
 ```
-My dataset contains 13 variables. "ProsperRating..Alpha." is an ordered factor indicating borrower's rating: 
-worst -----------------------> best
-HR -> E -> D -> C -> B -> A -> AA
+This dataset contains 13 variables. All of them are numeric, representing different kinds of chemical compositions about white wine.
 
 ### What is/are the main feature(s) of interest in your dataset?
-"YieldPercentage" is the main feature of interest in my dataset, it is defined as "YieldPercentage = LenderYield * LP_CustomerPrincipalPayments / LoanOriginalAmount". An investor is likely to benefit from the loan if the corresponding yield percentage is high. I want to figure out how other features affect it. Especially how do investors assess different features when planning to invest some loans?
+"quanlity" is the main feature of interest in my dataset. I want to figure out how these chemical compositions affect the taste of white wine.
 
 ### What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
-I think average credit score, DTI ratio, prosper ratings and listing categories likely contribute to the yield percentage of loan, and maybe the occupation, employment status and duration are important factors to consider. 
+I guess variables about acidity, residual sugar, chlorides, pH and alcohol will help support the investigation of quality.
 
 ### Did you create any new variables from existing variables in the dataset?
-Yes, I create a new variable called "YieldPercentage" as a somewhat quantified indicator of the investor's yield, and since the original data gives credit score as a range, I simply take the average value of upper and lower bound to make a new variable called "CreditScoreAverage", this may simplifies the following analysis.
+Yes, I create a new variable called "sugar.acidity" defined as total acidity divided by residual sugar, and a new variable "bound.sulfur.dioxide" defined as total sulfur dioxide minus free sulfur dioxide.
 
 ### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
-Yes, the distribution of debt to income ratio is highly left-skewed, thus hard to analyze. So I perform a log scale transform on x axis, makes it more easier to figure out whar are the most common DTI ratios among all the borrowers.
+Yes, the histogram of residual sugar is highly left-skewed, this makes it difficult to analyze. So I create a log-transformed histogram to better investigate the distribution of residual sugar in white wine, because this is one of the important factors that might affect the taste of wine.
 
 
 # Bivariate Plots Section
 ```{r echo=FALSE, warning=FALSE, Bivariate_Plots}
-prosperSub <- select(prosperDataSet, YieldPercentage, CreditScoreAverage, PublicRecordsLast10Years, InquiriesLast6Months, TradesNeverDelinquent..percentage., DebtToIncomeRatio, EmploymentStatusDuration)
-
 set.seed(8341)
-ggpairs(prosperSub[sample.int(nrow(prosperSub), 5000), ])
+ggpairs(wineData[sample.int(nrow(wineData), 2500), ])
 ```
 Based on the scatter plot matrix, there are no strong correlations existed.
 ```{r echo=FALSE, Bivariate_Plots}
+cor(wineData)
 ```
 
 # Bivariate Analysis
