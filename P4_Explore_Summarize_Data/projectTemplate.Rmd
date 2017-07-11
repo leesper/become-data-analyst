@@ -1,11 +1,11 @@
 Prosper Exploration Data Analysis
 ========================================================
 
-[Prosper](prosper.com) is one of the largest financial company who operates P2P lending business. It allows individuals to both invest in personal loans and request to borrow money. For borrowers you just log in and apply for a request on the website telling how much money you want to borrow. Then Soon after Prosper will list your request with some of your extra personal credit information on the website. Investors will see all the listings from borrowers and finally determine whether to invest or not based on the information posted.
+[Prosper](prosper.com) is one of the largest financial company who operates on P2P lending business. It allows individuals to both invest in personal loans and request to borrow money. For borrowers you just log in and apply for a request on the website telling how much money you want to borrow. Then Soon after Prosper will list your request with some of your extra personal credit information on the website. Investors will see all the listings from borrowers and finally determine whether to invest or not based on the information posted. Investors can invest a portfolio of different loans to lower the risk. As the saying goes, "Do not put all your eggs in one basket".
 
 ![Investor Dashboard](./prosper_dashboard.png)
 
-The original data from Prosper contains about 110000 observations and 81 variables. This is quite a huge information. After a lot googling and looking at investor's dashboard at Prosper, I carefully select 11 variables that an investor might be interested in making a judgement about whether a listing is worth investing or not, and come up with an EDA report that performs an exploration of data from Prosper.com with about 110000 observations.
+This is a loan dashboard that an investor can see on Prosper website. It displays many aspects of information about the borrower. The original data to explore contains about 110000 observations and 81 variables. This is quite a huge information. It is not so easy for an investor to learn from such and finally determine which loan to invest. My goal is to explore the data and come up with an EDA report trying to figure out whether a loan is worth investing or not. Both investors and borrowers will benefit from it.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
 # Load all of the packages that you end up using
@@ -24,8 +24,10 @@ library(gridExtra)
 # Load the Data
 prosperData <- read.csv('prosperLoanData.csv', na.strings = c('', 'NA'))
 
-# calculate the average credit score
+# create three new variables: CreditScoreAverage, PrincipalPaymentsPercentage and YieldPercentage
 prosperData$CreditScoreAverage <- (prosperData$CreditScoreRangeUpper + prosperData$CreditScoreRangeUpper) / 2
+prosperData$PrincipalPaymentsPercentage <- prosperData$LP_CustomerPrincipalPayments / prosperData$LoanOriginalAmount
+prosperData$YieldPercentage <- prosperData$PrincipalPaymentsPercentage * prosperData$LenderYield
 
 # converting listing categories to factors
 listingCategories <- c('Not Available', 'Debt Consolidation', 'Home Improvement', 'Business', 'Personal Loan', 'Student Use', 'Auto', 'Other', 'Baby&Adoption', 'Boat', 'Cosmetic Procedure', 'Engagement Ring', 'Green Loans', 'Household Expenses', 'Large Purchases', 'Medical/Dental', 'Motorcycle', 'RV', 'Taxes', 'Vacation', 'Wedding Loans')
@@ -36,10 +38,11 @@ prosperData$ListingCategory <- factor(prosperData$ListingCategory..numeric.,
                                       levels = listingLevels,
                                       labels = listingCategories)
 
+# converting IsBorrowerHomeOwner to booleans
 prosperData$IsBorrowerHomeowner <- as.logical(prosperData$IsBorrowerHomeowner)
 
 # select variables interested
-prosperDataSet <- select(prosperData, TradesNeverDelinquent..percentage., CreditScoreAverage, DebtToIncomeRatio, IsBorrowerHomeowner, LoanStatus, Occupation, ProsperScore, BorrowerState, ListingCategory, EmploymentStatus, EmploymentStatusDuration)
+prosperDataSet <- select(prosperData, YieldPercentage, LoanStatus, CreditScoreAverage, ProsperRating..Alpha., PublicRecordsLast10Years, InquiriesLast6Months, TradesNeverDelinquent..percentage., DebtToIncomeRatio, IsBorrowerHomeowner, ListingCategory, Occupation, EmploymentStatus, EmploymentStatusDuration)
 ```
 
 # Univariate Plots Section
