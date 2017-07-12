@@ -71,43 +71,77 @@ ggplot(data=wineData, aes(x=volatile.acidity)) + geom_histogram(binwidth = 0.01)
 ```{r echo=FALSE, Univariate_Plots}
 summary(wineData$volatile.acidity)
 ```
-Most of the wine has a volatile acidity between 0.15 and 0.31 $g/dm^3$ approximately. The mininum value is not much less than the maxinum.
+Most of the wine has a volatile acidity between 0.15 and 0.31 $g/dm^3$ approximately. The mininum value is not much less than the maxinum. A high level of this value may lead to an unpleasant taste, I will analyze it with quality later on.
 
 ```{r echo=FALSE, Univariate_Plots}
 # histogram of citric acidity
-ggplot(data=wineData, aes(x=citric.acid)) + geom_histogram()
+ggplot(data=wineData, aes(x=citric.acid)) + geom_histogram(binwidth = 0.01)
 ```
-Most of the white wine has a citric acidity between 0.25 and 0.4 $g/dm^3$. From all the three plots above we can see that the distribution of acidity in wine is somewhat normal.
+```{r echo=FALSE, Univariate_Plots}
+summary(wineData$citric.acid)
+```
+Most wines have a citric acidity between 0.25 and 0.5 $g/dm^3$. The minimum value is 0.0, contains no citric acid, but this can add freshness and flavor to wines, later on I will also analyze the relation ship between citric acid and quality.
 
 ```{r echo=FALSE, Univariate_Plots}
-# histogram and boxplot of residual sugar
-pSugarHist <- ggplot(data=wineData, aes(x=residual.sugar)) + geom_histogram(bins=100)
-pSugarHistScaled <- ggplot(data=wineData, aes(x=residual.sugar)) + geom_histogram(bins=100) + scale_x_log10()
-pSugarBox <- ggplot(data=wineData, aes(x='residual sugar', y=residual.sugar)) + geom_boxplot()
-grid.arrange(pSugarHist, pSugarHistScaled, pSugarBox, ncol=3)
+# histogram of residual sugar
+pSugarHist <- ggplot(data=wineData, aes(x=residual.sugar)) + geom_histogram(binwidth = 0.1)
+pSugarHistScaled <- ggplot(data=wineData, aes(x=residual.sugar)) + geom_histogram(binwidth = 0.03) + scale_x_log10()
+grid.arrange(pSugarHist, pSugarHistScaled, ncol=1)
 ```
-Because the histogram is highly left-skewed, I create a log-transformed version in middle. And we can see from the log-tranformed histogram that the residual sugar of most white wine is below 15 $g/dm^3$. But from the boxplot there are some outliers with high value above 60 $g/dm^3$, that's too sweet.
 
 ```{r echo=FALSE, Univariate_Plots}
-# histogram of sugar-acidity ratio
-ggplot(data=wineData, aes(x=sugar.acidity)) + geom_histogram(bins=60)
+# boxplot of residual sugar
+ggplot(data=wineData, aes(x='residual sugar', y=residual.sugar)) + geom_boxplot()
 ```
-This shows the distribution of sugar/acidity ratio. Most of the white wine has a ratio between 0 and 2.5.
 
 ```{r echo=FALSE, Univariate_Plots}
-# histogram of salt
-ggplot(data=wineData, aes(x=chlorides)) + geom_histogram(bins=200)
+summary(wineData$residual.sugar)
 ```
-Most of the white wine has chlorides between 0.01 and 0.05 $g/dm^3$, this is the amount of salt in wine. A too high value may lead the wine too salty.
+I create an original histogram and a log-tranformed one to better analyze the residual sugar, it contributes to the sweetness of wine. Most of the wines contains residual sugar less than 10 $g/dm^3$, but some outliers exist. The boxplot indicates that median is around 5 and outliers have residual sugar more than 20 $g/dm^3$, some even has  more than 60 $g/dm^3$, that's too sweet. According to [Wikipedia](https://en.wikipedia.org/wiki/Sweetness_of_wine#Residual_sugar), a wine can be classified as four levels: dry(up to 4 $g/dm^3$), medium dry(up to 12 $g/dm^3$), medium(up to 45 $g/dm^3$) and sweet(more than 45 $g/dm^3$) by sweetness, I wonder what the plot looks like across these categories.
 
 ```{r echo=FALSE, Univariate_Plots}
-# histograms about free, bound sulfur dioxide and sulphates
-pFreeSulfur <- ggplot(data=wineData, aes(x=free.sulfur.dioxide)) + geom_histogram()
-pBoundSulfur <- ggplot(data=wineData, aes(x=bound.sulfur.dioxide)) + geom_histogram()
-pSulphates <- ggplot(data=wineData, aes(x=sulphates)) + geom_histogram()
-grid.arrange(pFreeSulfur, pBoundSulfur, pSulphates, ncol=3)
+table(cut(wineData$residual.sugar, breaks = c(-Inf, 4, 12, 45, Inf)))
 ```
-The chemical composition of sulfur dioxide can prevent microbial growth and oxidation of wine. But it is somewhat harmful so the amount has to be limited. Most of the wine has a free sulfur dioxide below 100 $mg/dm^3$, a bound one between 50 - 150 $mg/dm^3$. Sulphates is an wine additive that can keep sulfur dioxide levels, most wine has about 0.3 - 0.6 $mg/dm^3$
+
+```{r echo=FALSE, Univariate_Plots}
+ggplot(data=wineData, aes(x=cut(wineData$residual.sugar, breaks = c(-Inf, 4, 12, 45, Inf)))) + 
+  geom_bar() + 
+  scale_x_discrete(labels = c('dry', 'medium dry', 'medium', 'sweet'))
+```
+
+Most of wines are dry or medium dry, there are 825 wines of medium, and only 1 wine is sweet.
+
+```{r echo=FALSE, Univariate_Plots}
+# histogram of chlorides
+ggplot(data=wineData, aes(x=chlorides)) + geom_histogram(binwidth = 0.001)
+```
+```{r echo=FALSE, Univariate_Plots}
+# boxplot of chlorides
+ggplot(data=wineData, aes(x='chlorides', y=chlorides)) + geom_boxplot()
+```
+```{r echo=FALSE, Univariate_Plots}
+summary(wineData$chlorides)
+```
+Most of the wines have chlorides between 0.025 and 0.0755 $g/dm^3$, this is the amount of salt in wine. The boxplot indicates that there are many outliers existed, the maximum value is 0.346 $g/dm^3$, but the variation in chlorides is small. Will a too-salty wine tastes bad? I will exlore it with quality later on.
+
+```{r echo=FALSE, Univariate_Plots}
+# histogram of free sulfur dioxide
+ggplot(data=wineData, aes(x=free.sulfur.dioxide)) + geom_histogram(binwidth = 1)
+```
+
+```{r echo=FALSE, Univariate_Plots}
+# histogram of bound sulfur dioxide
+ggplot(data=wineData, aes(x=bound.sulfur.dioxide)) + geom_histogram(binwidth = 1)
+```
+
+```{r echo=FALSE, Univariate_Plots}
+# histogram of sulphates
+ggplot(data=wineData, aes(x=sulphates)) + geom_histogram(binwidth = 0.01)
+```
+```{r echo=FALSE, Univariate_Plots}
+summary(select(wineData, free.sulfur.dioxide, bound.sulfur.dioxide, sulphates))
+```
+Sulfur dioxide can prevent microbial growth and oxidation of wine. But it is somewhat harmful so the amount has to be limited. Most of the wines have free sulfur dioxide below 50 $mg/dm^3$, and bound sulfur dioxide one between 50 - 150 $mg/dm^3$. The maximum values of free and bound sulfur dioxide is 289 and 331 respectively, maybe this is a factor that affects the quality. Sulphates is an additive that can keep sulfur dioxide levels, most wines have between 0.4 and 0.6 $g/dm^3$.
 
 ```{r echo=FALSE, Univariate_Plots}
 # histogram of density
