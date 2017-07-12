@@ -14,7 +14,7 @@ I choose the white wine dataset to perform exploration data analysis. This datas
 library(ggplot2)
 library(dplyr)
 library(gridExtra)
-library(GGally)
+library(car)
 ```
 
 ```{r echo=FALSE, Load_the_Data}
@@ -85,7 +85,7 @@ Most wines have a citric acidity between 0.25 and 0.5 $g/dm^3$. The minimum valu
 ```{r echo=FALSE, Univariate_Plots}
 # histogram of residual sugar
 pSugarHist <- ggplot(data=wineData, aes(x=residual.sugar)) + geom_histogram(binwidth = 0.1)
-pSugarHistScaled <- ggplot(data=wineData, aes(x=residual.sugar)) + geom_histogram(binwidth = 0.03) + scale_x_log10()
+pSugarHistScaled <- ggplot(data=wineData, aes(x=residual.sugar)) + geom_histogram(binwidth = 0.01) + scale_x_log10()
 grid.arrange(pSugarHist, pSugarHistScaled, ncol=1)
 ```
 
@@ -97,7 +97,7 @@ ggplot(data=wineData, aes(x='residual sugar', y=residual.sugar)) + geom_boxplot(
 ```{r echo=FALSE, Univariate_Plots}
 summary(wineData$residual.sugar)
 ```
-I create an original histogram and a log-tranformed one to better analyze the residual sugar, it contributes to the sweetness of wine. Most of the wines contains residual sugar less than 10 $g/dm^3$, but some outliers exist. The boxplot indicates that median is around 5 and outliers have residual sugar more than 20 $g/dm^3$, some even has  more than 60 $g/dm^3$, that's too sweet. According to [Wikipedia](https://en.wikipedia.org/wiki/Sweetness_of_wine#Residual_sugar), a wine can be classified as four levels: dry(up to 4 $g/dm^3$), medium dry(up to 12 $g/dm^3$), medium(up to 45 $g/dm^3$) and sweet(more than 45 $g/dm^3$) by sweetness, I wonder what the plot looks like across these categories.
+The residual sugar contributes to the sweetness of wine. I create an original histogram and a log-tranformed one to better analyze it. The transformed distribution appears bimodal with the residual sugar peaking at both 3 and 9 $g/dm^3$. Most of the wines contains residual sugar less than 10 $g/dm^3$, but some outliers exist. The boxplot indicates that median is around 5 and outliers have residual sugar more than 20 $g/dm^3$, some even has  more than 60 $g/dm^3$, that's too sweet. According to [Wikipedia](https://en.wikipedia.org/wiki/Sweetness_of_wine#Residual_sugar), a wine can be classified as four levels: dry(up to 4 $g/dm^3$), medium dry(up to 12 $g/dm^3$), medium(up to 45 $g/dm^3$) and sweet(more than 45 $g/dm^3$) by sweetness, I wonder what the plot looks like across these categories.
 
 ```{r echo=FALSE, Univariate_Plots}
 table(cut(wineData$residual.sugar, breaks = c(-Inf, 4, 12, 45, Inf)))
@@ -109,8 +109,15 @@ ggplot(data=wineData, aes(x=cut(wineData$residual.sugar, breaks = c(-Inf, 4, 12,
   scale_x_discrete(labels = c('dry', 'medium dry', 'medium', 'sweet'))
 ```
 
-Most of wines are dry or medium dry, there are 825 wines of medium, and only 1 wine is sweet.
-
+Most of wines are dry or medium dry, there are 825 wines of medium, and only 1 wine is sweet. And I'd like to have a look at the quality distributions of each level.
+```{r echo=FALSE, Univariate_Plots}
+pQualityDry <- ggplot(data=subset(wineData, residual.sugar <= 4), aes(x=quality)) + geom_histogram() + labs(title='dry')
+pQualityMediumDry <- ggplot(data=subset(wineData, residual.sugar > 4 & residual.sugar <= 12), aes(x=quality)) + geom_histogram() + labs(title='medium dry')
+pQualityMeidum <- ggplot(data=subset(wineData, residual.sugar > 12 & residual.sugar <= 45), aes(x=quality)) + geom_histogram() + labs(title='medium')
+pQualitySweet <- ggplot(data=subset(wineData, residual.sugar > 45), aes(x=quality)) + geom_histogram() + labs(title='sweet')
+grid.arrange(pQualityDry, pQualityMediumDry, pQualityMeidum, pQualitySweet, ncol=2)
+```
+Level of sweet wine has quality 6, and other levels have wines of greater quality, in bivariate analysis section I will analyze the relationship between sugar and quality deeply.
 ```{r echo=FALSE, Univariate_Plots}
 # histogram of chlorides
 ggplot(data=wineData, aes(x=chlorides)) + geom_histogram(binwidth = 0.001)
@@ -195,28 +202,28 @@ Other observations:
 * Most wines' alcohol is low, about 9%-12%.
 
 ### What is/are the main feature(s) of interest in your dataset?
-
 Quality is the main feature of interest in my dataset. I want to figure out how these chemical compositions affect the quality of wine. Maybe there are some features best for predicting the quality of wine.
 
 ### What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
-I guess variables about acidity, residual sugar, chlorides, pH and alcohol will help support the investigation of quality.
+Fixed acidity, volatile acidity, citric acid, residual sugar, chlorides, sulfur dioxide, sulphates and alcohol are likely to contribute to quality of wines. 
 
 ### Did you create any new variables from existing variables in the dataset?
-Yes, I create a new variable called "sugar.acidity" defined as total acidity divided by residual sugar, and a new variable "bound.sulfur.dioxide" defined as total sulfur dioxide minus free sulfur dioxide.
+Yes, I create a new variable "bound.sulfur.dioxide" to divide total sulfur dioxide into two parts: the free one and the bound one, thus investigate them apartly in following explorations.
 
 ### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
-Yes, the histogram of residual sugar is highly left-skewed, this makes it difficult to analyze. So I create a log-transformed histogram to better investigate the distribution of residual sugar in white wine, because this is one of the important factors that might affect the taste of wine.
+Yes, the histogram of residual sugar is highly right-skewed, this makes it difficult to analyze. So I create a log-transformed histogram to better investigate it. The transformed distribution appears bimodal with the residual sugar peaking at both 3 and 9 $g/dm^3$.
 
 
 # Bivariate Plots Section
-```{r echo=FALSE, warning=FALSE, Bivariate_Plots}
-set.seed(8341)
-ggpairs(wineData[sample.int(nrow(wineData), 2500), ])
-```
-Based on the scatter plot matrix, there are no strong correlations existed.
 ```{r echo=FALSE, Bivariate_Plots}
 cor(wineData)
 ```
+
+```{r echo=FALSE, warning=FALSE, Bivariate_Plots}
+scatterplotMatrix(~ quality + fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + bound.sulfur.dioxide + sulphates + density + pH + alcohol, data = wineData, spread = FALSE, smoother.args=list(lty=2), main='Scatter plot matrix of wine')
+```
+
+
 
 # Bivariate Analysis
 
