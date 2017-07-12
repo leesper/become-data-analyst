@@ -1,7 +1,7 @@
 Wine Exploration Data Analysis
 ========================================================
 
-I choose the white wine dataset to perform exploration data analysis. There are 12 variables in the original data. All about chemical compositions except one output variable: the quality scored by at least three wine specialists. I want to figure out the key compositions that affect the taste of white wine.
+I choose the white wine dataset to perform exploration data analysis. This dataset contains quality and chemical compositions for 4898 white wine. 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
 # Load all of the packages that you end up using
@@ -16,46 +16,62 @@ library(dplyr)
 library(gridExtra)
 library(GGally)
 ```
+
 ```{r echo=FALSE, Load_the_Data}
 # Load the Data
 wineData <- read.csv('wineQualityWhites.csv', na.strings = c('', 'NA'))
 
-# create a new variable called sugar.acidity to represent the ratio between residual sugar and total acidity
-wineData$sugar.acidity <- (wineData$fixed.acidity + wineData$volatile.acidity + wineData$citric.acid) / wineData$residual.sugar
-
-# create a new variable called bound.sulfur.dioxide
+# create a new variable called bound.sulfur.dioxide according to wineQualityInfo.txt
 wineData$bound.sulfur.dioxide <- wineData$total.sulfur.dioxide - wineData$free.sulfur.dioxide
 
 # select and rearrange variables
-wineData <- select(wineData, quality, fixed.acidity, volatile.acidity, citric.acid, residual.sugar, sugar.acidity, chlorides, free.sulfur.dioxide, bound.sulfur.dioxide, sulphates, density, pH, alcohol)
+wineData <- select(wineData, quality, fixed.acidity, volatile.acidity, citric.acid, residual.sugar, chlorides, free.sulfur.dioxide, bound.sulfur.dioxide, sulphates, density, pH, alcohol)
 ```
-
 # Univariate Plots Section
 ```{r echo=FALSE, Univariate_Plots}
 dim(wineData)
 ```
+
+```{r echo=FALSE, Univariate_Plots}
+str(wineData)
+```
+
 ```{r echo=FALSE, Univariate_Plots}
 summary(wineData)
 ```
-There are 4898 observations, 13 variables to be explored, and the basic summaries are displayed above.
+The dataset contains 12 variables and almost 5000 observations. No NAs existed.
 
 ```{r echo=FALSE, Univariate_Plots}
 # histogram of quality scores
 ggplot(data=wineData, aes(x=quality)) + geom_bar()
 ```
-The quality score is the variable most interested in. There are six kinds of quality scores in the dataset. Most of the white wine has a score of 6.
+```{r echo=FALSE, Univariate_Plots}
+table(wineData$quality)
+```
+```{r echo=FALSE, Univariate_Plots}
+summary(wineData$quality)
+```
+The lowest quality is 3 and the highest is 9; mean 5.878 and median 6. Most of the wine is in quality 5, 6 and 7. Wine with very high or low quality is rare.
 
 ```{r echo=FALSE, Univariate_Plots}
 # histogram of fixed acidity
-ggplot(data=wineData, aes(x=fixed.acidity)) + geom_histogram()
+pOrigin <- ggplot(data=wineData, aes(x=fixed.acidity)) + geom_histogram()
+pBinned <- ggplot(data=wineData, aes(x=fixed.acidity)) + geom_histogram(binwidth = 0.12)
+grid.arrange(pOrigin, pBinned, ncol=1)
 ```
-Most of the white wine has a fixed acidity between 6 and 8 $g/dm^3$. About 1000 white wine has a fixed acidity of nearly 7 $g/dm^3$.
+```{r echo=FALSE, Univariate_Plots}
+summary(wineData$fixed.acidity)
+```
+Most of the wine has a fixed acidity between 6 and 7.5 $g/dm^3$. There is a peak around 7 $g/dm^3$. Mean 6.855 $g/dm^3$ and median 6.80 $g/dm^3$; the maximum is 14.2 $g/dm^3$ and the minimum is 3.8 $g/dm^3$.
 
 ```{r echo=FALSE, Univariate_Plots}
 # histogram of volatile acidity
-ggplot(data=wineData, aes(x=volatile.acidity)) + geom_histogram()
+ggplot(data=wineData, aes(x=volatile.acidity)) + geom_histogram(binwidth = 0.01)
 ```
-Most of the white wine has a volatile acidity between 0.15 and 0.31 $g/dm^3$ approximately. The number of wine with volatile acdity about 0.27 $g/dm^3$ is nearly 1000.
+```{r echo=FALSE, Univariate_Plots}
+summary(wineData$volatile.acidity)
+```
+Most of the wine has a volatile acidity between 0.15 and 0.31 $g/dm^3$ approximately. The mininum value is not much less than the maxinum.
 
 ```{r echo=FALSE, Univariate_Plots}
 # histogram of citric acidity
@@ -114,6 +130,7 @@ White wine is a kind of low-alcohol drink. Most of them has alcohol range from 9
 # Univariate Analysis
 
 ### What is the structure of your dataset?
+TODO: put it above
 ```{r echo=FALSE, Univariate_Plots}
 str(wineData)
 ```
