@@ -62,7 +62,7 @@ grid.arrange(pOrigin, pBinned, ncol=1)
 ```{r echo=FALSE, Univariate_Plots}
 summary(wineData$fixed.acidity)
 ```
-Most of the wine has a fixed acidity between 6 and 7.5 $g/dm^3$. There is a peak around 7 $g/dm^3$. Mean 6.855 $g/dm^3$ and median 6.80 $g/dm^3$; the maximum is 14.2 $g/dm^3$ and the minimum is 3.8 $g/dm^3$.
+Most wines have fixed acidity between 6 and 7.5 $g/dm^3$. There is a peak around 7 $g/dm^3$. Mean 6.855 $g/dm^3$ and median 6.80 $g/dm^3$; the maximum is 14.2 $g/dm^3$ and the minimum is 3.8 $g/dm^3$.
 
 ```{r echo=FALSE, Univariate_Plots}
 # histogram of volatile acidity
@@ -71,7 +71,7 @@ ggplot(data=wineData, aes(x=volatile.acidity)) + geom_histogram(binwidth = 0.01)
 ```{r echo=FALSE, Univariate_Plots}
 summary(wineData$volatile.acidity)
 ```
-Most of the wine has a volatile acidity between 0.15 and 0.31 $g/dm^3$ approximately. The mininum value is not much less than the maxinum. A high level of this value may lead to an unpleasant taste, I will analyze it with quality later on.
+Most wines have volatile acidity between 0.15 and 0.31 $g/dm^3$ approximately. The mininum value is not much less than the maxinum. A high level of this value may lead to an unpleasant taste, I will analyze it with quality later on.
 
 ```{r echo=FALSE, Univariate_Plots}
 # histogram of citric acidity
@@ -122,7 +122,7 @@ ggplot(data=wineData, aes(x='chlorides', y=chlorides)) + geom_boxplot()
 ```{r echo=FALSE, Univariate_Plots}
 summary(wineData$chlorides)
 ```
-Most of the wines have chlorides between 0.025 and 0.0755 $g/dm^3$, this is the amount of salt in wine. The boxplot indicates that there are many outliers existed, the maximum value is 0.346 $g/dm^3$, but the variation in chlorides is small. Will a too-salty wine tastes bad? I will exlore it with quality later on.
+Most wines have chlorides between 0.025 and 0.0755 $g/dm^3$, this is the amount of salt in wine. The boxplot indicates that there are many outliers existed, the maximum value is 0.346 $g/dm^3$, but the variation in chlorides is small. Will a too-salty wine tastes bad? I will exlore it with quality later on.
 
 ```{r echo=FALSE, Univariate_Plots}
 # histogram of free sulfur dioxide
@@ -141,37 +141,62 @@ ggplot(data=wineData, aes(x=sulphates)) + geom_histogram(binwidth = 0.01)
 ```{r echo=FALSE, Univariate_Plots}
 summary(select(wineData, free.sulfur.dioxide, bound.sulfur.dioxide, sulphates))
 ```
-Sulfur dioxide can prevent microbial growth and oxidation of wine. But it is somewhat harmful so the amount has to be limited. Most of the wines have free sulfur dioxide below 50 $mg/dm^3$, and bound sulfur dioxide one between 50 - 150 $mg/dm^3$. The maximum values of free and bound sulfur dioxide is 289 and 331 respectively, maybe this is a factor that affects the quality. Sulphates is an additive that can keep sulfur dioxide levels, most wines have between 0.4 and 0.6 $g/dm^3$.
+Sulfur dioxide can prevent microbial growth and oxidation of wine. But it is somewhat harmful so the amount has to be limited. Most wines have free sulfur dioxide below 50 $mg/dm^3$, and bound sulfur dioxide one between 50 and 150 $mg/dm^3$. The maximum values of free and bound sulfur dioxide is 289 and 331 respectively, maybe this is a factor that affects the quality. Sulphates is an additive that can keep sulfur dioxide levels, most wines have between 0.4 and 0.6 $g/dm^3$.
 
 ```{r echo=FALSE, Univariate_Plots}
 # histogram of density
-ggplot(data=wineData, aes(x=density)) + geom_histogram(bins=100)
+ggplot(data=wineData, aes(x=density)) + geom_histogram(binwidth = 0.0001)
+```
+```{r echo=FALSE, Univariate_Plots}
+summary(wineData$density)
 ```
 Most wine has a density around 1.00 $g/cm^3$.
 
 ```{r echo=FALSE, Univariate_Plots}
 # histogram of pH
-ggplot(data=wineData, aes(x=pH)) + geom_histogram()
+ggplot(data=wineData, aes(x=pH)) + geom_histogram(binwidth = 0.01)
 ```
-All the wine is naturally acidic. And most of them are in pH 3.0 - 3.3.
+```{r echo=FALSE, Univariate_Plots}
+summary(wineData$pH)
+```
+All the wine is naturally acidic. And most of them are in pH 3.0-3.3; minimum 2.72, maximum 3.82, mean and median are almost the same. This may correlates to acidities above.
 
 ```{r echo=FALSE, Univariate_Plots}
 # histograms of alcohol
-ggplot(data=wineData, aes(x=alcohol)) + geom_histogram(bins=60)
+ggplot(data=wineData, aes(x=alcohol)) + geom_histogram(binwidth = 0.1)
 ```
-White wine is a kind of low-alcohol drink. Most of them has alcohol range from 9% to 12% by volume.
+```{r echo=FALSE, Univariate_Plots}
+# histograms of alcohol
+ggplot(data=wineData, aes(x=alcohol)) + geom_histogram(binwidth = 0.01)
+```
+```{r echo=FALSE, Univariate_Plots}
+summary(wineData$alcohol)
+```
+Wine is a kind of low-alcohol drink. Most of them have alcohol between 9% and 12%. The minimum is 8% and the maximum is 14.2%, mean and median are 10.4% and 10.51% respectively. I guess alcohol is one of the important factors that will affect the quality.
 
 # Univariate Analysis
 
 ### What is the structure of your dataset?
-TODO: put it above
-```{r echo=FALSE, Univariate_Plots}
-str(wineData)
-```
-This dataset contains 13 variables. All of them are numeric, representing different kinds of chemical compositions about white wine.
+
+There are 4898 wines with 12 variables (quality, fixed acidity, volatile acidity, citric acid, residual sugar, chlorides, free and total sulfur dioxide, sulphates, density, pH and alcohol). All are numeric. 
+
+Other observations:
+
+* Most wines are of quality 5, 6 and 7;
+* The median quality is 6;
+* Most wines have fixed acidity between 6 and 7.5 $g/dm^3$;
+* Most wines have volatile acidity between 0.15 and 0.31 $g/dm^3$;
+* Most wines have citric acid between 0.25 and 0.5 $g/dm^3$;
+* Most wines have residual sugar less than 10 $g/dm^3$;
+* The number of wines of "dry", "medium dry", "medium" and "sweet" are 2097, 1975, 825 and 1 respectively;
+* Most wines have chlorides between 0.025 and 0.0755 $g/dm^3$, but many outliers existed;
+* Most wines have free sulfur dioxide below 50 $mg/dm^3$ and bound sulfur dioxide 50-150 $mg/dm^3$, a 0.4-0.6 $g/dm^3$ sulphates keep their levels;
+* Most wines are naturally acidic, around 3.0-3.3;
+* Most wines' alcohol is low, about 9%-12%.
 
 ### What is/are the main feature(s) of interest in your dataset?
-"quanlity" is the main feature of interest in my dataset. I want to figure out how these chemical compositions affect the taste of white wine.
+
+Quality is the main feature of interest in my dataset. I want to figure out how these chemical compositions affect the quality of wine. Maybe there are some features best for predicting the quality of wine.
 
 ### What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
 I guess variables about acidity, residual sugar, chlorides, pH and alcohol will help support the investigation of quality.
