@@ -216,14 +216,40 @@ Yes, the histogram of residual sugar is highly right-skewed, this makes it diffi
 
 # Bivariate Plots Section
 ```{r echo=FALSE, Bivariate_Plots}
+options(digits = 1)
 cor(wineData)
 ```
+Some variables correlate with each other. Residual sugar correlates strongly with density, so is alchohol. All meaningful correlations are:
 
-```{r echo=FALSE, warning=FALSE, Bivariate_Plots}
-scatterplotMatrix(~ quality + fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + bound.sulfur.dioxide + sulphates + density + pH + alcohol, data = wineData, spread = FALSE, smoother.args=list(lty=2), main='Scatter plot matrix of wine')
+* quality: density(-0.307), alcohol(0.436)
+* fixed acidity: pH(-0.43)
+* residual sugar: free sulfur dioxide(0.30), bound sulfur.dioxide(0.34), density(0.84), alcohol(-0.45)
+* chlorides: alcohol(-0.36)
+* density: bound sulfur dioxide(0.50), alcohol(-0.78)
+* alcohol: bound sulfur dioxide(-0.43)
+
+I'd like to look at these variables' scatterplot matrix.
+
+```{r echo=FALSE, warning=FALSE, Bivariate_Plots, fig.width=10}
+scatterplotMatrix(~ quality + fixed.acidity + residual.sugar + chlorides + free.sulfur.dioxide + bound.sulfur.dioxide + density + pH + alcohol, data = wineData, spread = FALSE, smoother.args=list(lty=2), main='Scatter plot matrix of wine')
 ```
 
+Density and alcohol correlate with quality. I'd like to take a look at scatter plot involving them first.
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(data=wineData, aes(x=density, y=quality)) + geom_point()
+```
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(data=wineData, aes(x=density, y=quality)) + geom_jitter(alpha=0.02) + scale_x_continuous(limits = c(0.95, 1.05))
+```
+The horizontal lines indicate quality values are all integers. After adding jitter, transparency and changing the y limits, it shows a slight correlation between density and quality(negative).
 
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(data=wineData, aes(x=alcohol, y=quality)) + geom_point()
+```
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(data=wineData, aes(x=alcohol, y=quality)) + geom_jitter(alpha=0.05)
+```
+Similarly, After adding jitter and transparency, it shows a slight correlation between alcohol and quality(positive).
 
 # Bivariate Analysis
 
