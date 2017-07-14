@@ -269,21 +269,24 @@ Alcohol median decreases then increases significantly as the quality improves. W
 ggplot(data=wineData, aes(x=fixed.acidity, y=pH)) + geom_point()
 ```
 ```{r echo=FALSE, Bivariate_Plots}
+ggplot(data=wineData, aes(x=fixed.acidity, y=pH)) + geom_jitter(alpha=0.05) + geom_smooth(method='lm', color='red', se=FALSE)
+```
+It is not surprising that fixed acidity correlates with pH, and after dealing with overplotting by adding jitter and alpha, the plot shows a meaningful-but-small correlation between them. The higher the fixed acidity, the lower the pH (more acid). So again let's take a look at fixed acidity across qualities.
 
-ggplot(data=wineData, aes(x=fixed.acidity, y=pH)) + geom_point(alpha=0.05) + geom_smooth(se=FALSE, method='lm', color='red')
-```
-After adjusting by alpha, the scatterplot shows a weak correlation between fixed.acidity and pH. I'd like to check the fixed acidity and pH across quality.
 ```{r echo=FALSE, Bivariate_Plots}
-ggplot(data=wineData, aes(x=factor(wineData$quality, ordered=TRUE), y=fixed.acidity)) + geom_boxplot() + xlab('qualities')
+ggplot(data=wineData, aes(x=factor(quality, ordered = TRUE), y=fixed.acidity)) + 
+  geom_boxplot() +
+  xlab('qualities')
 ```
+As the quality improves, median of fixed acidity tends to decrease a little bit and increase from quality of 8 on. On the other hand, the variation tends to decrease, and at the best quality of 9, the variation is very small. Outliers appear more in low qualities.
 
 ```{r echo=FALSE, Bivariate_Plots}
 ggplot(data=wineData, aes(x=factor(wineData$quality, ordered=TRUE), y=pH)) + geom_boxplot() + xlab('qualities')
 ```
 
-The trend between quality and fixed acidity is clear. Firstly the variation in fixed acidity tends to decrease when quality improves. Secondly the median slightly decreases then increases a little bit. Variation in pH decreases then increases, and at the best quality of 9 it decreases. What is interesting is that wines of best quality tend to have a median which is equal to the minimum.
+Variation in pH decreases a lot and then increases slightly, and at the best quality it decreases to the minimum. What is interesting is that wines of best quality tend to have a median which is equal to the Q1.
 
-Although they show no correlation with quality, but next I want to investigate what free and bound sulfur dioxide look like across qualities. 
+Although they show no correlation with quality, but I still want to investigate what free and bound sulfur dioxide look like across qualities. 
 ```{r echo=FALSE, Bivariate_Plots}
 ggplot(data=wineData, aes(x=factor(wineData$quality, ordered=TRUE), y=free.sulfur.dioxide)) + geom_boxplot() + xlab('qualities')
 ```
