@@ -269,9 +269,26 @@ Alcohol median decreases then increases significantly as the quality improves. W
 ggplot(data=wineData, aes(x=fixed.acidity, y=pH)) + geom_point()
 ```
 ```{r echo=FALSE, Bivariate_Plots}
-#TODO
-ggplot(data=wineData, aes(x=fixed.acidity, y=pH)) + geom_point()
+ggplot(data=wineData, aes(x=fixed.acidity, y=pH)) + geom_jitter(alpha=0.05)
 ```
+It is not surprising that fixed acidity correlates with pH, and after dealing with overplotting by adding jitter and alpha, the plot shows a meaningful-but-small correlation between them. The higher the fixed acidity, the lower the pH (more acid). So again let's take a look at fixed acidity across qualities.
+
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(data=wineData, aes(x=factor(quality, ordered = TRUE), y=fixed.acidity)) + 
+  geom_boxplot() +
+  xlab('qualities')
+```
+As the quality improves, median of fixed acidity tends to decrease a little bit and increase from quality of 8 on. The variation tends to decrease, and at the best quality of 9, the variation is very small. Outliers appear more in low qualities.
+
+Next I'll consider about residual sugar. It is the amount of sugar remaining after fermentaion stops. At the very beginning I thought it might correlate with alcohol strongly but what is surprising is that it correlates with density most strongly. Let's first look at that.
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(data=wineData, aes(x=residual.sugar, y=density)) + geom_jitter(alpha=0.05) + geom_smooth(method='lm', color='red')
+```
+
+```{r echo=FALSE, Bivariate_Plots}
+summary(lm(formula=density ~ residual.sugar, data=wineData))
+```
+The relationship looks quite linear. Based on the $R^2$ value, residual sugar explains about 70.4% of the variance in density.
 # Bivariate Analysis
 
 ### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
