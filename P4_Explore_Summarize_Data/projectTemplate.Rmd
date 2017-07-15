@@ -294,7 +294,39 @@ ggplot(data=wineData, aes(x=factor(wineData$quality, ordered=TRUE), y=free.sulfu
 ```{r echo=FALSE, Bivariate_Plots}
 ggplot(data=wineData, aes(x=factor(wineData$quality, ordered=TRUE), y=bound.sulfur.dioxide)) + geom_boxplot() + xlab('qualities')
 ```
-TODO
+Both free and bound sulfur dioxide tend to have the same pattern. The median decreases slightly when quality improves, and the variation becomes smaller and smaller. High quality tends to have less outliers. One of the obvious difference is that the median and variation in free sulfur dioxide is much smaller than the one in bound sulfur dioxide, comparing under the same quality.
+
+Next I'll consider about residual sugar. It is the amount of sugar remaining after fermentaion stops. At the very beginning I thought it might correlate with alcohol strongly but what is surprising is that it correlates with density most strongly.
+
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(data=wineData, aes(x=residual.sugar, y=density)) + geom_jitter(alpha=0.05) + geom_smooth(method='lm', color='red')
+```
+
+```{r echo=FALSE, Bivariate_Plots}
+summary(lm(formula=density ~ residual.sugar, data=wineData))
+```
+
+Although the plot looks quite linear, what we can infer from the $R^2$ value is that residual sugar only explains about 70.4% of the variance in density. I am not very content with this value, by checking the correlation matrix again, I find that density correlates with bound sulfur dioxide moderately and alcohol strongly, so is it possible to build a better model among them all? Let's try this!
+
+```{r echo=FALSE, Bivariate_Plots}
+m1 <- lm(formula=density ~ residual.sugar, data=wineData)
+m2 <- update(m1, ~ . + bound.sulfur.dioxide)
+m3 <- update(m2, ~ . + alcohol)
+summary(m3)
+```
+And yes! The $R^2$ improves to 0.914, which means that residual sugar, together with bound sulfur dioxide and alcohol, explains 91.4% of the variance in density. Now it's time to analyze residual sugar across qualities.
+
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(data=wineData, aes(x=factor(wineData$quality, ordered=TRUE), y=residual.sugar)) + geom_boxplot() + xlab('qualities')
+```
+The variance in residual sugar goes with its median. As the quality improves, the variation and median decrease and then increase, and again decrease till quality of 7 and then increase at 8, and at the quality of 9 both decrease: the variation decreases to the mininum and median decreases to the first quantile.
+
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(data=wineData, aes(x=factor(wineData$quality, ordered=TRUE), y=chlorides)) + geom_boxplot() + xlab('qualities')
+```
+Then comes the chlorides across qualities. There are some interesting things in plot. Firstly, there are more outliers in quality of 5 and 6 than the others; secondly, the variation remains small and the median doesn't change very much; thirdly, the quality of 9 has the smallest variation and the median is equal to Q3 approximately.
+
+
 
 # Bivariate Analysis
 
