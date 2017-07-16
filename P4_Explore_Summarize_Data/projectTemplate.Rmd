@@ -115,7 +115,7 @@ ggplot(data=wineData, aes(x='residual sugar', y=residual.sugar)) + geom_boxplot(
 ```{r echo=FALSE, Univariate_Plots}
 summary(wineData$residual.sugar)
 ```
-The residual sugar contributes to the sweetness of wine. I create an original histogram and a log-tranformed one to better observe it. The transformed distribution appears bimodal with the residual sugar peaking at both 3 and 9 $g/dm^3$. Most of the wines contains residual sugar less than 10 $g/dm^3$, but some outliers exist. The boxplot indicates that median is around 5 and outliers have residual sugar more than 20 $g/dm^3$, some even has more than 60 $g/dm^3$, that's too sweet.
+The residual sugar contributes to the sweetness of wine. I create an original histogram and a log-tranformed one to better observe it. Most of the wines contains residual sugar between 1 $g/dm^3$ and 10 $g/dm^3$, but some outliers exist. The boxplot indicates that median is around 5 and outliers have residual sugar more than 20 $g/dm^3$, some even has more than 60 $g/dm^3$, that's too sweet.
 
 ```{r echo=FALSE, Univariate_Plots}
 ggplot(data=wineData, aes(x=wineData$sugar_level)) + geom_bar()
@@ -428,6 +428,11 @@ ggplot(data=wineData, aes(x=quality, color=sugar_level)) + geom_density() +
 This density plot indicates that at the lower part of quality comes with more wines of sweet and medium, and higher part of quality comes with more wines of medium dry and dry. The only exception is at 4, where there are more dry and medium dry, so I think residual sugar is not the only factor that affects taste.
 
 ```{r echo=FALSE, Multivariate_Plots}
+ggplot(data=wineData, aes(x=residual.sugar, y=citric.acid)) + geom_jitter(alpha=0.05) + facet_wrap(~quality_level, nrow=3)
+```
+Comparing with other levels, wines of high quality level tends to have conservative residual sugar and citric acid, the corresponding plot looks more centric: residual sugar is limited within 20 $g/dm^3$ and most citric acid within 0.5 $g/dm^3$.
+
+```{r echo=FALSE, Multivariate_Plots}
 ggplot(data=subset(wineData, residual.sugar <= quantile(wineData$residual.sugar, prob=.99)), 
        aes(x=residual.sugar, y=density)) + 
   geom_point() +
@@ -528,9 +533,13 @@ For wines of high quality, it improves again! Now this model can explain about 9
 
 ### Talk about some of the relationships you observed in this part of the investigation. Were there features that strengthened each other in terms of looking at your feature(s) of interest?
 
+Although correlated strongly, the model is not very ideal if creating with density and only one feature(residual sugar or alcohol) alone, it will be even worse under some of the quality levels. By checking features that correlates with each other strongly or moderately, I finally create a new model that is much better. Especially under the high quality level, density, residual sugar, alcohol and bound sulfur dioxide strengthened each other.
+
 ### Were there any interesting or surprising interactions between features?
+Yes, residual sugar and citric acid tend to be more conservative in wines of high quality, this is reasonable for residual sugar because sugar level correlates with quality level. What is surprising is that although citric acid can add freshness and flavor to wines, it is not "the more the better".
 
 ### OPTIONAL: Did you create any models with your dataset? Discuss the strengths and limitations of your model.
+Yes, after doing some explorations and looking at relationships between different features. I create a model of density by taking residual sugar, alcohol and bound sulphur dioxide into account. It explains 91.4% of the variance in density in general. This model has limitations, it explains better under high quality level(about 94.03%), in levels of low and medium, it becomes worse, but can still explain about 89%.
 
 ------
 
@@ -538,11 +547,13 @@ For wines of high quality, it improves again! Now this model can explain about 9
 
 ### Plot One
 ```{r echo=FALSE, Plot_One}
-
+ggplot(data=wineData, aes(x=wineData$sugar_level)) + 
+  geom_bar() + 
+  labs(title='Wines of different sugar levels', x='Sugar level', y='Number of wines')
 ```
 
 ### Description One
-
+Most wines are of dry and medium dry, there are more than 750 wines of medium, and wines of sweet are very rare.
 
 ### Plot Two
 ```{r echo=FALSE, Plot_Two}
