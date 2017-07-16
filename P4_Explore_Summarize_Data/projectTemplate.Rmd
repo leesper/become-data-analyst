@@ -15,6 +15,7 @@ library(ggplot2)
 library(dplyr)
 library(gridExtra)
 library(car)
+library(vcd)
 ```
 
 ```{r echo=FALSE, Load_the_Data}
@@ -191,44 +192,45 @@ Wine is a kind of low-alcohol drink. Most of them have alcohol between 9% and 12
 
 ### What is the structure of your dataset?
 
-There are 4898 wines with 12 variables (quality, fixed acidity, volatile acidity, citric acid, residual sugar, chlorides, free and total sulfur dioxide, sulphates, density, pH and alcohol). All are numeric. 
+There are 4898 wines with 14 variables (quality, quality level, fixed acidity, volatile acidity, citric acid, residual sugar, sugar level, chlorides, free and total sulfur dioxide, sulphates, density, pH and alcohol).
+
+quality level: low < medium < high
+sugar level: dry < medium dry < medium < sweet
 
 Other observations:
 
-* Most wines are of quality 5, 6 and 7;
+* Most wines are of medium quality level;
 * The median quality is 6;
 * Most wines have fixed acidity between 6 and 7.5 $g/dm^3$;
 * Most wines have volatile acidity between 0.15 and 0.31 $g/dm^3$;
 * Most wines have citric acid between 0.25 and 0.5 $g/dm^3$;
-* Most wines have residual sugar less than 10 $g/dm^3$;
-* The number of wines of "dry", "medium dry", "medium" and "sweet" are 2097, 1975, 825 and 1 respectively;
+* Most wines are dry or medium dry;
 * Most wines have chlorides between 0.025 and 0.0755 $g/dm^3$, but many outliers existed;
 * Most wines have free sulfur dioxide below 50 $mg/dm^3$ and bound sulfur dioxide 50-150 $mg/dm^3$, a 0.4-0.6 $g/dm^3$ sulphates keep their levels;
 * Most wines are naturally acidic, around 3.0-3.3;
-* Most wines' alcohol is low, about 9%-12%.
+* Wines are low-alcohol drinks, about 9%-12%.
 
 ### What is/are the main feature(s) of interest in your dataset?
-Quality is the main feature of interest in my dataset. I want to figure out how these chemical compositions affect the quality of wine. Maybe there are some features best for predicting the quality of wine.
+Quality and quality level are the main features of interest in my dataset. I want to figure out how these chemical compositions affect the quality of wine. 
 
 ### What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
-Fixed acidity, volatile acidity, citric acid, residual sugar, chlorides, sulfur dioxide, sulphates and alcohol are likely to contribute to quality of wines. 
+Fixed acidity, volatile acidity, citric acid, residual sugar, sugar level, chlorides, sulfur dioxide, sulphates and alcohol are likely to contribute to quality of wines. 
+
 ### Did you create any new variables from existing variables in the dataset?
-Yes, I create a new variable "bound.sulfur.dioxide" to divide total sulfur dioxide into two parts: the free one and the bound one, thus investigate them apartly in following explorations.
+Yes, I create a new variable "bound.sulfur.dioxide" to divide total sulfur dioxide into two parts: the free one and the bound one, thus investigate them apartly in following explorations. And I create two categorical variables called "quality_level" and "sugar_level", the former is created by classifying qualities into three groups: low, medium and high; the latter is created by cutting residual sugar into four levels: dry, medium dry, medium and sweet.
 
 ### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
 Yes, the histogram of residual sugar is highly right-skewed, this makes it difficult to analyze. So I create a log-transformed histogram to better investigate it. The transformed distribution appears bimodal with the residual sugar peaking at both 3 and 9 $g/dm^3$.
 
-
 # Bivariate Plots Section
 ```{r echo=FALSE, Bivariate_Plots}
-options(digits = 1)
-cor(wineData)
+cor(select(wineData, -quality_level, -sugar_level))
 ```
 
 ```{r echo=FALSE, warning=FALSE, Bivariate_Plots, fig.width=10}
 scatterplotMatrix(~ quality + fixed.acidity + residual.sugar + chlorides + free.sulfur.dioxide + bound.sulfur.dioxide + density + pH + alcohol, data = wineData, spread = FALSE, smoother.args=list(lty=2), main='Scatter plot matrix of wine')
 ```
-Some variables correlate with each other. Residual sugar correlates strongly with density, so is alchohol. All meaningful correlations are:
+Some variables correlate with each other. Density correlates strongly with residual sugar and alcohol. All meaningful correlations are:
 
 * quality: density(-0.307), alcohol(0.436)
 * fixed acidity: pH(-0.43)
@@ -247,7 +249,16 @@ ggplot(data=wineData, aes(x=density, y=quality)) +
   scale_x_continuous(limits = c(0.95, 1.05)) + 
   geom_smooth(color='red', se=FALSE, method='lm')
 ```
-The horizontal lines indicate quality values are all integers. After adding jitter, transparency, lineary smooth and changing the y limits, it shows a slight correlation between density and quality.
+The horizontal lines indicate quality values are all integers. After adding jitter, transparency, lineary smooth and changing the y limits, it shows a small and negative correlation between density and quality.
+
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(data=wineData, aes(x=quality_level, y=density)) + geom_boxplot() + xlab('quality levels')
+```
+
+```{r echo=FALSE, Bivariate_Plots}
+by(wineData$density, wineData$quality_level, summary)
+```
+The density median decreases as the quality level improves, and the variations are all very small. Wines of high quality level tends to have more outliers than the others. Density of wines is very close to 1.00 $g/cm^3$.
 
 ```{r echo=FALSE, Bivariate_Plots}
 ggplot(data=wineData, aes(x=alcohol, y=quality)) + geom_point()
@@ -257,17 +268,15 @@ ggplot(data=wineData, aes(x=alcohol, y=quality)) +
   geom_jitter(alpha=0.05) + 
   geom_smooth(se=FALSE, method='lm', color='red')
 ```
-Similarly, After adding jitter, transparency and linear smooth, it shows a slight correlation between alcohol and quality. Next I'll investigate alcohol across different qualities.
-```{r echo=FALSE, Bivariate_Plots}
-ggplot(data=wineData, aes(x=factor(quality, ordered = TRUE), y=alcohol)) + 
-  geom_boxplot() +
-  xlab('qualities')
-```
-```{r echo=FALSE, Bivariate_Plots}
-by(wineData$alcohol, factor(wineData$quality, ordered=TRUE), summary)
-```
+Similarly, After adding jitter, transparency and linear smooth, it shows a small and positive correlation between alcohol and quality. Next I'll investigate alcohol across different quality levels.
 
-Wines of higher quality(6, 7 and 8) tends to have bigger median and variation in alcohol than those of lower quality(3, 4 and 5). And wines of best quality have the highest median and smallest variation. Outliers occur most in quality of 5.
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(data=wineData, aes(x=quality_level, y=alcohol)) + geom_boxplot() + xlab('quality levels')
+```
+```{r echo=FALSE, Bivariate_Plots}
+by(wineData$alcohol, wineData$quality_level, summary)
+```
+Low level wines have many outliers. And the alcohol median increases as the quality level improves. Wines of medium level have the biggest variation in alcohol and wines of low level have the smallest.
 
 ```{r echo=FALSE, Bivariate_Plots}
 ggplot(data=wineData, aes(x=fixed.acidity, y=pH)) + geom_point()
@@ -275,44 +284,69 @@ ggplot(data=wineData, aes(x=fixed.acidity, y=pH)) + geom_point()
 ```{r echo=FALSE, Bivariate_Plots}
 ggplot(data=wineData, aes(x=fixed.acidity, y=pH)) + geom_jitter(alpha=0.05) + geom_smooth(method='lm', color='red', se=FALSE)
 ```
-It is not surprising that fixed acidity correlates with pH, and after dealing with overplotting by adding jitter and alpha, the plot shows a meaningful-but-small correlation between them. The higher the fixed acidity, the lower the pH (more acid). So again let's take a look at fixed acidity across qualities.
+It is not surprising that fixed acidity correlates with pH, and after dealing with overplotting by adding jitter and alpha, the plot shows a meaningful-but-small correlation between them. The higher the fixed acidity, the lower the pH (more acid). So again let's take a look at fixed acidity across quality levels.
 
 ```{r echo=FALSE, Bivariate_Plots}
-ggplot(data=wineData, aes(x=factor(quality, ordered = TRUE), y=fixed.acidity)) + 
-  geom_boxplot() +
-  xlab('qualities')
-```
-As the quality improves, median of fixed acidity tends to decrease a little bit and increase from quality of 8 on. On the other hand, the variation tends to decrease, and at the best quality of 9, the variation is very small. Outliers appear more in low qualities.
-
-```{r echo=FALSE, Bivariate_Plots}
-ggplot(data=wineData, aes(x=factor(quality, ordered = TRUE), y=volatile.acidity)) + 
-  geom_boxplot() +
-  xlab('qualities')
-```
-A too high of levels of volatile acidity could lead to unpleasant taste, and this is proven by the outliers in plot. More outliers appear in quality less than or equal to 6. And variation in volatile acidity of high-quality wines tends to be smaller than low-quality ones. Wines of best quality have no outliers and the median is close to Q1 value.
-
-```{r echo=FALSE, Bivariate_Plots}
-ggplot(data=wineData, aes(x=factor(quality, ordered = TRUE), y=citric.acid)) + 
-  geom_boxplot() +
-  xlab('qualities')
-```
-Citric acid is yet another factor that may affect taste, it add freshness and falvor to wines. From the plot we can see that although citric acid may improve taste, but it is not that "the more the better", adding quite a lot will not help, which can be seen by the many outliers in quality of 6. On the other hand, the median, minimum and maximum value of best quality are actually higher than other qualities.
-
-```{r echo=FALSE, Bivariate_Plots}
-ggplot(data=wineData, aes(x=factor(wineData$quality, ordered=TRUE), y=pH)) + geom_boxplot() + xlab('qualities')
-```
-
-Variation in pH decreases a lot and then increases slightly, and at the best quality it decreases to the minimum. What is interesting is that wines of best quality tend to have a median which is equal to the Q1.
-
-Although they show no correlation with quality, but I still want to investigate what free and bound sulfur dioxide look like across qualities. 
-```{r echo=FALSE, Bivariate_Plots}
-ggplot(data=wineData, aes(x=factor(wineData$quality, ordered=TRUE), y=free.sulfur.dioxide)) + geom_boxplot() + xlab('qualities')
+ggplot(data=wineData, aes(x=quality_level, y=fixed.acidity)) + geom_boxplot() + xlab('quality levels')
 ```
 
 ```{r echo=FALSE, Bivariate_Plots}
-ggplot(data=wineData, aes(x=factor(wineData$quality, ordered=TRUE), y=bound.sulfur.dioxide)) + geom_boxplot() + xlab('qualities')
+by(wineData$fixed.acidity, wineData$quality_level, summary)
 ```
-Both free and bound sulfur dioxide tend to have the same pattern. The median decreases slightly when quality improves, and the variation becomes smaller and smaller. High quality tends to have less outliers. One of the obvious difference is that the median and variation in free sulfur dioxide is much smaller than the one in bound sulfur dioxide, comparing under the same quality.
+The higher the quality level, the less the outliers. Both the median and variation remain approximately the same across quality levels.
+
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(data=wineData, aes(x=quality_level, y=volatile.acidity)) + geom_boxplot() + xlab('quality levels')
+```
+```{r echo=FALSE, Bivariate_Plots}
+by(wineData$volatile.acidity, wineData$quality_level, summary)
+```
+A too high of levels of volatile acidity could lead to unpleasant taste, and this is proven by the outliers in plot. More outliers appear in low quality. The variation doesn't change very much, but wines of medium and high quality tends to have median lower than those of low quality.
+
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(data=wineData, aes(x=quality_level, y=citric.acid)) + geom_boxplot() + xlab('quality levels')
+```
+```{r echo=FALSE, Bivariate_Plots}
+by(wineData$citric.acid, wineData$quality_level, summary)
+```
+Citric acid is yet another factor that may affect taste, it add freshness and falvor to wines. The median doesn't change very much as the quality level improves, but the variation becomes smaller and smaller, all three quality levels have outliers.
+
+So after analyzing three different acidities, what is pH value like across quality levels?
+
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(data=wineData, aes(x=quality_level, y=pH)) + geom_boxplot() + xlab('quality levels')
+```
+
+```{r echo=FALSE, Bivariate_Plots}
+by(wineData$pH, wineData$quality_level, summary)
+```
+The median and variation in pH increases slightly as the quality level improves. High quality level tends to have less outliers than others.
+
+Although they show no correlation with quality, but I still want to investigate what sulphates, free and bound sulfur dioxide look like across quality levels. 
+
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(data=wineData, aes(x=quality_level, y=free.sulfur.dioxide)) + geom_boxplot() + xlab('quality levels')
+```
+```{r echo=FALSE, Bivariate_Plots}
+by(wineData$free.sulfur.dioxide, wineData$quality_level, summary)
+```
+As the quality level improves, the median decreases slightly and the variation decreases significantly, all three levels have outliers.
+
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(data=wineData, aes(x=quality_level, y=bound.sulfur.dioxide)) + geom_boxplot() + xlab('quality levels')
+```
+```{r echo=FALSE, Bivariate_Plots}
+by(wineData$bound.sulfur.dioxide, wineData$quality_level, summary)
+```
+The median decreases as the quality level improves. And wines of high quality level have the smallest variation in bound sulfur dioxide. All three levels have outliers.
+
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(data=wineData, aes(x=quality_level, y=sulphates)) + geom_boxplot() + xlab('quality levels')
+```
+```{r echo=FALSE, Bivariate_Plots}
+by(wineData$sulphates, wineData$quality_level, summary)
+```
+The median remains approximately the same. The variation in sulphates increases as the quality level improves. All three levels have outliers.
 
 Next I'll consider about residual sugar. It is the amount of sugar remaining after fermentaion stops. At the very beginning I thought it might correlate with alcohol strongly but what is surprising is that it correlates with density most strongly.
 
@@ -324,7 +358,7 @@ ggplot(data=wineData, aes(x=residual.sugar, y=density)) + geom_jitter(alpha=0.05
 summary(lm(formula=density ~ residual.sugar, data=wineData))
 ```
 
-Although the plot looks quite linear, what we can infer from the $R^2$ value is that residual sugar only explains about 70.4% of the variance in density. I am not very content with this value, by checking the correlation matrix again, I find that density correlates with bound sulfur dioxide moderately and alcohol strongly, so is it possible to build a better model among them all? Let's try this!
+Although the plot looks quite linear, what we can infer from the $R^2$ value is that residual sugar only explains about 70.4% of the variance in density. I am not very content with this value, by checking the correlation matrix again, I find that density correlates with bound sulfur dioxide moderately and alcohol strongly, so is it possible to build a better model by incorporating them all? Let's try this!
 
 ```{r echo=FALSE, Bivariate_Plots}
 m1 <- lm(formula=density ~ residual.sugar, data=wineData)
@@ -332,34 +366,51 @@ m2 <- update(m1, ~ . + bound.sulfur.dioxide)
 m3 <- update(m2, ~ . + alcohol)
 summary(m3)
 ```
-And yes! The $R^2$ improves to 0.914, which means that residual sugar, together with bound sulfur dioxide and alcohol, explains 91.4% of the variance in density. Now it's time to analyze residual sugar across qualities.
+And yes! The $R^2$ improves to 0.914, which means that residual sugar, together with bound sulfur dioxide and alcohol, explains 91.4% of the variance in density. Now it's time to analyze residual sugar across quality levels
 
 ```{r echo=FALSE, Bivariate_Plots}
-ggplot(data=wineData, aes(x=factor(wineData$quality, ordered=TRUE), y=residual.sugar)) + geom_boxplot() + xlab('qualities')
+ggplot(data=wineData, aes(x=quality_level, y=residual.sugar)) + geom_boxplot() + xlab('quality levels')
 ```
-The variance in residual sugar goes with its median. As the quality improves, the variation and median decrease and then increase, and again decrease till quality of 7 and then increase at 8, and at the quality of 9 both decrease: the variation decreases to the mininum and median decreases to the first quantile.
+```{r echo=FALSE, Bivariate_Plots}
+by(wineData$residual.sugar, wineData$quality_level, summary)
+```
+The median decreases significantly as the quality level improves, and the variation decreases too, indicating that the higher the quality levels, the less the residual sugar remains. Many advanced wines are dry, thus this is reasonable. Now let's take a closer look at relationships between quality levels and sugar levels, see if we can find something interesting.
 
 ```{r echo=FALSE, Bivariate_Plots}
-ggplot(data=wineData, aes(x=factor(wineData$quality, ordered=TRUE), y=chlorides)) + geom_boxplot() + xlab('qualities')
+mosaic(~sugar_level + quality_level, data=wineData, shade=TRUE, legend=TRUE)
 ```
-Then comes the chlorides across qualities. There are some interesting things in plot. Firstly, there are more outliers in quality of 5 and 6 than the others; secondly, the variation remains small and the median doesn't change very much; thirdly, the quality of 9 has the smallest variation and the median is equal to Q3 approximately.
+From the mosaic plot we can confirm that quality levels do correlate with sugar levels. Wines of high quality tends to be dry.
+
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(data=wineData, aes(x=quality_level, y=chlorides)) + geom_boxplot() + xlab('quality levels')
+```
+```{r echo=FALSE, Bivariate_Plots}
+by(wineData$chlorides, wineData$quality_level, summary)
+```
+The variation in chlorides remains the same, but the median decreases as the quality level improves, all three levels have outliers but high quality level is less than the others.
 
 # Bivariate Analysis
 
 ### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
 
-Density correlates with residual sugar and alcohol strongly.
+Density correlates with residual sugar and alcohol strongly, the former is positive, and the latter is negative.
 
-Quality's correlations with density and alcohol are both very small. Wines of higher quality(6, 7 and 8) tend to have bigger median and variation in alcohol than those of lower quality(3, 4 and 5). And wines of best quality have the highest median and smallest variation. Outliers occur most in quality of 5.
+Quality has a meaningful but small correlation with density and alcohol respectively. Density of all wines is close to 1.00 $g/cm^3$. 
 
-Fixed acidity has a meaningful-but-small correlation with pH, about -0.43. Wines of best quality have a relatively higher citric acid than others but no outliers.
+Sugar level correlates with quality level, wines of high quality tends to be dry.
 
-For all the chemicals analyzed(acidities, alcohol, pH, sulfur dioxide, residual sugar and chlorides), wines of best quality show two common pattern:
+Other observations: 
 
-1. The variation tends to be small;
-2. There's only one or even no outliers;
+* Wines of high quality tends to have smallest median and variation in density;
+* Wines of high quality tends to have biggest median in alcohol;
+* Wines of high quality tends to have least outliers in fixed acidity;
+* Wines of high quality tends to have smallest median and least outliers in volatile acidity;
+* Wines of high quality tends to have smallest median and variation in citric acid, but many outliers existed;
+* Wines of high quality tends to have biggest median, variation and least outliers in pH;
+* Residual sugar of wines decreases as the quality level improves;
+* Chlorides of wines decreases slightly as the quality level improves;
 
-Based on the $R^2$ value, if incorporated with feature of bound sulfur dioxide and alcohol, residual sugar explains abount 91.4% of the variance in density.
+Fixed acidity has a negative, meaningful but small correlation with pH, about -0.43.
 
 ### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
 
@@ -367,7 +418,10 @@ Fixed acidity tends to correlate with pH value. The higher the fixed acidity, th
 
 ### What was the strongest relationship you found?
 
-The residual sugar is positively and strongly correlated with density; alcohol is negatively correlates with density but less strongly. And if we want a better linear regression model between residual sugar and density, we must incorporate with bound sulfur dioxide and alcohol, and this gives a $R^2$ of 91.4%.
+The residual sugar is positively and strongly correlated with density; alcohol is negatively correlates with density but a little bit less strongly. 
+
+#TODO
+And if we want a better linear regression model between residual sugar and density, we must take bound sulfur dioxide and alcohol into consider. Based on the $R^2$ value, if incorporated with bound sulfur dioxide and alcohol, residual sugar explains abount 91.4% of the variance in density.
 
 # Multivariate Plots Section
 
