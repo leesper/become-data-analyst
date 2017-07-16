@@ -16,6 +16,7 @@ library(dplyr)
 library(gridExtra)
 library(car)
 library(vcd)
+library(RColorBrewer)
 ```
 
 ```{r echo=FALSE, Load_the_Data}
@@ -418,13 +419,68 @@ Fixed acidity tends to correlate with pH value. The higher the fixed acidity, th
 
 ### What was the strongest relationship you found?
 
-The residual sugar is positively and strongly correlated with density; alcohol is negatively correlates with density but a little bit less strongly. 
-
-#TODO
-And if we want a better linear regression model between residual sugar and density, we must take bound sulfur dioxide and alcohol into consider. Based on the $R^2$ value, if incorporated with bound sulfur dioxide and alcohol, residual sugar explains abount 91.4% of the variance in density.
+The residual sugar is positively and strongly correlated with density; alcohol is negatively correlates with density but a little bit less strongly. And if we want a better linear regression model between residual sugar and density, we must take bound sulfur dioxide and alcohol into consider. Based on the $R^2$ value, if incorporated with bound sulfur dioxide and alcohol, residual sugar explains abount 91.4% of the variance in density.
 
 # Multivariate Plots Section
 
+```{r echo=FALSE, Multivariate_Plots}
+ggplot(data=wineData, aes(x=quality, color=sugar_level)) + geom_density() + 
+  scale_color_brewer(type = 'div',
+    guide = guide_legend(title = 'sugar level', reverse = T,
+    override.aes = list(alpha = 1, size = 2)))
+```
+This density plot indicates that residual sugar do correlate with quality somehow. 
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+```{r echo=FALSE, Multivariate_Plots}
+
+```
 ```{r echo=FALSE, Multivariate_Plots}
 
 ```
