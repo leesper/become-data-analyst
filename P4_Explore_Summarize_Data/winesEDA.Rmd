@@ -420,12 +420,9 @@ And if we want a better linear regression model between residual sugar and densi
 # Multivariate Plots Section
 
 ```{r echo=FALSE, Multivariate_Plots}
-ggplot(data=wineData, aes(x=quality, color=sugar_level)) + geom_density() + 
-  scale_color_brewer(type = 'div',
-    guide = guide_legend(title = 'sugar level', reverse = T,
-    override.aes = list(alpha = 1, size = 2)))
+ggplot(data=wineData, aes(x=residual.sugar, color=quality_level)) + geom_density()
 ```
-This density plot indicates that at the lower part of quality comes with more wines of sweet and medium, and higher part of quality comes with more wines of medium dry and dry. The only exception is at 4, where there are more dry and medium dry, so I think residual sugar is not the only factor that affects taste.
+The kernel density plot shows the distributions of residual sugar under different quality levels. The higher the quality level, the more the residual sugar is limited within 10 $g/dm^3$.
 
 ```{r echo=FALSE, Multivariate_Plots}
 ggplot(data=wineData, aes(x=residual.sugar, y=citric.acid)) + geom_jitter(alpha=0.05) + facet_wrap(~quality_level, nrow=3)
@@ -557,19 +554,38 @@ Most wines are of dry and medium dry, there are more than 750 wines of medium, a
 
 ### Plot Two
 ```{r echo=FALSE, Plot_Two}
-
+ggplot(data=wineData, aes(x=residual.sugar, color=quality_level)) + 
+  geom_density() + 
+  scale_color_brewer(type = 'qual',
+    guide = guide_legend(title = 'quality level', reverse = T,
+    override.aes = list(alpha = 1, size = 2))) +
+  labs(title='Distribution of residual sugar under different quality levels', x='Residual sugar', y='Density')
 ```
 
 ### Description Two
-
+A large proportion of residual sugar is within 10 $g/dm^3$ under high quality level. When the quality level goes down, this proportion becomes smaller and smaller. Wines of higher quality tend to have less residual sugar.
 
 ### Plot Three
 ```{r echo=FALSE, Plot_Three}
-
+wineData$bound.sulfur.level <- cut(wineData$bound.sulfur.dioxide, breaks=c(4, 100, 331))
+ggplot(data=subset(wineData, residual.sugar <= quantile(wineData$residual.sugar, prob=.99)), 
+       aes(x=residual.sugar, y=density, color=alcohol, shape=bound.sulfur.level)) + 
+  geom_jitter(alpha=.5) + facet_wrap(~quality_level, nrow=3) +
+  labs(title='Scatterplot between residual sugar and density clustered by quality level',
+       x='Residual sugar', y='Density')
 ```
 
 ### Description Three
+These are scatterplots of residual sugar and density clustered by quality levels. The shade of color indicates the content of alcohol, and the shapes represent different levels of contents of bound sulfur dioxide. They indicate that a linear model could be constructed to predict density using residual sugar as the predictor variable. Holding residual sugar constant, wines with less alcohol and more bound sulful dioxide almost always have larger density.
 
 ------
 
 # Reflection
+
+This dataset is about white wines, containing 4898 observations of 13 variables. Although none of the observations contain NAs. But it lacks of categorical variables. So I create two new categorical variables called sugar_level and quality_level. I also create a new variable to retrieve bound sulfur dioxide from total sulfur dioxide by free sulfur dioxide.
+
+I begin my exploration by investigating indiviual variables, trying to figure out their distributions by histograms, count the number of wines by different levels.
+
+Then I create a correlation and scatterplots matrix to see if there are some correlations between variables. I was surprised at the beginning that there's no strong correlations between quality and other chemicals, only to find some small correlations with density and alcohol. But density do correlates with residual sugar and alcohol strongly, with bound sulfur dioxide moderately, so I investigate some related variables with quality levels. Then I explore the relathionships between the two categorical variables by mosaic plot, finding that sugar level correlates with quality level to some extent. This is an important clue for further exploration.
+
+Because quality correlates with density and alcohol small, and density correlates with alcohol and residual sugar strongly, with bound sulphur dioxide moderately, I focus on these features in multivariate section. At first I take a look at kernel density plot of residual sugar under different quality levels. Secondly, I investigate residual sugar and citric acid, which may add freshness and flavor to wines, under different quality levels too. At last, I try to create a model to predict density by alcohol or residual sugar alone, assessing the model in different quality levels only to find that it is not very ideal. Then I realize that only one or two features are not enough, so I take related 3 features into account and finally get a better model which is able to account for 91.45% of the variance in density, and a 94.03% under high quality level. One major limitation is that this model becomes worse when it comes to low and medium level, but can still explain about 89%.
