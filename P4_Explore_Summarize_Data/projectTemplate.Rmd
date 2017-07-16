@@ -20,14 +20,10 @@ library(car)
 ```{r echo=FALSE, Load_the_Data}
 # Load the Data
 wineData <- read.csv('wineQualityWhites.csv', na.strings = c('', 'NA'))
-
-# create a new variable called bound.sulfur.dioxide according to wineQualityInfo.txt
-wineData$bound.sulfur.dioxide <- wineData$total.sulfur.dioxide - wineData$free.sulfur.dioxide
-
-# select and rearrange variables
-wineData <- select(wineData, quality, fixed.acidity, volatile.acidity, citric.acid, residual.sugar, chlorides, free.sulfur.dioxide, bound.sulfur.dioxide, sulphates, density, pH, alcohol)
 ```
+
 # Univariate Plots Section
+
 ```{r echo=FALSE, Univariate_Plots}
 dim(wineData)
 ```
@@ -39,19 +35,39 @@ str(wineData)
 ```{r echo=FALSE, Univariate_Plots}
 summary(wineData)
 ```
-The dataset contains 12 variables and almost 5000 observations. No NAs existed.
+The dataset contains 13 variables and almost 5000 observations, no NAs existed. Not all variables are helpful for analyzing. According to the specifications in wineQualityInfo.txt, I will create a new variable called bound.sulfur.dioxide defined as total.sulfur.dioxide minus free.sulfur.dioxide. 
+
+I will create two categorical variables called sweet_level and quality_level. According to  [Wikipedia](https://en.wikipedia.org/wiki/Sweetness_of_wine#Residual_sugar), a wine can be classified as four levels: dry(up to 4 $g/dm^3$), medium dry(up to 12 $g/dm^3$), medium(up to 45 $g/dm^3$) and sweet(more than 45 $g/dm^3$) by sweetness; the quality ranges from 3 to 9 and 6 is the median, so I will classify the quality into three types: low(qualities of 3, 4 and 5), medium(quality of 6) and high(quanlity of 7, 8 and 9), this may do some help for analyzing.
+
+```{r echo=FALSE, Univariate_Plots}
+# create a new variable called bound.sulfur.dioxide according to specifications in wineQualityInfo.txt
+wineData$bound.sulfur.dioxide <- wineData$total.sulfur.dioxide - wineData$free.sulfur.dioxide
+
+# create a new variable called sugar_level by cut of residual sugar, convert it into ordered factor
+wineData$sugar_level <- cut(wineData$residual.sugar, breaks = c(-Inf, 4, 12, 45, Inf), labels = c('dry', 'medium dry', 'medium', 'sweet'))
+wineData$sugar_level <- factor(wineData$sugar_level, ordered=TRUE, levels=c('dry', 'medium dry', 'medium', 'sweet'))
+
+# create a new variable called quality_level by quality ranges, convert it into ordered factor
+wineData$quality_level <- ifelse(wineData$quality < 6, 'low', ifelse(wineData$quality == 6, 'medium', 'high'))
+wineData$quality_level <- factor(wineData$quality_level, ordered=TRUE, levels=c('low', 'medium', 'high'))
+
+# select and rearrange variables
+wineData <- select(wineData, quality, quality_level, fixed.acidity, volatile.acidity, citric.acid, residual.sugar, sugar_level, chlorides, free.sulfur.dioxide, bound.sulfur.dioxide, sulphates, density, pH, alcohol)
+```
+
+And this is the new structure.
+```{r echo=FALSE, Univariate_Plots}
+str(wineData)
+```
 
 ```{r echo=FALSE, Univariate_Plots}
 # histogram of quality scores
-ggplot(data=wineData, aes(x=quality)) + geom_bar()
+ggplot(data=wineData, aes(x=quality_level)) + geom_bar()
 ```
 ```{r echo=FALSE, Univariate_Plots}
-table(wineData$quality)
+table(wineData$quality_level)
 ```
-```{r echo=FALSE, Univariate_Plots}
-summary(wineData$quality)
-```
-The lowest quality is 3 and the highest is 9; mean 5.878 and median 6. Most of the wine is in quality 5, 6 and 7. Wine with very high or low quality is rare.
+The data contains 1640 observations of low quality wines, 2198 observations of medium quality wines and 1060 high quality of wines.
 
 ```{r echo=FALSE, Univariate_Plots}
 # histogram of fixed acidity
@@ -80,7 +96,7 @@ ggplot(data=wineData, aes(x=citric.acid)) + geom_histogram(binwidth = 0.01)
 ```{r echo=FALSE, Univariate_Plots}
 summary(wineData$citric.acid)
 ```
-Most wines have a citric acidity between 0.25 and 0.5 $g/dm^3$. The minimum value is 0.0, contains no citric acid, but this can add freshness and flavor to wines, later on I will also analyze the relation ship between citric acid and quality.
+Most wines have a citric acidity between 0.25 and 0.5 $g/dm^3$. The minimum value is 0.0, which means containing no citric acid. Later on I will analyze the relationship between citric acid and quality.
 
 ```{r echo=FALSE, Univariate_Plots}
 # histogram of residual sugar
@@ -97,27 +113,17 @@ ggplot(data=wineData, aes(x='residual sugar', y=residual.sugar)) + geom_boxplot(
 ```{r echo=FALSE, Univariate_Plots}
 summary(wineData$residual.sugar)
 ```
-The residual sugar contributes to the sweetness of wine. I create an original histogram and a log-tranformed one to better analyze it. The transformed distribution appears bimodal with the residual sugar peaking at both 3 and 9 $g/dm^3$. Most of the wines contains residual sugar less than 10 $g/dm^3$, but some outliers exist. The boxplot indicates that median is around 5 and outliers have residual sugar more than 20 $g/dm^3$, some even has  more than 60 $g/dm^3$, that's too sweet. According to [Wikipedia](https://en.wikipedia.org/wiki/Sweetness_of_wine#Residual_sugar), a wine can be classified as four levels: dry(up to 4 $g/dm^3$), medium dry(up to 12 $g/dm^3$), medium(up to 45 $g/dm^3$) and sweet(more than 45 $g/dm^3$) by sweetness, I wonder what the plot looks like across these categories.
+The residual sugar contributes to the sweetness of wine. I create an original histogram and a log-tranformed one to better observe it. The transformed distribution appears bimodal with the residual sugar peaking at both 3 and 9 $g/dm^3$. Most of the wines contains residual sugar less than 10 $g/dm^3$, but some outliers exist. The boxplot indicates that median is around 5 and outliers have residual sugar more than 20 $g/dm^3$, some even has more than 60 $g/dm^3$, that's too sweet.
 
 ```{r echo=FALSE, Univariate_Plots}
-table(cut(wineData$residual.sugar, breaks = c(-Inf, 4, 12, 45, Inf)))
+ggplot(data=wineData, aes(x=wineData$sugar_level)) + geom_bar()
 ```
 
 ```{r echo=FALSE, Univariate_Plots}
-ggplot(data=wineData, aes(x=cut(wineData$residual.sugar, breaks = c(-Inf, 4, 12, 45, Inf)))) + 
-  geom_bar() + 
-  scale_x_discrete(labels = c('dry', 'medium dry', 'medium', 'sweet'))
+table(wineData$sugar_level)
 ```
+Most of wines are dry or medium dry, there are 825 wines of medium, and only 1 wine is sweet. 
 
-Most of wines are dry or medium dry, there are 825 wines of medium, and only 1 wine is sweet. And I'd like to have a look at the quality distributions of each level.
-```{r echo=FALSE, Univariate_Plots}
-pQualityDry <- ggplot(data=subset(wineData, residual.sugar <= 4), aes(x=quality)) + geom_histogram() + labs(title='dry')
-pQualityMediumDry <- ggplot(data=subset(wineData, residual.sugar > 4 & residual.sugar <= 12), aes(x=quality)) + geom_histogram() + labs(title='medium dry')
-pQualityMeidum <- ggplot(data=subset(wineData, residual.sugar > 12 & residual.sugar <= 45), aes(x=quality)) + geom_histogram() + labs(title='medium')
-pQualitySweet <- ggplot(data=subset(wineData, residual.sugar > 45), aes(x=quality)) + geom_histogram() + labs(title='sweet')
-grid.arrange(pQualityDry, pQualityMediumDry, pQualityMeidum, pQualitySweet, ncol=2)
-```
-Level of sweet wine has quality 6, and other levels have wines of greater quality, in bivariate analysis section I will analyze the relationship between sugar and quality deeply.
 ```{r echo=FALSE, Univariate_Plots}
 # histogram of chlorides
 ggplot(data=wineData, aes(x=chlorides)) + geom_histogram(binwidth = 0.001)
@@ -129,7 +135,7 @@ ggplot(data=wineData, aes(x='chlorides', y=chlorides)) + geom_boxplot()
 ```{r echo=FALSE, Univariate_Plots}
 summary(wineData$chlorides)
 ```
-Most wines have chlorides between 0.025 and 0.0755 $g/dm^3$, this is the amount of salt in wine. The boxplot indicates that there are many outliers existed, the maximum value is 0.346 $g/dm^3$, but the variation in chlorides is small. Will a too-salty wine tastes bad? I will exlore it with quality later on.
+Chlorides is the amount of salt in wine. Most wines have chlorides between 0.025 and 0.0755 $g/dm^3$. The boxplot indicates that there are many outliers existed, the maximum value is 0.346 $g/dm^3$, but the variation in chlorides is small. Will a too-salty wine tastes bad? I will exlore it later on.
 
 ```{r echo=FALSE, Univariate_Plots}
 # histogram of free sulfur dioxide
@@ -362,8 +368,6 @@ Fixed acidity tends to correlate with pH value. The higher the fixed acidity, th
 ### What was the strongest relationship you found?
 
 The residual sugar is positively and strongly correlated with density; alcohol is negatively correlates with density but less strongly. And if we want a better linear regression model between residual sugar and density, we must incorporate with bound sulfur dioxide and alcohol, and this gives a $R^2$ of 91.4%.
-
-
 
 # Multivariate Plots Section
 
