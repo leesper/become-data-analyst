@@ -26,6 +26,11 @@ library(RColorBrewer)
 ```{r echo=FALSE}
 # Load the Data
 wineData <- read.csv('wineQualityWhites.csv', na.strings = c('', 'NA'))
+
+# create a function to plot histogram for convenient use
+uni_histo <- function(var) {
+  ggplot(data=wineData, aes_string(x = var)) + geom_histogram(bins=20)
+}
 ```
 
 # Univariate Plots Section
@@ -87,6 +92,8 @@ wineData <- select(wineData,
                    density, 
                    pH, 
                    alcohol)
+
+
 ```
 
 And this is the new structure.
@@ -129,8 +136,7 @@ The data contains 1640 observations of low quality wines, 2198 observations of m
 
 ```{r echo=FALSE}
 # histogram of fixed acidity
-ggplot(data=wineData, aes(x=fixed.acidity)) + 
-  geom_histogram(bins=20)
+uni_histo('fixed.acidity')
 ```
 
 ```{r echo=FALSE}
@@ -142,8 +148,7 @@ Most wines have fixed acidity between 6 and 7.5 $g/dm^3$. There is a peak around
 
 ```{r echo=FALSE}
 # histogram of volatile acidity
-ggplot(data=wineData, aes(x=volatile.acidity)) + 
-  geom_histogram(bins=20)
+uni_histo('volatile.acidity')
 ```
 ```{r echo=FALSE}
 # summary about volatile acidity
@@ -154,8 +159,7 @@ Most wines have volatile acidity between 0.15 and 0.31 $g/dm^3$ approximately. T
 
 ```{r echo=FALSE}
 # histogram of citric acidity
-ggplot(data=wineData, aes(x=citric.acid)) + 
-  geom_histogram(bins=20)
+uni_histo('citric.acid')
 ```
 
 ```{r echo=FALSE}
@@ -167,15 +171,12 @@ Most wines have a citric acidity between 0.25 and 0.5 $g/dm^3$. The minimum valu
 
 ```{r echo=FALSE}
 # histogram of residual sugar
-ggplot(data=wineData, aes(x=residual.sugar)) + 
-  geom_histogram(bins=20)
+uni_histo('residual.sugar')
 ```
 
 ```{r echo=FALSE}
 # histogram of log-transformed residual sugar
-ggplot(data=wineData, aes(x=residual.sugar)) + 
-  geom_histogram(bins=20) + 
-  scale_x_log10()
+uni_histo('residual.sugar') + scale_x_log10()
 ```
 
 ```{r echo=FALSE}
@@ -207,8 +208,7 @@ Most of wines are dry or medium dry, there are 825 wines of medium, and only 1 w
 
 ```{r echo=FALSE}
 # histogram of chlorides
-ggplot(data=wineData, aes(x=chlorides)) + 
-  geom_histogram(bins=30)
+uni_histo('chlorides')
 ```
 
 ```{r echo=FALSE}
@@ -226,20 +226,17 @@ Chlorides is the amount of salt in wine. Most wines have chlorides between 0.03 
 
 ```{r echo=FALSE}
 # histogram of free sulfur dioxide
-ggplot(data=wineData, aes(x=free.sulfur.dioxide)) + 
-  geom_histogram(bins=20)
+uni_histo('free.sulfur.dioxide')
 ```
 
 ```{r echo=FALSE}
 # histogram of bound sulfur dioxide
-ggplot(data=wineData, aes(x=bound.sulfur.dioxide)) + 
-  geom_histogram(bins=20)
+uni_histo('bound.sulfur.dioxide')
 ```
 
 ```{r echo=FALSE}
 # histogram of sulphates
-ggplot(data=wineData, aes(x=sulphates)) + 
-  geom_histogram(bins=20)
+uni_histo('sulphates')
 ```
 
 ```{r echo=FALSE}
@@ -251,8 +248,7 @@ Sulfur dioxide can prevent microbial growth and oxidation of wine. But it is som
 
 ```{r echo=FALSE}
 # histogram of density
-ggplot(data=wineData, aes(x=density)) + 
-  geom_histogram(bins=20)
+uni_histo('density')
 ```
 
 ```{r echo=FALSE}
@@ -264,8 +260,7 @@ Most wine has a density between 0.99 $g/cm^3$ and 1.00 $g/cm^3$.
 
 ```{r echo=FALSE}
 # histogram of pH
-ggplot(data=wineData, aes(x=pH)) + 
-  geom_histogram(bins=20)
+uni_histo('pH')
 ```
 
 ```{r echo=FALSE}
@@ -277,8 +272,7 @@ All the wine is naturally acidic. And most of them are in pH 3.0-3.3; minimum 2.
 
 ```{r echo=FALSE}
 # histograms of alcohol
-ggplot(data=wineData, aes(x=alcohol)) + 
-  geom_histogram(bins=20)
+uni_histo('alcohol')
 ```
 
 ```{r echo=FALSE}
