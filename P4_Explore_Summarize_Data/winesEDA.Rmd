@@ -98,7 +98,8 @@ str(wineData)
 
 ```{r echo=FALSE}
 # histogram of quality levels
-ggplot(data=wineData, aes(x=quality_level)) + geom_bar()
+ggplot(data=wineData, aes(x=quality_level)) + 
+  geom_bar()
 ```
 
 ```{r echo=FALSE}
@@ -110,8 +111,12 @@ The data contains 1640 observations of low quality wines, 2198 observations of m
 
 ```{r echo=FALSE}
 # histogram of fixed acidity
-pOrigin <- ggplot(data=wineData, aes(x=fixed.acidity)) + geom_histogram()
-pBinned <- ggplot(data=wineData, aes(x=fixed.acidity)) + geom_histogram(binwidth = 0.12)
+pOrigin <- ggplot(data=wineData, aes(x=fixed.acidity)) + 
+  geom_histogram()
+
+pBinned <- ggplot(data=wineData, aes(x=fixed.acidity)) + 
+  geom_histogram(binwidth = 0.12)
+
 grid.arrange(pOrigin, pBinned, ncol=1)
 ```
 
@@ -124,7 +129,8 @@ Most wines have fixed acidity between 6 and 7.5 $g/dm^3$. There is a peak around
 
 ```{r echo=FALSE}
 # histogram of volatile acidity
-ggplot(data=wineData, aes(x=volatile.acidity)) + geom_histogram(binwidth = 0.01)
+ggplot(data=wineData, aes(x=volatile.acidity)) + 
+  geom_histogram(binwidth = 0.01)
 ```
 ```{r echo=FALSE}
 # summary about volatile acidity
@@ -135,7 +141,8 @@ Most wines have volatile acidity between 0.15 and 0.31 $g/dm^3$ approximately. T
 
 ```{r echo=FALSE}
 # histogram of citric acidity
-ggplot(data=wineData, aes(x=citric.acid)) + geom_histogram(binwidth = 0.01)
+ggplot(data=wineData, aes(x=citric.acid)) + 
+  geom_histogram(binwidth = 0.01)
 ```
 
 ```{r echo=FALSE}
@@ -173,7 +180,8 @@ The residual sugar contributes to the sweetness of wine. I create an original hi
 
 ```{r echo=FALSE}
 # barplot about number of wines of different sugar level
-ggplot(data=wineData, aes(x=wineData$sugar_level)) + geom_bar()
+ggplot(data=wineData, aes(x=wineData$sugar_level)) + 
+  geom_bar()
 ```
 
 ```{r echo=FALSE}
@@ -185,12 +193,14 @@ Most of wines are dry or medium dry, there are 825 wines of medium, and only 1 w
 
 ```{r echo=FALSE}
 # histogram of chlorides
-ggplot(data=wineData, aes(x=chlorides)) + geom_histogram(binwidth = 0.001)
+ggplot(data=wineData, aes(x=chlorides)) + 
+  geom_histogram(binwidth = 0.001)
 ```
 
 ```{r echo=FALSE}
 # boxplot of chlorides
-ggplot(data=wineData, aes(x='chlorides', y=chlorides)) + geom_boxplot()
+ggplot(data=wineData, aes(x='chlorides', y=chlorides)) + 
+  geom_boxplot()
 ```
 
 ```{r echo=FALSE}
@@ -202,17 +212,20 @@ Chlorides is the amount of salt in wine. Most wines have chlorides between 0.025
 
 ```{r echo=FALSE}
 # histogram of free sulfur dioxide
-ggplot(data=wineData, aes(x=free.sulfur.dioxide)) + geom_histogram(binwidth = 1)
+ggplot(data=wineData, aes(x=free.sulfur.dioxide)) + 
+  geom_histogram(binwidth = 1)
 ```
 
 ```{r echo=FALSE}
 # histogram of bound sulfur dioxide
-ggplot(data=wineData, aes(x=bound.sulfur.dioxide)) + geom_histogram(binwidth = 1)
+ggplot(data=wineData, aes(x=bound.sulfur.dioxide)) + 
+  geom_histogram(binwidth = 1)
 ```
 
 ```{r echo=FALSE}
 # histogram of sulphates
-ggplot(data=wineData, aes(x=sulphates)) + geom_histogram(binwidth = 0.01)
+ggplot(data=wineData, aes(x=sulphates)) + 
+  geom_histogram(binwidth = 0.01)
 ```
 
 ```{r echo=FALSE}
@@ -224,7 +237,8 @@ Sulfur dioxide can prevent microbial growth and oxidation of wine. But it is som
 
 ```{r echo=FALSE}
 # histogram of density
-ggplot(data=wineData, aes(x=density)) + geom_histogram(binwidth = 0.0001)
+ggplot(data=wineData, aes(x=density)) + 
+  geom_histogram(binwidth = 0.0001)
 ```
 
 ```{r echo=FALSE}
@@ -236,7 +250,8 @@ Most wine has a density around 1.00 $g/cm^3$.
 
 ```{r echo=FALSE}
 # histogram of pH
-ggplot(data=wineData, aes(x=pH)) + geom_histogram(binwidth = 0.01)
+ggplot(data=wineData, aes(x=pH)) + 
+  geom_histogram(binwidth = 0.01)
 ```
 
 ```{r echo=FALSE}
@@ -248,12 +263,14 @@ All the wine is naturally acidic. And most of them are in pH 3.0-3.3; minimum 2.
 
 ```{r echo=FALSE}
 # histograms of alcohol
-ggplot(data=wineData, aes(x=alcohol)) + geom_histogram(binwidth = 0.1)
+ggplot(data=wineData, aes(x=alcohol)) + 
+  geom_histogram(binwidth = 0.1)
 ```
 
 ```{r echo=FALSE}
 # histograms of alcohol
-ggplot(data=wineData, aes(x=alcohol)) + geom_histogram(binwidth = 0.01)
+ggplot(data=wineData, aes(x=alcohol)) + 
+  geom_histogram(binwidth = 0.01)
 ```
 
 ```{r echo=FALSE}
@@ -602,7 +619,9 @@ And if we want a better linear regression model between residual sugar and densi
 ```{r echo=FALSE}
 # kernel density plot of residual sugar across quality levels
 ggplot(data=wineData, aes(x=residual.sugar, color=quality_level)) + 
-  geom_density()
+  scale_color_brewer(palette='Blues') +
+  geom_density() + 
+  theme(panel.background = element_rect(fill="dark gray"))
 ```
 
 The kernel density plot shows the distributions of residual sugar under different quality levels. The higher the quality level, the more the residual sugar is limited within 10 $g/dm^3$.
@@ -619,11 +638,15 @@ Comparing with other levels, wines of high quality level tends to have conservat
 ```{r echo=FALSE}
 # scatterplots of residual sugar and density across quality levels
 ggplot(data=subset(wineData, residual.sugar <= quantile(wineData$residual.sugar, prob=.99)), 
-       aes(x=residual.sugar, y=density)) + 
-  geom_point() +
-  geom_smooth(se=FALSE, method='lm', color='red') +
-  facet_wrap(~quality_level)
+       aes(x=residual.sugar, y=density, color=quality_level)) + 
+  geom_jitter(alpha=0.5) +
+  scale_color_brewer(palette='Blues') +
+  geom_smooth(se=FALSE, method='lm', size=1) + 
+  labs(title='residual sugar vs density vs quality levels', y='Density', x='Residual sugar') +
+  theme(panel.background = element_rect(fill="dark gray"))
 ```
+
+From the plot we can see that fitting lines of different quality levels are separate from each other. Let's take a look at the performance of model.
 
 ```{r echo=FALSE}
 # summary about linear model in general
@@ -658,11 +681,15 @@ Density also correlates with alcohol strongly, next I'd like to analyze the same
 ```{r echo=FALSE}
 # scatterplots of alcohol and density across quality levels
 ggplot(data=subset(wineData, alcohol <= quantile(wineData$alcohol, prob=.99)), 
-       aes(x=alcohol, y=density)) + 
-  geom_point() +
-  geom_smooth(se=FALSE, method='lm', color='red') +
-  facet_wrap(~quality_level)
+       aes(x=alcohol, y=density, color=quality_level)) + 
+  geom_jitter(alpha=0.5) +
+  scale_color_brewer(palette='Blues') +
+  geom_smooth(se=FALSE, method='lm', size=1) +
+  labs(title='alcohol vs density vs quality levels', y='Density', x='Alcohol') +
+  theme(panel.background = element_rect(fill="dark gray"))
 ```
+
+From the plot we can see that fitting lines of different quality levels are overlapping. Again I'd like to assess the availability of model.
 
 ```{r echo=FALSE}
 # summary about linear model in general
@@ -704,7 +731,8 @@ So is it possible to create a better model by incorporating them all? Let's try 
 wineData$bound.sulfur.level <- cut(wineData$bound.sulfur.dioxide, breaks=c(4, 100, 331))
 ggplot(data=subset(wineData, residual.sugar <= quantile(wineData$residual.sugar, prob=.99)), 
        aes(x=residual.sugar, y=density, color=alcohol, shape=bound.sulfur.level)) + 
-  geom_point() + facet_wrap(~quality_level, nrow=3)
+  geom_jitter(alpha=0.5) + 
+  facet_wrap(~quality_level, nrow=3)
 ```
 
 ```{r echo=FALSE}
@@ -777,10 +805,11 @@ Most wines are of dry and medium dry, there are more than 750 wines of medium, a
 # kernel density plot for residual sugar across quality levels
 ggplot(data=wineData, aes(x=residual.sugar, color=quality_level)) + 
   geom_density() + 
-  scale_color_brewer(type = 'qual',
-    guide = guide_legend(title = 'quality level', reverse = T,
-    override.aes = list(alpha = 1, size = 2))) +
-  labs(title='Distribution of residual sugar under different quality levels', x='Residual sugar', y='Density')
+  scale_color_brewer(palette='Blues') +
+  labs(title='Distribution of residual sugar under different quality levels', 
+       x='Residual sugar', 
+       y='Density') +
+  theme(panel.background=element_rect(fill='dark gray'))
 ```
 
 ### Description Two
@@ -791,11 +820,13 @@ A large proportion of residual sugar is within 10 $g/dm^3$ under high quality le
 # scatterplots of residual sugar and density, clusted by quality levels, 
 # colored and shaped by alcohol and bound sulfur dioxide respectively
 wineData$bound.sulfur.level <- cut(wineData$bound.sulfur.dioxide, breaks=c(4, 100, 331))
-ggplot(data=subset(wineData, residual.sugar <= quantile(wineData$residual.sugar, prob=.99)), 
+ggplot(data=subset(wineData, 
+                   residual.sugar <= quantile(wineData$residual.sugar, prob=.99)), 
        aes(x=residual.sugar, y=density, color=alcohol, shape=bound.sulfur.level)) + 
   geom_jitter(alpha=.5) + facet_wrap(~quality_level, nrow=3) +
   labs(title='Scatterplot between residual sugar and density clustered by quality level',
-       x='Residual sugar', y='Density')
+       x='Residual sugar', 
+       y='Density')
 ```
 
 ### Description Three
