@@ -96,8 +96,26 @@ And this is the new structure.
 str(wineData)
 ```
 
+Let's first look at the original qualities
+
 ```{r echo=FALSE}
-# histogram of quality levels
+# barplot of qualities
+ggplot(data=wineData, aes(x=factor(quality))) +
+  geom_bar()
+```
+
+```{r echo=FALSE}
+table(wineData$quality)
+```
+
+```{r echo=FALSE}
+summary(wineData$quality)
+```
+
+From the plot we can see that a majority of wines are of quality 5, 6 and 7. Wines of very high or low quality are relatively rare, there are only 5 observations about quality of 9. The median is 6, so that's why I decide to classify the wines into categories by quality: low(quality < 6), medium(quality = 6) and high(quality > 6).
+
+```{r echo=FALSE}
+# barplot of quality levels
 ggplot(data=wineData, aes(x=quality_level)) + 
   geom_bar()
 ```
@@ -111,13 +129,8 @@ The data contains 1640 observations of low quality wines, 2198 observations of m
 
 ```{r echo=FALSE}
 # histogram of fixed acidity
-pOrigin <- ggplot(data=wineData, aes(x=fixed.acidity)) + 
-  geom_histogram()
-
-pBinned <- ggplot(data=wineData, aes(x=fixed.acidity)) + 
-  geom_histogram(binwidth = 0.12)
-
-grid.arrange(pOrigin, pBinned, ncol=1)
+ggplot(data=wineData, aes(x=fixed.acidity)) + 
+  geom_histogram(bins=20)
 ```
 
 ```{r echo=FALSE}
@@ -130,7 +143,7 @@ Most wines have fixed acidity between 6 and 7.5 $g/dm^3$. There is a peak around
 ```{r echo=FALSE}
 # histogram of volatile acidity
 ggplot(data=wineData, aes(x=volatile.acidity)) + 
-  geom_histogram(binwidth = 0.01)
+  geom_histogram(bins=20)
 ```
 ```{r echo=FALSE}
 # summary about volatile acidity
@@ -142,7 +155,7 @@ Most wines have volatile acidity between 0.15 and 0.31 $g/dm^3$ approximately. T
 ```{r echo=FALSE}
 # histogram of citric acidity
 ggplot(data=wineData, aes(x=citric.acid)) + 
-  geom_histogram(binwidth = 0.01)
+  geom_histogram(bins=20)
 ```
 
 ```{r echo=FALSE}
@@ -154,14 +167,15 @@ Most wines have a citric acidity between 0.25 and 0.5 $g/dm^3$. The minimum valu
 
 ```{r echo=FALSE}
 # histogram of residual sugar
-pSugarHist <- ggplot(data=wineData, aes(x=residual.sugar)) + 
-  geom_histogram(binwidth = 0.1)
+ggplot(data=wineData, aes(x=residual.sugar)) + 
+  geom_histogram(bins=20)
+```
 
-pSugarHistScaled <- ggplot(data=wineData, aes(x=residual.sugar)) + 
-  geom_histogram(binwidth = 0.01) + 
+```{r echo=FALSE}
+# histogram of log-transformed residual sugar
+ggplot(data=wineData, aes(x=residual.sugar)) + 
+  geom_histogram(bins=20) + 
   scale_x_log10()
-
-grid.arrange(pSugarHist, pSugarHistScaled, ncol=1)
 ```
 
 ```{r echo=FALSE}
@@ -175,7 +189,7 @@ ggplot(data=wineData, aes(x='residual sugar', y=residual.sugar)) +
 summary(wineData$residual.sugar)
 ```
 
-The residual sugar contributes to the sweetness of wine. I create an original histogram and a log-tranformed one to better observe it. Most of the wines contains residual sugar between 1 $g/dm^3$ and 10 $g/dm^3$, but some outliers exist. The boxplot indicates that median is around 5 and outliers have residual sugar more than 20 $g/dm^3$, some even has more than 60 $g/dm^3$, that's too sweet.
+The residual sugar contributes to the sweetness of wine. Because the histogram is right-skewed, I create a log-tranformed one to better observe it. Most of the wines contains residual sugar between 1 $g/dm^3$ and 10 $g/dm^3$, the log-transformed one looks bimodal, it has two peaks around 2 $g/dm^3$ and 9 $g/dm^3$ respectively, and some outliers exist. The boxplot indicates that median is around 5 and outliers have residual sugar more than 20 $g/dm^3$, some even has more than 60 $g/dm^3$, that's too sweet.
 
 
 ```{r echo=FALSE}
@@ -194,7 +208,7 @@ Most of wines are dry or medium dry, there are 825 wines of medium, and only 1 w
 ```{r echo=FALSE}
 # histogram of chlorides
 ggplot(data=wineData, aes(x=chlorides)) + 
-  geom_histogram(binwidth = 0.001)
+  geom_histogram(bins=30)
 ```
 
 ```{r echo=FALSE}
@@ -208,24 +222,24 @@ ggplot(data=wineData, aes(x='chlorides', y=chlorides)) +
 summary(wineData$chlorides)
 ```
 
-Chlorides is the amount of salt in wine. Most wines have chlorides between 0.025 and 0.0755 $g/dm^3$. The boxplot indicates that there are many outliers existed, the maximum value is 0.346 $g/dm^3$, but the variation in chlorides is small. Will a too-salty wine tastes bad? I will exlore it later on.
+Chlorides is the amount of salt in wine. Most wines have chlorides between 0.03 and 0.06 $g/dm^3$. The boxplot indicates that there are many outliers existed, the maximum value is 0.346 $g/dm^3$, but the variation in chlorides is small. Will a too-salty wine tastes bad? I will exlore it later on.
 
 ```{r echo=FALSE}
 # histogram of free sulfur dioxide
 ggplot(data=wineData, aes(x=free.sulfur.dioxide)) + 
-  geom_histogram(binwidth = 1)
+  geom_histogram(bins=20)
 ```
 
 ```{r echo=FALSE}
 # histogram of bound sulfur dioxide
 ggplot(data=wineData, aes(x=bound.sulfur.dioxide)) + 
-  geom_histogram(binwidth = 1)
+  geom_histogram(bins=20)
 ```
 
 ```{r echo=FALSE}
 # histogram of sulphates
 ggplot(data=wineData, aes(x=sulphates)) + 
-  geom_histogram(binwidth = 0.01)
+  geom_histogram(bins=20)
 ```
 
 ```{r echo=FALSE}
@@ -233,12 +247,12 @@ ggplot(data=wineData, aes(x=sulphates)) +
 summary(select(wineData, free.sulfur.dioxide, bound.sulfur.dioxide, sulphates))
 ```
 
-Sulfur dioxide can prevent microbial growth and oxidation of wine. But it is somewhat harmful so the amount has to be limited. Most wines have free sulfur dioxide below 50 $mg/dm^3$, and bound sulfur dioxide one between 50 and 150 $mg/dm^3$. The maximum values of free and bound sulfur dioxide is 289 and 331 respectively, maybe this is a factor that affects the quality. Sulphates is an additive that can keep sulfur dioxide levels, most wines have between 0.4 and 0.6 $g/dm^3$.
+Sulfur dioxide can prevent microbial growth and oxidation of wine. But it is somewhat harmful so the amount has to be limited. Most wines have free sulfur dioxide between 8 $mg/dm^3$ and 50 $mg/dm^3$, and bound sulfur dioxide dioxide between 70 and 150 $mg/dm^3$. The maximum values of free and bound sulfur dioxide is 289 and 331 respectively. Sulphates is an additive that can keep sulfur dioxide levels, most wines have between 0.35 and 0.6 $g/dm^3$.
 
 ```{r echo=FALSE}
 # histogram of density
 ggplot(data=wineData, aes(x=density)) + 
-  geom_histogram(binwidth = 0.0001)
+  geom_histogram(bins=20)
 ```
 
 ```{r echo=FALSE}
@@ -246,12 +260,12 @@ ggplot(data=wineData, aes(x=density)) +
 summary(wineData$density)
 ```
 
-Most wine has a density around 1.00 $g/cm^3$.
+Most wine has a density between 0.99 $g/cm^3$ and 1.00 $g/cm^3$.
 
 ```{r echo=FALSE}
 # histogram of pH
 ggplot(data=wineData, aes(x=pH)) + 
-  geom_histogram(binwidth = 0.01)
+  geom_histogram(bins=20)
 ```
 
 ```{r echo=FALSE}
@@ -264,13 +278,7 @@ All the wine is naturally acidic. And most of them are in pH 3.0-3.3; minimum 2.
 ```{r echo=FALSE}
 # histograms of alcohol
 ggplot(data=wineData, aes(x=alcohol)) + 
-  geom_histogram(binwidth = 0.1)
-```
-
-```{r echo=FALSE}
-# histograms of alcohol
-ggplot(data=wineData, aes(x=alcohol)) + 
-  geom_histogram(binwidth = 0.01)
+  geom_histogram(bins=20)
 ```
 
 ```{r echo=FALSE}
@@ -807,8 +815,8 @@ ggplot(data=wineData, aes(x=residual.sugar, color=quality_level)) +
   geom_density() + 
   scale_color_brewer(palette='Blues') +
   labs(title='Distribution of residual sugar under different quality levels', 
-       x='Residual sugar', 
-       y='Density') +
+       x='Residual sugar (g / dm^3)', 
+       y='Density (g / cm^3)') +
   theme(panel.background=element_rect(fill='dark gray'))
 ```
 
@@ -825,8 +833,8 @@ ggplot(data=subset(wineData,
        aes(x=residual.sugar, y=density, color=alcohol, shape=bound.sulfur.level)) + 
   geom_jitter(alpha=.5) + facet_wrap(~quality_level, nrow=3) +
   labs(title='Scatterplot between residual sugar and density clustered by quality level',
-       x='Residual sugar', 
-       y='Density')
+       x='Residual sugar (g / dm^3)', 
+       y='Density (g / cm^3)')
 ```
 
 ### Description Three
@@ -843,3 +851,5 @@ I begin my exploration by investigating indiviual variables, trying to figure ou
 Then I create a correlation and scatterplots matrix to see if there are some correlations between variables. I was surprised at the beginning that there's no strong correlations between quality and other chemicals, only to find some small correlations with density and alcohol. But density do correlates with residual sugar and alcohol strongly, with bound sulfur dioxide moderately, so I investigate some related variables with quality levels. Then I explore the relathionships between the two categorical variables by mosaic plot, finding that sugar level correlates with quality level to some extent. This is an important clue for further exploration.
 
 Because quality correlates with density and alcohol small, and density correlates with alcohol and residual sugar strongly, with bound sulphur dioxide moderately, I focus on these features in multivariate section. At first I take a look at kernel density plot of residual sugar under different quality levels. Secondly, I investigate residual sugar and citric acid, which may add freshness and flavor to wines, under different quality levels too. At last, I try to create a model to predict density by alcohol or residual sugar alone, assessing the model in different quality levels only to find that it is not very ideal. Then I realize that only one or two features are not enough, so I take related 3 features into account and finally get a better model which is able to account for 91.45% of the variance in density, and a 94.03% under high quality level. One major limitation is that this model becomes worse when it comes to low and medium level, but can still explain about 89%.
+
+One of the limitations of the dataset is that it is too small to have only 4898 observations. Maybe with a much larger dataset we can find more interesting things or stronger correlations. And when the number of variables becomes larger and larger, it is difficult to find the inner relationships by just doing data analysis, maybe we need some advanced techniques such as machine learning(even deep learning). So the future work includes collecting more data and more variables, finding another dataset about red wines and then doing a joint analysis, or applying some machine learning techniques to help us figure out deeply hidden patterns and so on.
