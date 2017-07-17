@@ -3,6 +3,10 @@ Wine Exploration Data Analysis
 
 I choose the white wine dataset to perform exploration data analysis. This dataset contains quality and chemical compositions for 4898 white wine. 
 
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE, echo=FALSE)
+```
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
 # Load all of the packages that you end up using
 # in your analysis in this code chunk.
@@ -330,24 +334,24 @@ Density and alcohol correlate with quality. I'd like to take a look at scatter p
 
 ```{r echo=FALSE}
 # scatterplot of density and quality
-ggplot(data=wineData, aes(x=density, y=quality)) + 
-  geom_point()
+ggplot(data=wineData, aes(x=factor(quality), y=density)) + 
+  geom_jitter(alpha=0.05) +
+  geom_boxplot(alpha=0.5) + 
+  coord_cartesian(ylim=c(0.97, 1.05))
 ```
 
 ```{r echo=FALSE}
-# scatterplot about density and quality, adding jitter and alpha and limit the x axis to make it better
-ggplot(data=wineData, aes(x=density, y=quality)) + 
-  geom_jitter(alpha=0.02) + 
-  scale_x_continuous(limits = c(0.95, 1.05)) + 
-  geom_smooth(color='red', se=FALSE, method='lm')
+# summary of density across qualities
+by(wineData$density, wineData$quality, summary)
 ```
 
-The horizontal lines indicate quality values are all integers. After adding jitter, transparency, lineary smooth and changing the y limits, it shows a small and negative correlation between density and quality.
+The vertical lines indicate quality values are all integers. After adding jitter, alpha and zooming the y limits, it shows that most wines' density are around 1.00 $g/cm^3$, median and variation don't change very much.
 
 ```{r echo=FALSE}
 # boxplots about density across quality levels
 ggplot(data=wineData, aes(x=quality_level, y=density)) + 
-  geom_boxplot() + 
+  geom_jitter(alpha=0.05) + 
+  geom_boxplot(alpha=0.5) + 
   xlab('quality levels')
 ```
 
@@ -359,33 +363,20 @@ by(wineData$density, wineData$quality_level, summary)
 The density median decreases as the quality level improves, and the variations are all very small. Wines of high quality level tends to have more outliers than the others. Density of wines is very close to 1.00 $g/cm^3$.
 
 ```{r echo=FALSE}
-# scatterplot about alcohol and quality
-ggplot(data=wineData, aes(x=alcohol, y=quality)) + 
-  geom_point()
-```
-
-```{r echo=FALSE}
 # add jitter and alpha to make it better
-ggplot(data=wineData, aes(x=alcohol, y=quality)) + 
+ggplot(data=wineData, aes(x=factor(quality), y=alcohol)) + 
   geom_jitter(alpha=0.05) + 
-  geom_smooth(se=FALSE, method='lm', color='red')
+  geom_boxplot(alpha=0.5) +
+  coord_cartesian(ylim=c(8, 14.5))
 ```
 
-Similarly, After adding jitter, transparency and linear smooth, it shows a small and positive correlation between alcohol and quality. Next I'll investigate alcohol across different quality levels.
-
-```{r echo=FALSE}
-# scatterplot of alcohol and density, jitter and alpha added
-ggplot(data=wineData, aes(x=alcohol, y=density)) + 
-  geom_jitter(alpha=0.05) + 
-  geom_smooth(se=FALSE, method='lm', color='red')
-```
-
-Alcohol correlates with density strongly, and the plot looks quite linear.
+Similarly, After adding jitter, alpha and zooming the y limits, it shows that wines of quality 6 and 7 tend to have larger variations than others. Wines of best quality tend to have largest median and smallest variation. Next I'll investigate alcohol across different quality levels.
 
 ```{r echo=FALSE}
 # boxplots about alcohol across quality levels
 ggplot(data=wineData, aes(x=quality_level, y=alcohol)) + 
-  geom_boxplot() + 
+  geom_jitter(alpha=0.05) +
+  geom_boxplot(alpha=0.5) + 
   xlab('quality levels')
 ```
 
@@ -397,10 +388,13 @@ by(wineData$alcohol, wineData$quality_level, summary)
 Low level wines have many outliers. And the alcohol median increases as the quality level improves. Wines of medium level have the biggest variation in alcohol and wines of low level have the smallest.
 
 ```{r echo=FALSE}
-# scatterplot of fixed acidity and pH
-ggplot(data=wineData, aes(x=fixed.acidity, y=pH)) + 
-  geom_point()
+# scatterplot of alcohol and density, jitter and alpha added
+ggplot(data=wineData, aes(x=alcohol, y=density)) + 
+  geom_jitter(alpha=0.05) + 
+  geom_smooth(se=FALSE, method='lm', color='red')
 ```
+
+Alcohol correlates with density strongly, and the plot looks quite linear.
 
 ```{r echo=FALSE}
 # add jitter and alpha to make it better
@@ -414,7 +408,8 @@ It is not surprising that fixed acidity correlates with pH, and after dealing wi
 ```{r echo=FALSE}
 # boxplots about fixed acidity across quality levels
 ggplot(data=wineData, aes(x=quality_level, y=fixed.acidity)) + 
-  geom_boxplot() + 
+  geom_jitter(alpha=0.05) +
+  geom_boxplot(alpha=0.5) + 
   xlab('quality levels')
 ```
 
@@ -423,12 +418,13 @@ ggplot(data=wineData, aes(x=quality_level, y=fixed.acidity)) +
 by(wineData$fixed.acidity, wineData$quality_level, summary)
 ```
 
-The higher the quality level, the less the outliers. Both the median and variation remain approximately the same across quality levels.
+The higher the quality level, the less the outliers. Both the median and variation remain approximately the same across quality levels. It shows that content of fixed acidity in wines is stable.
 
 ```{r echo=FALSE}
 # boxplots about volatile acidity across quality levels
 ggplot(data=wineData, aes(x=quality_level, y=volatile.acidity)) + 
-  geom_boxplot() + 
+  geom_jitter(alpha=0.05) +
+  geom_boxplot(alpha=0.5) + 
   xlab('quality levels')
 ```
 
@@ -442,7 +438,8 @@ A too high of levels of volatile acidity could lead to unpleasant taste, and thi
 ```{r echo=FALSE}
 # boxplots about citric acid across quality levels
 ggplot(data=wineData, aes(x=quality_level, y=citric.acid)) + 
-  geom_boxplot() + 
+  geom_jitter(alpha=0.05) +
+  geom_boxplot(alpha=0.5) + 
   xlab('quality levels')
 ```
 
@@ -458,7 +455,8 @@ So after analyzing three different acidities, what is pH value like across quali
 ```{r echo=FALSE}
 # boxplots about pH across quality levels
 ggplot(data=wineData, aes(x=quality_level, y=pH)) + 
-  geom_boxplot() + 
+  geom_jitter(alpha=0.05) +
+  geom_boxplot(alpha=0.5) + 
   xlab('quality levels')
 ```
 
@@ -474,7 +472,8 @@ Although they show no correlation with quality, but I still want to investigate 
 ```{r echo=FALSE}
 # boxplots about free sulfur dioxide across quality levels
 ggplot(data=wineData, aes(x=quality_level, y=free.sulfur.dioxide)) + 
-  geom_boxplot() + 
+  geom_jitter(alpha=0.05) +
+  geom_boxplot(alpha=0.5) + 
   xlab('quality levels')
 ```
 
@@ -488,7 +487,8 @@ As the quality level improves, the median decreases slightly and the variation d
 ```{r echo=FALSE}
 # boxplots about bound sulfur dioxide across quality levels
 ggplot(data=wineData, aes(x=quality_level, y=bound.sulfur.dioxide)) + 
-  geom_boxplot() + 
+  geom_jitter(alpha=0.05) +
+  geom_boxplot(alpha=0.5) + 
   xlab('quality levels')
 ```
 
@@ -502,7 +502,8 @@ The median decreases as the quality level improves. And wines of high quality le
 ```{r echo=FALSE}
 # boxplots about sulphates across quality levels
 ggplot(data=wineData, aes(x=quality_level, y=sulphates)) + 
-  geom_boxplot() + 
+  geom_jitter(alpha=0.05) +
+  geom_boxplot(alpha=0.5) + 
   xlab('quality levels')
 ```
 
@@ -528,7 +529,10 @@ The relationship looks quite linear. Now it's time to analyze residual sugar acr
 
 ```{r echo=FALSE}
 # boxplots about residual sugar across quality levels
-ggplot(data=wineData, aes(x=quality_level, y=residual.sugar)) + geom_boxplot() + xlab('quality levels')
+ggplot(data=wineData, aes(x=quality_level, y=residual.sugar)) + 
+  geom_jitter(alpha=0.05) +
+  geom_boxplot(alpha=0.5) + 
+  xlab('quality levels')
 ```
 
 ```{r echo=FALSE}
@@ -547,7 +551,10 @@ From the mosaic plot we can confirm that quality levels do correlate with sugar 
 
 ```{r echo=FALSE}
 # boxplots about chlorides across quality levels
-ggplot(data=wineData, aes(x=quality_level, y=chlorides)) + geom_boxplot() + xlab('quality levels')
+ggplot(data=wineData, aes(x=quality_level, y=chlorides)) + 
+  geom_jitter(alpha=0.05) +
+  geom_boxplot(alpha=0.5) + 
+  xlab('quality levels')
 ```
 
 ```{r echo=FALSE}
@@ -555,7 +562,7 @@ ggplot(data=wineData, aes(x=quality_level, y=chlorides)) + geom_boxplot() + xlab
 by(wineData$chlorides, wineData$quality_level, summary)
 ```
 
-The variation in chlorides remains the same, but the median decreases as the quality level improves, all three levels have outliers but high quality level is less than the others.
+The variation in chlorides remains the same, but the median decreases as the quality level improves, all three levels have outliers but high quality level is less than the others. The higher the quality level, the less salty the wines are.
 
 # Bivariate Analysis
 
@@ -594,14 +601,17 @@ And if we want a better linear regression model between residual sugar and densi
 
 ```{r echo=FALSE}
 # kernel density plot of residual sugar across quality levels
-ggplot(data=wineData, aes(x=residual.sugar, color=quality_level)) + geom_density()
+ggplot(data=wineData, aes(x=residual.sugar, color=quality_level)) + 
+  geom_density()
 ```
 
 The kernel density plot shows the distributions of residual sugar under different quality levels. The higher the quality level, the more the residual sugar is limited within 10 $g/dm^3$.
 
 ```{r echo=FALSE}
 # scatterplots about residual sugar and citric acide across quality levels
-ggplot(data=wineData, aes(x=residual.sugar, y=citric.acid)) + geom_jitter(alpha=0.05) + facet_wrap(~quality_level, nrow=3)
+ggplot(data=wineData, aes(x=residual.sugar, y=citric.acid)) + 
+  geom_jitter(alpha=0.05) + 
+  facet_wrap(~quality_level, nrow=3)
 ```
 
 Comparing with other levels, wines of high quality level tends to have conservative residual sugar and citric acid, the corresponding plot looks more centric: residual sugar is limited within 20 $g/dm^3$ and most citric acid within 0.5 $g/dm^3$.
