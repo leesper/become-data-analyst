@@ -29,8 +29,6 @@ features_list = [
 'salary',
 'shared_receipt_with_poi',
 'to_messages',
-'total_payments',
-'total_stock_value',
 ] # You will need to use more features
 
 ### Load the dictionary containing the dataset
@@ -40,12 +38,27 @@ with open("final_project_dataset.pkl", "r") as data_file:
 ### Task 2: Remove outliers
 data_dict.pop('TOTAL', 0)
 ### Task 3: Create new feature(s)
+# TODO: try to find some advanced features from email data
+for k in data_dict.keys():
+    from_this_person_to_poi = data_dict[k]['from_this_person_to_poi']
+    from_messages = data_dict[k]['from_messages']
+    from_poi_to_this_person = data_dict[k]['from_poi_to_this_person']
+    to_messages = data_dict[k]['to_messages']
+    shared_receipt_with_poi = data_dict[k]['shared_receipt_with_poi']
+    data_dict[k]['from_this_person_to_poi_ratio'] =  from_this_person_to_poi * 1.0 / from_messages if from_this_person_to_poi != 'NaN' and from_messages != 'NaN' else 'NaN'
+    data_dict[k]['from_poi_to_this_person_ratio'] =  from_poi_to_this_person * 1.0 / to_messages if from_poi_to_this_person != 'NaN' and to_messages != 'NaN' else 'NaN'
+    data_dict[k]['shared_receipt_with_poi_ratio'] = shared_receipt_with_poi * 1.0 / to_messages if shared_receipt_with_poi != 'NaN' and to_messages != 'NaN' else 'NaN'
+
 ### Store to my_dataset for easy export below.
 my_dataset = data_dict
+features_list.append('from_this_person_to_poi_ratio')
+features_list.append('from_poi_to_this_person_ratio')
+features_list.append('shared_receipt_with_poi_ratio')
 
 ### Extract features and labels from dataset for local testing
 data = featureFormat(my_dataset, features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
+#TODO : some feature selection operation
 
 ### Task 4: Try a varity of classifiers
 ### Please name your classifier clf for easy export below.
