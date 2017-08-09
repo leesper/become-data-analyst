@@ -23,6 +23,3 @@ for point in data:
 matplotlib.pyplot.xlabel("salary")
 matplotlib.pyplot.ylabel("bonus")
 matplotlib.pyplot.show()
-
-
-
