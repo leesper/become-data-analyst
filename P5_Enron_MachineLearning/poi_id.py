@@ -56,6 +56,8 @@ features_list.append('from_poi_to_this_person_ratio')
 ### Extract features and labels from dataset for local testing
 data = featureFormat(my_dataset, features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
+
+# FIXME
 # get the scores of features based on SelectKBest
 from sklearn.feature_selection import f_classif
 from sklearn.feature_selection import SelectKBest
@@ -78,8 +80,19 @@ labels, features = targetFeatureSplit(data)
 ### http://scikit-learn.org/stable/modules/pipeline.html
 
 # Provided to give you a starting point. Try a variety of classifiers.
+# from sklearn.naive_bayes import GaussianNB
+# clf = GaussianNB()
+from sklearn.decomposition import PCA
+from sklearn.feature_selection import SelectKBest
+from sklearn.pipeline import Pipeline
 from sklearn.naive_bayes import GaussianNB
-clf = GaussianNB()
+from sklearn.model_selection import GridSearchCV
+
+pipeline = Pipeline([("pca", PCA()), ("gaussian", GaussianNB())])
+param_grid = dict(pca__n_components=range(1, len(features_list)))
+clf = GridSearchCV(pipeline, param_grid=param_grid)
+clf.fit(features, labels)
+print 'best', clf.best_params_
 
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall
 ### using our testing script. Check the tester.py script in the final project
