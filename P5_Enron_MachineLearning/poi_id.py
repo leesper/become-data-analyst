@@ -88,11 +88,20 @@ from sklearn.pipeline import Pipeline
 from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import GridSearchCV
 
-pipeline = Pipeline([("pca", PCA()), ("gaussian", GaussianNB())])
-param_grid = dict(pca__n_components=range(1, len(features_list)))
-clf = GridSearchCV(pipeline, param_grid=param_grid)
-clf.fit(features, labels)
-print 'best', clf.best_params_
+algorithms = [
+    {
+        "clf": ("gaussian", GaussianNB()),
+        "params": None,
+    }
+]
+for a in algorithms:
+    pipeline = Pipeline([("pca", PCA()), a["clf"]])
+    param_grid = dict(pca__n_components=[1, 3, 5, 7, 9])
+    if a["params"] is not None:
+        param_grid.update(a["params"])
+    clf = GridSearchCV(pipeline, param_grid=param_grid)
+    clf.fit(features, labels)
+    print 'best', clf.best_params_
 
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall
 ### using our testing script. Check the tester.py script in the final project
