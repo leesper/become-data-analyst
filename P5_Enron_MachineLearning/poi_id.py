@@ -56,7 +56,20 @@ features_list.append('from_poi_to_this_person_ratio')
 ### Extract features and labels from dataset for local testing
 data = featureFormat(my_dataset, features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
-#TODO : some feature selection operation
+# get the scores of features based on SelectKBest
+from sklearn.feature_selection import f_classif
+from sklearn.feature_selection import SelectKBest
+selector = SelectKBest(f_classif, k='all')
+selector.fit(features, labels)
+score_feature = zip(selector.scores_, features_list[1:])
+features_list = ['poi']
+for t in sorted(score_feature, key=lambda x: x[0], reverse=True):
+    if t[0] >= 2.0:
+        features_list.append(t[1])
+# get rid of features scored lower than 2.0 by SelectKBest
+# (to_messages, deferral_payments, from_messages, restricted_stock_deferred)
+data = featureFormat(my_dataset, features_list, sort_keys = True)
+labels, features = targetFeatureSplit(data)
 
 ### Task 4: Try a varity of classifiers
 ### Please name your classifier clf for easy export below.
