@@ -29,7 +29,7 @@ features_list = [
 'salary',
 'shared_receipt_with_poi',
 'to_messages',
-] # You will need to use more features
+] # total_stock_value and total_payments are strongly related with others, so remove them
 
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
@@ -38,7 +38,6 @@ with open("final_project_dataset.pkl", "r") as data_file:
 ### Task 2: Remove outliers
 data_dict.pop('TOTAL', 0)
 ### Task 3: Create new feature(s)
-# TODO: try to find some advanced features from email data
 for k in data_dict.keys():
     from_this_person_to_poi = data_dict[k]['from_this_person_to_poi']
     from_messages = data_dict[k]['from_messages']
@@ -57,8 +56,8 @@ features_list.append('from_poi_to_this_person_ratio')
 data = featureFormat(my_dataset, features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
 
-# FIXME
-# get the scores of features based on SelectKBest
+# get rid of features scored lower than 2.0 by SelectKBest:
+# (to_messages, deferral_payments, from_messages, restricted_stock_deferred)
 from sklearn.feature_selection import f_classif
 from sklearn.feature_selection import SelectKBest
 selector = SelectKBest(f_classif, k='all')
@@ -68,10 +67,6 @@ features_list = ['poi']
 for t in sorted(score_feature, key=lambda x: x[0], reverse=True):
     if t[0] >= 2.0:
         features_list.append(t[1])
-# get rid of features scored lower than 2.0 by SelectKBest
-# (to_messages, deferral_payments, from_messages, restricted_stock_deferred)
-data = featureFormat(my_dataset, features_list, sort_keys = True)
-labels, features = targetFeatureSplit(data)
 
 ### Task 4: Try a varity of classifiers
 ### Please name your classifier clf for easy export below.
@@ -87,21 +82,32 @@ from sklearn.feature_selection import SelectKBest
 from sklearn.pipeline import Pipeline
 from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import GridSearchCV
+from sklearn.cross_validation import train_test_split
+from tester import test_classifier
 
-algorithms = [
-    {
-        "clf": ("gaussian", GaussianNB()),
-        "params": None,
-    }
+classifiers = [
+    GridSearchCV(GaussianNB(), param_grid=dict()),
 ]
-for a in algorithms:
-    pipeline = Pipeline([("pca", PCA()), a["clf"]])
-    param_grid = dict(pca__n_components=[1, 3, 5, 7, 9])
-    if a["params"] is not None:
-        param_grid.update(a["params"])
-    clf = GridSearchCV(pipeline, param_grid=param_grid)
-    clf.fit(features, labels)
-    print 'best', clf.best_params_
+
+for i in range(2, len(features_list)+1):
+    sub_features_list = features_list[:i]
+    sub_data = featureFormat(my_dataset, sub_features_list, sort_keys = True)
+    sub_labels, sub_features = targetFeatureSplit(sub_data)
+    sub_features_train, sub_features_test, sub_labels_train, sub_labels_test = \
+        train_test_split(features, labels, test_size=0.3, random_state=42)
+    for sub_clf in classifiers:
+        sub_clf.fit(sub_features_train, sub_labels_train)
+        test_classifier(sub_clf, my_dataset, sub_features_list)
+
+
+# for a in algorithms:
+#     pipeline = Pipeline([("pca", PCA()), a["clf"]])
+#     param_grid = dict(pca__n_components=[1, 3, 5, 7, 9])
+#     if a["params"] is not None:
+#         param_grid.update(a["params"])
+#     clf = GridSearchCV(pipeline, param_grid=param_grid)
+#     clf.fit(features, labels)
+#     print 'best', clf.best_params_
 
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall
 ### using our testing script. Check the tester.py script in the final project
@@ -111,9 +117,9 @@ for a in algorithms:
 ### http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
 
 # Example starting point. Try investigating other evaluation techniques!
-from sklearn.cross_validation import train_test_split
-features_train, features_test, labels_train, labels_test = \
-    train_test_split(features, labels, test_size=0.3, random_state=42)
+# from sklearn.cross_validation import train_test_split
+# features_train, features_test, labels_train, labels_test = \
+#     train_test_split(features, labels, test_size=0.3, random_state=42)
 
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
 ### check your results. You do not need to change anything below, but make sure
