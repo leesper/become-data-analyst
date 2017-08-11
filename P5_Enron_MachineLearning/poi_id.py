@@ -56,17 +56,37 @@ features_list.append('from_poi_to_this_person_ratio')
 data = featureFormat(my_dataset, features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
 
-# get rid of features scored lower than 2.0 by SelectKBest:
-# (to_messages, deferral_payments, from_messages, restricted_stock_deferred)
+# split into multiple training and test sets, do SelectKBest on them,
+# retain features with average score bigger than 3.0
 from sklearn.feature_selection import f_classif
 from sklearn.feature_selection import SelectKBest
-selector = SelectKBest(f_classif, k='all')
-selector.fit(features, labels)
-score_feature = zip(selector.scores_, features_list[1:])
+from sklearn.model_selection import StratifiedShuffleSplit
+
+feature_scores = dict()
+for feature_name in features_list[1:]:
+    feature_scores[feature_name] = []
+
+sss = StratifiedShuffleSplit(n_splits=1000, test_size=0.3, random_state=42)
+for train_index, test_index in sss.split(features, labels):
+    features_train = []
+    labels_train = []
+    for ii in train_index:
+        features_train.append(features[ii])
+        labels_train.append(labels[ii])
+
+    selector = SelectKBest(f_classif, k='all')
+    selector.fit(features_train, labels_train)
+    feature_score = zip(features_list[1:], selector.scores_)
+    for t in feature_score:
+        feature_scores[t[0]].append(t[1])
+
+# calculate average scores
+for k in feature_scores.keys():
+    feature_scores[k] = sum(feature_scores[k])/len(feature_scores[k])
 features_list = ['poi']
-for t in sorted(score_feature, key=lambda x: x[0], reverse=True):
-    if t[0] >= 2.0:
-        features_list.append(t[1])
+for k in feature_scores.keys():
+    if feature_scores[k] > 3.0:
+        features_list.append(k)
 
 ### Task 4: Try a varity of classifiers
 ### Please name your classifier clf for easy export below.
@@ -87,18 +107,8 @@ from tester import test_classifier
 
 classifiers = [
     GridSearchCV(GaussianNB(), param_grid=dict()),
+    # GridSearchCV(Pipeline([("pca", PCA()), ("classifier", GaussianNB())]), param_grid=dict(pca__n_components=range(1, len(features_list)))),
 ]
-
-for i in range(2, len(features_list)+1):
-    sub_features_list = features_list[:i]
-    sub_data = featureFormat(my_dataset, sub_features_list, sort_keys = True)
-    sub_labels, sub_features = targetFeatureSplit(sub_data)
-    sub_features_train, sub_features_test, sub_labels_train, sub_labels_test = \
-        train_test_split(features, labels, test_size=0.3, random_state=42)
-    for sub_clf in classifiers:
-        sub_clf.fit(sub_features_train, sub_labels_train)
-        test_classifier(sub_clf, my_dataset, sub_features_list)
-
 
 # for a in algorithms:
 #     pipeline = Pipeline([("pca", PCA()), a["clf"]])
@@ -116,14 +126,67 @@ for i in range(2, len(features_list)+1):
 ### stratified shuffle split cross validation. For more info:
 ### http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
 
-# Example starting point. Try investigating other evaluation techniques!
-# from sklearn.cross_validation import train_test_split
-# features_train, features_test, labels_train, labels_test = \
-#     train_test_split(features, labels, test_size=0.3, random_state=42)
+# modified from test_classifier, I only need the f1 score :)
+def calculate_f1_score(clf, dataset, feature_list, folds = 1000):
+    data = featureFormat(dataset, feature_list, sort_keys = True)
+    labels, features = targetFeatureSplit(data)
+    sss = StratifiedShuffleSplit(folds, random_state=42)
+    true_negatives = 0
+    false_negatives = 0
+    true_positives = 0
+    false_positives = 0
+    for train_idx, test_idx in sss.split(features, labels):
+        features_train = []
+        features_test  = []
+        labels_train   = []
+        labels_test    = []
+        for ii in train_idx:
+            features_train.append( features[ii] )
+            labels_train.append( labels[ii] )
+        for jj in test_idx:
+            features_test.append( features[jj] )
+            labels_test.append( labels[jj] )
+
+        ### fit the classifier using training set, and test on test set
+        clf.fit(features_train, labels_train)
+        predictions = clf.predict(features_test)
+        for prediction, truth in zip(predictions, labels_test):
+            if prediction == 0 and truth == 0:
+                true_negatives += 1
+            elif prediction == 0 and truth == 1:
+                false_negatives += 1
+            elif prediction == 1 and truth == 0:
+                false_positives += 1
+            elif prediction == 1 and truth == 1:
+                true_positives += 1
+            else:
+                print "Warning: Found a predicted label not == 0 or 1."
+                print "All predictions should take value 0 or 1."
+                print "Evaluating performance for processed predictions:"
+                break
+    f1 = 2.0 * true_positives/(2*true_positives + false_positives+false_negatives)
+    return f1
+
+clf = None
+best_f1_score = -1.0
+best_features_list = None
+for i in range(2, len(features_list)+1):
+    sub_features_list = features_list[:i]
+    sub_data = featureFormat(my_dataset, sub_features_list, sort_keys = True)
+    sub_labels, sub_features = targetFeatureSplit(sub_data)
+    for sub_clf in classifiers:
+        sub_clf.fit(sub_features, sub_labels)
+        f1_score = calculate_f1_score(sub_clf, my_dataset, sub_features_list)
+        if f1_score > best_f1_score:
+            clf = sub_clf
+            best_features_list = sub_features_list
+            best_f1_score = f1_score
+
+print 'aloha', clf, best_features_list, best_f1_score
 
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
 ### check your results. You do not need to change anything below, but make sure
 ### that the version of poi_id.py that you submit can be run on its own and
 ### generates the necessary .pkl files for validating your results.
 
-dump_classifier_and_data(clf, my_dataset, features_list)
+dump_classifier_and_data(clf, my_dataset, best_features_list)
