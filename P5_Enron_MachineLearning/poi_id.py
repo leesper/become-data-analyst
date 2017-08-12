@@ -2,10 +2,36 @@
 
 import sys
 import pickle
+import warnings
+warnings.filterwarnings('ignore')
 sys.path.append("../tools/")
 
 from feature_format import featureFormat, targetFeatureSplit
 from tester import dump_classifier_and_data
+from sklearn.metrics import f1_score
+
+def estimate_classifier(clf, dataset, feature_list, folds = 1000):
+    data = featureFormat(dataset, feature_list, sort_keys = True)
+    labels, features = targetFeatureSplit(data)
+    sss = StratifiedShuffleSplit(n_splits=1000, random_state=42)
+    cv_f1_scores = []
+    for train_idx, test_idx in sss.split(features, labels):
+        features_train = []
+        features_test  = []
+        labels_train   = []
+        labels_test    = []
+        for ii in train_idx:
+            features_train.append( features[ii] )
+            labels_train.append( labels[ii] )
+        for jj in test_idx:
+            features_test.append( features[jj] )
+            labels_test.append( labels[jj] )
+
+        ### fit the classifier using training set, and test on test set
+        clf.fit(features_train, labels_train)
+        predictions = clf.predict(features_test)
+        cv_f1_scores.append(f1_score(predictions, labels_test))
+    return np.mean(cv_f1_scores)
 
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
@@ -85,7 +111,7 @@ for k in feature_scores.keys():
     feature_scores[k] = sum(feature_scores[k])/len(feature_scores[k])
 features_list = ['poi']
 for k in feature_scores.keys():
-    if feature_scores[k] > 3.0:
+    if feature_scores[k] >= 2.0:
         features_list.append(k)
 
 ### Task 4: Try a varity of classifiers
@@ -102,20 +128,39 @@ from sklearn.feature_selection import SelectKBest
 from sklearn.pipeline import Pipeline
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.cross_validation import train_test_split
 from sklearn.preprocessing import StandardScaler
+import numpy as np
 
-gaussianGSCV = GridSearchCV(Pipeline([("pca", PCA()), ("clf", GaussianNB())]),
+gaussianGSCV = GridSearchCV(Pipeline([("pca", PCA(random_state=42)), ("clf", GaussianNB())]),
                             dict(pca__n_components=[1, 2, 3, 4, 6, 8]), 'f1')
-svmGSCV = GridSearchCV(Pipeline([("scaler", StandardScaler()), ("pca", PCA()), ("clf", SVC())]),
-                       [dict(pca__n_components=[1, 2, 3, 4, 6, 8], clf__C=[1, 10, 100, 1000], clf__kernel=['linear']),
-                       dict(pca__n_components=[1, 2, 3, 4, 6, 8], clf__C=[1, 10, 100, 1000], clf__kernel=['rbf'], clf__gamma=[0.001, 0.0001])],
+
+svmGSCV = GridSearchCV(Pipeline([("scaler", StandardScaler()), ("pca", PCA(random_state=42)), ("clf", SVC())]),
+                       [dict(pca__n_components=[1, 2, 3, 4, 6, 8], clf__C=np.logspace(-2, 3, 6), clf__kernel=['sigmoid'], clf__class_weight=['balanced'], clf__gamma=np.logspace(-4, 1, 6)),
+                       dict(pca__n_components=[1, 2, 3, 4, 6, 8], clf__C=np.logspace(-2, 3, 6), clf__kernel=['rbf'], clf__class_weight=['balanced'], clf__gamma=np.logspace(-4, 1, 6))],
                        'f1')
+
+dtGSCV = GridSearchCV(Pipeline([("pca", PCA(random_state=42)), ("clf", DecisionTreeClassifier())]),
+                      dict(pca__n_components=[1, 2, 3, 4, 6, 8],
+                      clf__criterion=['gini', 'entropy'],
+                      clf__splitter=['best', 'random'],
+                      clf__min_samples_split=[2, 3, 4, 5],
+                      clf__random_state=[0, 42]), 'f1')
+
+adaGSCV = GridSearchCV(Pipeline([("pca", PCA(random_state=42)), ("clf", (AdaBoostClassifier(DecisionTreeClassifier(max_depth=1))))]),
+                       dict(pca__n_components=[1, 2, 3, 4, 6, 8],
+                       clf__algorithm=['SAMME', 'SAMME.R'],
+                       clf__n_estimators=[10, 20, 40, 50, 100, 120, 150, 180, 200, 300]), 'f1')
 
 classifiers = [
     gaussianGSCV,
     svmGSCV,
+    dtGSCV,
+    adaGSCV,
 ]
 
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall
@@ -126,21 +171,21 @@ classifiers = [
 ### http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
 
 best_clf = None
-best_features_list = None
 best_f1_score = -1.0
 for clf in classifiers:
     clf.fit(features, labels)
-    f1_score = clf.best_score_
-    if f1_score > best_f1_score:
+    f1 = estimate_classifier(clf.best_estimator_, my_dataset, features_list)
+    if f1 > best_f1_score:
         best_clf = clf
-        best_features_list = features_list
-        best_f1_score = f1_score
+        best_f1_score = f1
+    print('estimator: {}, f1 score: {}'.format(clf.best_estimator_, f1))
+    print
 
-print('best estimator {} with score {}'.format(best_clf.best_estimator_, best_clf.best_score_))
+# print('best estimator {} with score {}'.format(best_clf.best_estimator_, best_clf.best_score_))
 
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
 ### check your results. You do not need to change anything below, but make sure
 ### that the version of poi_id.py that you submit can be run on its own and
 ### generates the necessary .pkl files for validating your results.
 
-dump_classifier_and_data(best_clf.best_estimator_, my_dataset, best_features_list)
+dump_classifier_and_data(best_clf.best_estimator_, my_dataset, features_list)
