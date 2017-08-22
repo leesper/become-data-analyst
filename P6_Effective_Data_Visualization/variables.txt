@@ -1,0 +1,24 @@
+AUTHOR DRIVEN:
+LoanOriginationDate
+LoanOriginationQuarter
+LoanStatus
+ListingCategory
+MonthlyLoanPayment
+BorrowerRate
+EmploymentStatus
+EmploymentStatusDuration
+PercentFunded
+DebtToIncomeRatio
+
+VIEWER DRIVEN:
+BorrowerState
+Occupation
+Investors
+StatedMonthlyIncome
+BankcardUtilization
+AvailableBankcardCredit
+
+VARIABLES NEED TO HANDLE:
+LP_CustomerPrincipalPayments|LenderYield|LoanOriginalAmount
+CreditScoreRangeLower|CreditScoreRangeUpper
+TotalProsperLoans|OnTimeProsperPayments
