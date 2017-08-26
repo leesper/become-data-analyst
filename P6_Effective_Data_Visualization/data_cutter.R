@@ -1,7 +1,7 @@
 library(dplyr)
 
 # Load original data
-originalData <- read.csv('data/prosperLoanData.csv', na.strings = c('', 'NA'))
+originalData <- read.csv('prosperLoanData.csv', na.strings = c('', 'NA'))
 
 # Calculate credit score based on average
 originalData$CreditScore <- (originalData$CreditScoreRangeLower+originalData$CreditScoreRangeUpper) / 2.0
@@ -47,4 +47,4 @@ subData <- select(originalData,
                   CreditScore,
                   YieldIndex)
 
-write.table(subData, file='prosperSubData.csv', col.names = TRUE, row.names = FALSE)
+write.table(subData, sep=',', file='prosperSubData.csv', col.names = TRUE, row.names = FALSE)
