@@ -2,65 +2,77 @@
 <html lang="en">
 
 <head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.bootcss.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
-  <title>Prosper DataVis</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.bootcss.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+    <title>Prosper DataVis</title>
 </head>
 
 <body>
-  <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js"></script>
-  <script src="https://cdn.bootcss.com/popper.js/1.11.0/umd/popper.min.js"></script>
-  <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
-  <script src="https://cdn.bootcss.com/d3/4.10.0/d3.min.js"></script>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/d3/4.10.0/d3.min.js"></script>
 
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <p class="navbar-brand">Prosper DataVis</p>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <p class="navbar-brand">Prosper DataVis</p>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="index.html">贷款用途</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="occupation.html">职业分布</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="yield.html">收益指数</a>
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link" href="explore.html">自由探索</a>
-        </li>
-      </ul>
-    </div>
-  </nav>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">贷款用途</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="occupation.html">职业分布</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="yield.html">收益指数</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="explore.html">自由探索</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
-  <script>
-    var margin = {
-      top: 20,
-      right: 10,
-      bottom: 20,
-      left: 10
-    };
-    var width = 960 - margin.left - margin.right;
-    var height = 500 - margin.top - margin.bottom;
-    var svg = d3.select("body").append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+    <script>
+        var margin = {
+            top: 20,
+            right: 10,
+            bottom: 20,
+            left: 10
+        };
+        var width = 960 - margin.left - margin.right;
+        var height = 500 - margin.top - margin.bottom;
+        var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-    d3.csv("./data/prosperSubData.csv", draw);
+        var timeParser = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
-    function draw(data) {
-      console.log(data);
-    }
-  </script>
+        function preprocess(d) {
+            d.CreditScore = +d.CreditScore;
+            d.DebtToIncomeRatio = +d.DebtToIncomeRatio;
+            d.EmploymentStatusDuration = +d.EmploymentStatusDuration;
+            d.StatedMonthlyIncome = +d.StatedMonthlyIncome;
+            d.YieldIndex = +d.YieldIndex;
+            d.LoanOriginationDate = timeParser(d.LoanOriginationDate);
+            return d;
+        }
+
+        d3.csv("./data/prosperSubData.csv", preprocess, draw);
+
+        function draw(data) {
+            console.log(data);
+        }
+    </script>
 </body>
 
 </html>

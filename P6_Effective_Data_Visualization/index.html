@@ -55,8 +55,20 @@
       .append("g")
       .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-    d3.csv("./data/prosperSubData.csv", draw);
-    
+    var timeParser = d3.timeParse("%Y-%m-%d %H:%M:%S");
+
+    function preprocess(d) {
+      d.CreditScore = +d.CreditScore;
+      d.DebtToIncomeRatio = +d.DebtToIncomeRatio;
+      d.EmploymentStatusDuration = +d.EmploymentStatusDuration;
+      d.StatedMonthlyIncome = +d.StatedMonthlyIncome;
+      d.YieldIndex = +d.YieldIndex;
+      d.LoanOriginationDate = timeParser(d.LoanOriginationDate);
+      return d;
+    }
+
+    d3.csv("./data/prosperSubData.csv", preprocess, draw);
+
     function draw(data) {
       console.log(data);
     }
