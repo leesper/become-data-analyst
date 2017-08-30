@@ -18,6 +18,7 @@
     <script src="https://cdn.bootcss.com/popper.js/1.11.0/umd/popper.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
     <script src="https://cdn.bootcss.com/d3/4.10.0/d3.min.js"></script>
+    <script src="./js/common.js"></script>
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <p class="navbar-brand">Prosper DataVis</p>
@@ -54,18 +55,6 @@
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
-
-        var timeParser = d3.timeParse("%Y-%m-%d %H:%M:%S");
-
-        function preprocess(d) {
-            d.CreditScore = +d.CreditScore;
-            d.DebtToIncomeRatio = +d.DebtToIncomeRatio;
-            d.EmploymentStatusDuration = +d.EmploymentStatusDuration;
-            d.StatedMonthlyIncome = +d.StatedMonthlyIncome;
-            d.YieldIndex = +d.YieldIndex;
-            d.LoanOriginationDate = timeParser(d.LoanOriginationDate);
-            return d;
-        }
 
         d3.csv("./data/prosperSubData.csv", preprocess, draw);
 
