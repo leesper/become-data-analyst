@@ -46,7 +46,7 @@
       top: 20,
       right: 10,
       bottom: 20,
-      left: 10
+      left: 150
     };
     var width = 960 - margin.left - margin.right;
     var height = 500 - margin.top - margin.bottom;
@@ -94,7 +94,7 @@
       calculateTotal(categoryStatus, loanStatus);
 
       categoryStatus.sort(function(a, b) {
-        return (b.Completed + b.FinalPaymentInProgress) / b.Total - (a.Completed + a.FinalPaymentInProgress) / a.Total;
+        return b.Completed / b.Total - a.Completed / a.Total;
       });
 
       y.domain(categoryStatus.map(function(d) {
@@ -129,7 +129,31 @@
           return x(d[1]) - x(d[0]);
         });
 
-      console.log(JSON.stringify(categoryStatus));
+      g.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x).ticks(10, "%"));
+
+      g.append("g")
+        .attr("class", "axis axis--y")
+        .call(d3.axisLeft(y));
+
+      var legend = series.append("g")
+        .attr("class", "legend")
+        .attr("transform", function(d) {
+          var d = d[d.length - 1];
+          return "translate(" + (y(d.data.Category) + y.bandwidth()) + "," + ((x(d[0]) + x(d[1])) / 2) + ")";
+        });
+
+      legend.append("text")
+        .attr("x", 9)
+        .attr("dy", "0.35em")
+        .attr("fill", "#000")
+        .style("font", "10px sans-serif")
+        .text(function(d) {
+          return d.key;
+        });
+      // console.log(JSON.stringify(categoryStatus));
     }
 
     function calculateTotal(data, loanStatus) {
