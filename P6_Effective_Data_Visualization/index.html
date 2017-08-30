@@ -88,13 +88,13 @@
         })
         .entries(data);
 
-      var loanStatus = ["Completed", "Chargedoff", "Defaulted", "Cancelled", "Current", "Past Due", "FinalPaymentInProgress"];
+      var loanStatus = ["Completed", "Current", "FinalPaymentInProgress", "Chargedoff", "Defaulted", "Past Due", "Cancelled"];
 
       // calcuate a total for each category
       calculateTotal(categoryStatus, loanStatus);
 
       categoryStatus.sort(function(a, b) {
-        return b.Completed / b.Total - a.Completed / a.Total;
+        return (b.Completed + b.Current) / b.Total - (a.Completed + a.Current) / a.Total;
       });
 
       y.domain(categoryStatus.map(function(d) {
