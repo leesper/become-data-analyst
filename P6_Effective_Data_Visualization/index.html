@@ -44,7 +44,7 @@
   <script>
     var margin = {
       top: 20,
-      right: 10,
+      right: 200,
       bottom: 20,
       left: 150
     };
@@ -116,7 +116,6 @@
         })
         .enter().append("rect")
         .attr("x", function(d) {
-          // debugger;
           return x(d[0]);
         })
         .attr("y", function(d) {
@@ -138,21 +137,32 @@
         .attr("class", "axis axis--y")
         .call(d3.axisLeft(y));
 
-      var legend = series.append("g")
-        .attr("class", "legend")
-        .attr("transform", function(d) {
-          var d = d[d.length - 1];
-          return "translate(" + (y(d.data.Category) + y.bandwidth()) + "," + ((x(d[0]) + x(d[1])) / 2) + ")";
+      var legend = svg.append("g")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", 10)
+        .attr("text-anchor", "end")
+        .selectAll("g")
+        .data(loanStatus.reverse())
+        .enter()
+        .append("g")
+        .attr("transform", function(d, i) {
+          return "translate(" + (width - margin.right * 1.5) + ", " + (i+1) * 20 + ")";
         });
 
+      legend.append("rect")
+        .attr("x", width - 19)
+        .attr("width", 19)
+        .attr("height", 19)
+        .attr("fill", z);
+
       legend.append("text")
-        .attr("x", 9)
-        .attr("dy", "0.35em")
-        .attr("fill", "#000")
-        .style("font", "10px sans-serif")
+        .attr("x", width - 24)
+        .attr("y", 9.5)
+        .attr("dy", "0.32em")
         .text(function(d) {
-          return d.key;
+          return d;
         });
+
       // console.log(JSON.stringify(categoryStatus));
     }
 
