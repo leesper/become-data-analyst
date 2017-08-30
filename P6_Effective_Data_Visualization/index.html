@@ -76,7 +76,7 @@
     function draw(error, data) {
       if (error) throw error;
 
-      groupByCategoryStatus = d3.nest()
+      categoryStatus = d3.nest()
         .key(function(d) {
           return d.ListingCategory;
         })
@@ -88,20 +88,22 @@
         })
         .entries(data);
 
-      // calcuate a total for each category
-      var status = calculateTotal(groupByCategoryStatus);
+      var loanStatus = ["Completed", "Chargedoff", "Defaulted", "Cancelled", "Current", "Past Due", "FinalPaymentInProgress"];
 
-      groupByCategoryStatus.sort(function(a, b) {
-        return (b.Completed + b.FinalPaymentInProgress) / (b.total - b.Current) - (a.Completed + a.FinalPaymentInProgress) / (a.total - a.Current);
+      // calcuate a total for each category
+      calculateTotal(categoryStatus, loanStatus);
+
+      categoryStatus.sort(function(a, b) {
+        return (b.Completed + b.FinalPaymentInProgress) / b.Total - (a.Completed + a.FinalPaymentInProgress) / a.Total;
       });
 
-      y.domain(groupByCategoryStatus.map(function(d) {
-        return d.key;
+      y.domain(categoryStatus.map(function(d) {
+        return d.Category;
       }));
-      z.domain(status.values());
+      z.domain(loanStatus);
 
       var series = g.selectAll(".series")
-        .data(stack.keys(status.values())(groupByCategoryStatus))
+        .data(stack.keys(loanStatus)(categoryStatus))
         .enter().append("g")
         .attr("class", "series")
         .attr("fill", function(d) {
@@ -114,38 +116,43 @@
         })
         .enter().append("rect")
         .attr("x", function(d) {
-          return d[1]
+          // debugger;
+          return x(d[0]);
+        })
+        .attr("y", function(d) {
+          return y(d.data.Category);
+        })
+        .attr("height", function(d) {
+          return y.bandwidth();
+        })
+        .attr("width", function(d) {
+          return x(d[1]) - x(d[0]);
         });
-        // .attr("y", function(d) {
-        //   return y(d.data.key);
-        // })
-        // .attr("height", function(d) {
-        //   y.bandwidth();
-        // })
-        // .attr("width", function(d) {
-        //   return y(d[0]) - y(d[1]);
-        // });
 
-      console.log(JSON.stringify(groupByCategoryStatus));
+      console.log(JSON.stringify(categoryStatus));
     }
 
-    function calculateTotal(data) {
-      var status = d3.set();
+    function calculateTotal(data, loanStatus) {
       for (var i = 0; i < data.length; i++) {
         var total = 0;
         for (var j = 0; j < data[i].values.length; j++) {
           var k = data[i].values[j].key;
           var v = data[i].values[j].value;
           data[i][k] = v
-          status.add(k);
           total += v;
         }
         data[i].Category = data[i].key;
         data[i].Total = total;
         delete data[i].key;
         delete data[i].values;
+
+        // add missing loan status
+        for (var k = 0; k < loanStatus.length; k++) {
+          if (!(loanStatus[k] in data[i])) {
+            data[i][loanStatus[k]] = 0;
+          }
+        }
       }
-      return status;
     }
   </script>
 </body>
