@@ -53,13 +53,99 @@
     var svg = d3.select("body").append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
-      .append("g")
+    var g = svg.append("g")
       .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+    var x = d3.scaleLinear()
+      .rangeRound([0, width]);
+
+    var y = d3.scaleBand()
+      .rangeRound([height, 0])
+      .padding(0.1)
+      .align(0.1);
+
+    var z = d3.scaleOrdinal()
+      .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+    // normalize the values
+    var stack = d3.stack()
+      .offset(d3.stackOffsetExpand);
 
     d3.csv("./data/prosperSubData.csv", preprocess, draw);
 
-    function draw(data) {
-      console.log(data);
+    function draw(error, data) {
+      if (error) throw error;
+
+      groupByCategoryStatus = d3.nest()
+        .key(function(d) {
+          return d.ListingCategory;
+        })
+        .key(function(d) {
+          return d.LoanStatus;
+        })
+        .rollup(function(v) {
+          return v.length;
+        })
+        .entries(data);
+
+      // calcuate a total for each category
+      var status = calculateTotal(groupByCategoryStatus);
+
+      groupByCategoryStatus.sort(function(a, b) {
+        return (b.Completed + b.FinalPaymentInProgress) / (b.total - b.Current) - (a.Completed + a.FinalPaymentInProgress) / (a.total - a.Current);
+      });
+
+      y.domain(groupByCategoryStatus.map(function(d) {
+        return d.key;
+      }));
+      z.domain(status.values());
+
+      var series = g.selectAll(".series")
+        .data(stack.keys(status.values())(groupByCategoryStatus))
+        .enter().append("g")
+        .attr("class", "series")
+        .attr("fill", function(d) {
+          return z(d.key);
+        });
+
+      series.selectAll("rect")
+        .data(function(d) {
+          return d;
+        })
+        .enter().append("rect")
+        .attr("x", function(d) {
+          return d[1]
+        });
+        // .attr("y", function(d) {
+        //   return y(d.data.key);
+        // })
+        // .attr("height", function(d) {
+        //   y.bandwidth();
+        // })
+        // .attr("width", function(d) {
+        //   return y(d[0]) - y(d[1]);
+        // });
+
+      console.log(JSON.stringify(groupByCategoryStatus));
+    }
+
+    function calculateTotal(data) {
+      var status = d3.set();
+      for (var i = 0; i < data.length; i++) {
+        var total = 0;
+        for (var j = 0; j < data[i].values.length; j++) {
+          var k = data[i].values[j].key;
+          var v = data[i].values[j].value;
+          data[i][k] = v
+          status.add(k);
+          total += v;
+        }
+        data[i].Category = data[i].key;
+        data[i].Total = total;
+        delete data[i].key;
+        delete data[i].values;
+      }
+      return status;
     }
   </script>
 </body>
