@@ -66,14 +66,31 @@
             .append("g")
             .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-        d3.csv("./data/prosperSubData.csv", preprocess, draw);
+        d3.csv("./data/prosperSubData.csv", preprocess, loadCSVData);
 
+        function loadCSVData(cerr, pData) {
+            if (cerr) throw cerr;
 
+            d3.json("./data/us-states.json", function(jerr, usData) {
+              if (jerr) throw jerr;
 
-        function draw(error, data) {
-            if (error) throw error;
-            console.log(data);
+              for (var i = 0; i < usData.features.length; i++) {
+                // convert state to 2-letter abbrev
+                var state = usData.features[i].properties.name;
+                usData.features[i].properties.name = stateCodes[state];
+
+                usData.features[i].properties.values = [];
+                for (var j = 0; j < pData.length; j++) {
+                  if (pData[j].BorrowerState == stateCodes[state]) {
+                    usData.features[i].properties.values.push(pData[j]);
+                  }
+                }
+              }
+              console.log(usData);
+              // 
+            });
         }
+
     </script>
 </body>
 
