@@ -19,6 +19,7 @@
     <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
     <script src="https://cdn.bootcss.com/d3/4.10.0/d3.min.js"></script>
     <script src="./js/common.js"></script>
+    <script src="./js/d3-scale-chromatic.v1.min.js"></script>
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <p class="navbar-brand">Prosper DataVis</p>
@@ -66,31 +67,53 @@
             .append("g")
             .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
+        var color = d3.scaleThreshold()
+            .range(d3.schemeBlues[9]);
+
         d3.csv("./data/prosperSubData.csv", preprocess, loadCSVData);
 
         function loadCSVData(cerr, pData) {
             if (cerr) throw cerr;
 
+            
             d3.json("./data/us-states.json", function(jerr, usData) {
-              if (jerr) throw jerr;
+                if (jerr) throw jerr;
 
-              for (var i = 0; i < usData.features.length; i++) {
-                // convert state to 2-letter abbrev
-                var state = usData.features[i].properties.name;
-                usData.features[i].properties.name = stateCodes[state];
+                for (var i = 0; i < usData.features.length; i++) {
+                    // convert state to 2-letter abbrev
+                    var state = usData.features[i].properties.name;
+                    usData.features[i].properties.name = stateCodes[state];
 
-                usData.features[i].properties.values = [];
-                for (var j = 0; j < pData.length; j++) {
-                  if (pData[j].BorrowerState == stateCodes[state]) {
-                    usData.features[i].properties.values.push(pData[j]);
-                  }
+                    usData.features[i].properties.values = [];
+                    for (var j = 0; j < pData.length; j++) {
+                        if (pData[j].BorrowerState == stateCodes[state]) {
+                            usData.features[i].properties.values.push(pData[j]);
+                        }
+                    }
                 }
-              }
-              console.log(usData);
-              // 
+                geoChart(usData);
+                lineChart(pData);
             });
         }
 
+        function geoChart(usData) {
+
+            var proj = d3.geoAlbersUsa()
+                .translate([(width + margin.left + margin.right) / 2,
+                    (height + margin.top + margin.bottom) / 2
+                ]).scale([500]);
+
+            var path = d3.geoPath().projection(proj);
+
+            // color.domain([
+            //   d3.min(usData, function(d) {})
+            // ])
+            console.log(usData);
+        }
+
+        function lineChart(pData) {
+            // console.log(pData);
+        }
     </script>
 </body>
 
