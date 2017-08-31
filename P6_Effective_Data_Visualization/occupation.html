@@ -44,22 +44,162 @@
   <script>
     var margin = {
       top: 20,
-      right: 10,
+      right: 200,
       bottom: 20,
-      left: 10
+      left: 150
     };
     var width = 960 - margin.left - margin.right;
-    var height = 500 - margin.top - margin.bottom;
+    var height = 700 - margin.top - margin.bottom;
     var svg = d3.select("body").append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
-      .append("g")
+
+    var g = svg.append("g")
       .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+    var x = d3.scaleLinear()
+      .rangeRound([0, width]);
+    var y = d3.scaleBand()
+      .rangeRound([height, 0])
+      .padding(0.1)
+      .align(0.1);
+    var z = d3.scaleOrdinal()
+      .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+    var stack = d3.stack()
+      .offset(d3.stackOffsetExpand);
 
     d3.csv("./data/prosperSubData.csv", preprocess, draw);
 
-    function draw(data) {
-      console.log(data);
+    function draw(error, data) {
+      if (error) throw error;
+
+      occupationStatus = d3.nest()
+        .key(function(d) {
+          return d.Occupation;
+        })
+        .key(function(d) {
+          return d.LoanStatus;
+        })
+        .rollup(function(v) {
+          return v.length;
+        })
+        .entries(data);
+
+      var loanStatus = ["Completed", "Current", "FinalPaymentInProgress", "Chargedoff", "Defaulted", "Past Due", "Cancelled"];
+      calculateTotal(occupationStatus, loanStatus);
+
+      occupationStatus.sort(function(a, b) {
+        return (b.Completed + b.Current) / b.Total - (a.Completed + a.Current) / a.Total;
+      });
+
+      y.domain(occupationStatus.map(function(d) {
+        return d.Occupation;
+      }));
+      z.domain(loanStatus);
+
+      var series = g.selectAll(".series")
+        .data(stack.keys(loanStatus)(occupationStatus))
+        .enter().append("g")
+        .attr("class", "series")
+        .attr("fill", function(d) {
+          return z(d.key);
+        });
+
+      series.selectAll("rect")
+        .data(function(d) {
+          return d;
+        })
+        .enter().append("rect")
+        .transition()
+        .duration(1000)
+        .attr("x", function(d) {
+          return x(d[0]);
+        })
+        .transition()
+        .duration(1000)
+        .attr("y", function(d) {
+          return y(d.data.Occupation);
+        })
+        .transition()
+        .duration(1000)
+        .attr("height", function(d) {
+          return y.bandwidth();
+        })
+        .transition()
+        .duration(1000)
+        .attr("width", function(d) {
+          return x(d[1]) - x(d[0]);
+        });
+
+      g.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + height + ")")
+        .transition()
+        .duration(1000)
+        .call(d3.axisBottom(x));
+
+      g.append("g")
+        .attr("class", "axis axis--y")
+        .transition()
+        .duration(1000)
+        .call(d3.axisLeft(y).ticks(10, "%"));
+
+      var legend = svg.append("g")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", 10)
+        .attr("text-anchor", "end")
+        .selectAll("g")
+        .data(loanStatus.reverse())
+        .enter()
+        .append("g")
+        .attr("transform", function(d, i) {
+          return "translate(" + (width - margin.right * 1.5) + ", " + (i + 1) * 20 + ")";
+        });
+
+      legend.append("rect")
+        .attr("x", width - 19)
+        .attr("width", 19)
+        .attr("height", 19)
+        .attr("fill", z);
+
+      legend.append("text")
+        .attr("x", width - 24)
+        .attr("y", 9.5)
+        .attr("dy", "0.32em")
+        .text(function(d) {
+          return d;
+        });
+
+      // console.log(occupationStatus);
+    }
+
+    function calculateTotal(data, status) {
+      index = -1
+      for (var i = 0; i < data.length; i++) {
+        var total = 0;
+        for (var j = 0; j < data[i].values.length; j++) {
+          var key = data[i].values[j].key;
+          var val = data[i].values[j].value;
+          total += val;
+          data[i][key] = val;
+        }
+        data[i].Occupation = data[i].key;
+        data[i].Total = total;
+        delete data[i].key;
+        delete data[i].values;
+        for (var k = 0; k < status.length; k++) {
+          if (!(status[k] in data[i])) {
+            data[i][status[k]] = 0;
+          }
+        }
+        if (data[i].Occupation == "NA") {
+          index = i;
+        }
+      }
+      if (index != -1) {
+        data.splice(index, 1);
+      }
     }
   </script>
 </body>
