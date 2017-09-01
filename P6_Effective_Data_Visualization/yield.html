@@ -47,9 +47,9 @@
   <script>
     var margin = {
       top: 20,
-      right: 10,
+      right: 30,
       bottom: 20,
-      left: 10
+      left: 30
     };
     var width = 1150 - margin.left - margin.right;
     var height = 400 - margin.top - margin.bottom;
@@ -67,12 +67,19 @@
       .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
     var color = d3.scaleLinear()
-    .range(["#98abc5", "#8a89a6"]);
-    //
+      .range(["#98abc5", "#8a89a6"]);
 
-    var proj = d3.geoAlbersUsa().translate([width / 4, height / 2]).scale([750]);
+    var proj = d3.geoAlbersUsa()
+      .translate([width / 4, height / 2]).scale([750]);
 
-    var path = d3.geoPath().projection(proj);
+    var path = d3.geoPath()
+      .projection(proj);
+
+    var x = d3.scaleTime()
+      .range([0, width / 2]);
+
+    var y = d3.scaleLinear()
+      .rangeRound([height, 0]);
 
     d3.csv("./data/prosperSubData.csv", preprocess, loadCSVData);
 
@@ -119,7 +126,33 @@
     }
 
     function lineChart(pData) {
-      // console.log(pData);
+      var dateStatus = d3.nest()
+        .key(function(d) {
+          return d.LoanOriginationDate.toLocaleDateString();
+        })
+        .key(function(d) {
+          return d.LoanStatus;
+        })
+        .rollup(function(v) {
+          return v.length;
+        }).entries(pData);
+
+      var badDebts = [];
+      for (var i = 0; i < dateStatus.length; i++) {
+        var debt = {};
+        debt.LoanOriginationDate = d3.timeParse("%x")(dateStatus[i].key);
+        var total = 0;
+        for (var j = 0; j < dateStatus[i].values.length; j++) {
+          var key = dateStatus[i].values[j].key;
+          var val = dateStatus[i].values[j].value;
+          if (key != "Completed" && key != "Current" && key != "FinalPaymentInProgress") {
+            total += val;
+          }
+        }
+        debt.Count = total;
+        badDebts.push(debt);
+      }
+      debugger;
     }
   </script>
 </body>
