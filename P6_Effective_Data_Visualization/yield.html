@@ -38,6 +38,13 @@
         <li class="nav-item">
           <a class="nav-link" href="explore.html">自由探索</a>
         </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          年份
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" id="navbarDropDownMenu">
+          </div>
+        </li>
       </ul>
     </div>
   </nav>
@@ -98,6 +105,7 @@
     d3.csv("./data/prosperSubData.csv", preprocess, loadCSVData);
 
     var year = null;
+
     function loadCSVData(cerr, pData) {
       if (cerr) throw cerr;
 
@@ -120,8 +128,9 @@
             max = usData.features[i].properties.values.length;
           }
         }
-
         color.domain([0, max]);
+
+        onYearSelected(pData);
 
         geoChart(usData);
         categoryChart(pData);
@@ -138,15 +147,37 @@
         .style("fill", function(d) {
           return color(d.properties.values.length);
         })
-      console.log(usData);
     }
 
     function categoryChart(pData) {
-      console.log(year);
+      console.log(pData);
     }
 
     function occupationChart(pData) {
-      console.log(year);
+      console.log(pData);
+    }
+
+    function onYearSelected(pData) {
+      var selections = ["年份", 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016];
+      var buttons = d3.select("#navbarDropDownMenu")
+        .append("div")
+        .selectAll("a")
+        .data(selections)
+        .enter()
+        .append("a")
+        .attr("class", "dropdown-item")
+        .text(function(d) {
+          return d;
+        });
+
+      buttons.on("click", function(d) {
+        year = this.text;
+        d3.select("#navbarDropdownMenuLink")
+          .text(year);
+
+        categoryChart(pData);
+        occupationChart(pData);
+      })
     }
   </script>
 </body>
