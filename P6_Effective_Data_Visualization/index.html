@@ -91,7 +91,7 @@
       var loanStatus = ["Completed", "Current", "FinalPaymentInProgress", "Chargedoff", "Defaulted", "Past Due", "Cancelled"];
 
       // calcuate a total for each category
-      calculateTotal(categoryStatus, loanStatus);
+      calculateTotalCategory(categoryStatus, loanStatus);
 
       categoryStatus.sort(function(a, b) {
         return (b.Completed + b.Current) / b.Total - (a.Completed + a.Current) / a.Total;
@@ -174,29 +174,6 @@
         .text(function(d) {
           return d;
         });
-    }
-
-    function calculateTotal(data, loanStatus) {
-      for (var i = 0; i < data.length; i++) {
-        var total = 0;
-        for (var j = 0; j < data[i].values.length; j++) {
-          var k = data[i].values[j].key;
-          var v = data[i].values[j].value;
-          data[i][k] = v
-          total += v;
-        }
-        data[i].Category = data[i].key;
-        data[i].Total = total;
-        delete data[i].key;
-        delete data[i].values;
-
-        // add missing loan status
-        for (var k = 0; k < loanStatus.length; k++) {
-          if (!(loanStatus[k] in data[i])) {
-            data[i][loanStatus[k]] = 0;
-          }
-        }
-      }
     }
   </script>
 

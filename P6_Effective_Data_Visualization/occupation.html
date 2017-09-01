@@ -87,7 +87,7 @@
         .entries(data);
 
       var loanStatus = ["Completed", "Current", "FinalPaymentInProgress", "Chargedoff", "Defaulted", "Past Due", "Cancelled"];
-      calculateTotal(occupationStatus, loanStatus);
+      calculateTotalOccupation(occupationStatus, loanStatus);
 
       occupationStatus.sort(function(a, b) {
         return (b.Completed + b.Current) / b.Total - (a.Completed + a.Current) / a.Total;
@@ -170,36 +170,6 @@
         .text(function(d) {
           return d;
         });
-
-      // console.log(occupationStatus);
-    }
-
-    function calculateTotal(data, status) {
-      index = -1
-      for (var i = 0; i < data.length; i++) {
-        var total = 0;
-        for (var j = 0; j < data[i].values.length; j++) {
-          var key = data[i].values[j].key;
-          var val = data[i].values[j].value;
-          total += val;
-          data[i][key] = val;
-        }
-        data[i].Occupation = data[i].key;
-        data[i].Total = total;
-        delete data[i].key;
-        delete data[i].values;
-        for (var k = 0; k < status.length; k++) {
-          if (!(status[k] in data[i])) {
-            data[i][status[k]] = 0;
-          }
-        }
-        if (data[i].Occupation == "NA") {
-          index = i;
-        }
-      }
-      if (index != -1) {
-        data.splice(index, 1);
-      }
     }
   </script>
 

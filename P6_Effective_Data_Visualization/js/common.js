@@ -28,6 +28,57 @@ function preprocess(d) {
     return d;
 }
 
+function calculateTotalCategory(data, loanStatus) {
+  for (var i = 0; i < data.length; i++) {
+    var total = 0;
+    for (var j = 0; j < data[i].values.length; j++) {
+      var k = data[i].values[j].key;
+      var v = data[i].values[j].value;
+      data[i][k] = v
+      total += v;
+    }
+    data[i].Category = data[i].key;
+    data[i].Total = total;
+    delete data[i].key;
+    delete data[i].values;
+
+    // add missing loan status
+    for (var k = 0; k < loanStatus.length; k++) {
+      if (!(loanStatus[k] in data[i])) {
+        data[i][loanStatus[k]] = 0;
+      }
+    }
+  }
+}
+
+function calculateTotalOccupation(data, status) {
+  index = -1
+  for (var i = 0; i < data.length; i++) {
+    var total = 0;
+    for (var j = 0; j < data[i].values.length; j++) {
+      var key = data[i].values[j].key;
+      var val = data[i].values[j].value;
+      total += val;
+      data[i][key] = val;
+    }
+    data[i].Occupation = data[i].key;
+    data[i].Total = total;
+    delete data[i].key;
+    delete data[i].values;
+    for (var k = 0; k < status.length; k++) {
+      if (!(status[k] in data[i])) {
+        data[i][status[k]] = 0;
+      }
+    }
+    if (data[i].Occupation == "NA") {
+      index = i;
+    }
+  }
+  if (index != -1) {
+    data.splice(index, 1);
+  }
+}
+
 var stateCodes = {
     "Alabama": "AL",
     "Alaska": "AK",

@@ -42,55 +42,62 @@
     </div>
   </nav>
 
-  <div id="dashboard"></div>
-
   <script>
     var margin = {
       top: 20,
-      right: 30,
+      right: 10,
       bottom: 20,
-      left: 30
+      left: 10
     };
-    var width = 1150 - margin.left - margin.right;
-    var height = 400 - margin.top - margin.bottom;
-    var svgGeo = d3.select("#dashboard").append("svg")
+    var width = 960 - margin.left - margin.right;
+    var height = 500 - margin.top - margin.bottom;
+    var svgGeo = d3.select("body").append("svg")
       .attr("class", "geo")
-      .attr("width", (width + margin.left + margin.right) / 2)
+      .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
-      .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
-
-    var svgLine = d3.select("#dashboard").append("svg")
-      .attr("class", "line")
-      .attr("width", (width + margin.left + margin.right) / 2)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
       .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
     var color = d3.scaleLinear()
       .range(["#98abc5", "#8a89a6"]);
-
     var proj = d3.geoAlbersUsa()
-      .translate([width / 4, height / 2]).scale([750]);
-
+      .translate([width / 2, height / 2]).scale([900]);
     var path = d3.geoPath()
       .projection(proj);
 
-    var x = d3.scaleTime()
-      .range([0, width / 2]);
+    var barMargin = {
+      top: 20,
+      right: 10,
+      bottom: 20,
+      left: 10
+    };
+    var barWidth = 1150 - barMargin.left - barMargin.right;
+    var barHeight = 400 - barMargin.top - barMargin.bottom;
 
-    var y = d3.scaleLinear()
-      .rangeRound([height, 0]);
+    var svgCategory = d3.select("body").append("svg")
+      .attr("class", "category")
+      .attr("width", (barWidth + barMargin.left + barMargin.right) / 2)
+      .attr("height", barHeight + barMargin.top + barMargin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + barMargin.left + ", " + barMargin.top + ")");
 
-    var line = d3.line()
-      .x(function(d) {
-        return x(d.LoanOriginationDate);
-      })
-      .y(function(d) {
-        return y(d.Count);
-      });
+    var svgCategory = d3.select("body").append("svg")
+      .attr("class", "occupation")
+      .attr("width", (barWidth + barMargin.left + barMargin.right) / 2)
+      .attr("height", barHeight + barMargin.top + barMargin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + barMargin.left + ", " + barMargin.top + ")");
+
+    var x = d3.scaleLinear()
+      .rangeRound([0, width / 2]);
+
+    var y = d3.scaleBand()
+      .rangeRound([height, 0])
+      .padding(0.1)
+      .align(0.1);
 
     d3.csv("./data/prosperSubData.csv", preprocess, loadCSVData);
 
+    var year = null;
     function loadCSVData(cerr, pData) {
       if (cerr) throw cerr;
 
@@ -117,7 +124,8 @@
         color.domain([0, max]);
 
         geoChart(usData);
-        lineChart(pData);
+        categoryChart(pData);
+        occupationChart(pData);
       });
     }
 
@@ -133,68 +141,12 @@
       console.log(usData);
     }
 
-    function lineChart(pData) {
-      var dateStatus = d3.nest()
-        .key(function(d) {
-          return d.LoanOriginationDate.toLocaleDateString();
-        })
-        .key(function(d) {
-          return d.LoanStatus;
-        })
-        .rollup(function(v) {
-          return v.length;
-        }).entries(pData);
+    function categoryChart(pData) {
+      console.log(year);
+    }
 
-      var badDebts = [];
-      for (var i = 0; i < dateStatus.length; i++) {
-        var debt = {};
-        debt.LoanOriginationDate = d3.timeParse("%x")(dateStatus[i].key);
-        var total = 0;
-        for (var j = 0; j < dateStatus[i].values.length; j++) {
-          var key = dateStatus[i].values[j].key;
-          var val = dateStatus[i].values[j].value;
-          if (key != "Completed" && key != "Current" && key != "FinalPaymentInProgress") {
-            total += val;
-          }
-        }
-        debt.Count = total;
-        badDebts.push(debt);
-      }
-
-      x.domain(d3.extent(badDebts, function(d) {
-        return d.LoanOriginationDate;
-      }));
-      y.domain(d3.extent(badDebts, function(d) {
-        return d.Count;
-      }));
-
-      svgLine.append("g")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x))
-        .select(".domain")
-        .remove();
-
-      svgLine.append("g")
-        .call(d3.axisLeft(y))
-        .append("text")
-        .attr("fill", "#000")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", "0.71em")
-        .attr("text-anchor", "end")
-        .text("Bad Debts");
-
-      svgLine.append("path")
-        .datum(badDebts)
-        .attr("fill", "none")
-        .attr("stroke", "steelblue")
-        .attr("stroke-linejoin", "round")
-        .attr("stroke-linecap", "round")
-        .attr("stroke-width", 1.5)
-        .attr("d", line);
-
-      console.log(badDebts);
-      // debugger;
+    function occupationChart(pData) {
+      console.log(year);
     }
   </script>
 </body>
