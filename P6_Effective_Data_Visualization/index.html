@@ -19,23 +19,22 @@
   <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
   <script src="https://cdn.bootcss.com/d3/4.10.0/d3.min.js"></script>
   <script src="./js/common.js"></script>
+  <script src="./js/d3-scale-chromatic.v1.min.js"></script>
 
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <p class="navbar-brand">Prosper DataVis</p>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="index.html">贷款用途</a>
-        </li>
         <li class="nav-item">
-          <a class="nav-link" href="occupation.html">职业分布</a>
+          <a class="nav-link" href="index.html">自由探索</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="yield.html">收益指数</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="explore.html">自由探索</a>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          年份
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" id="navbarDropDownMenu">
+          </div>
         </li>
       </ul>
     </div>
@@ -48,13 +47,12 @@
       bottom: 20,
       left: 150
     };
+
     var width = 960 - margin.left - margin.right;
     var height = 500 - margin.top - margin.bottom;
-    var svg = d3.select("body").append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-    var g = svg.append("g")
-      .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+    var color = d3.scaleLinear()
+      .range(["#98abc5", "#8a89a6"]);
 
     var x = d3.scaleLinear()
       .rangeRound([0, width]);
@@ -71,24 +69,98 @@
     var stack = d3.stack()
       .offset(d3.stackOffsetExpand);
 
-    d3.csv("./data/prosperSubData.csv", preprocess, draw);
+    d3.csv("./data/prosperSubData.csv", preprocess, loadCSVData);
 
-    function draw(error, data) {
-      if (error) throw error;
+    var year = "年份";
 
-      var categoryStatus = groupByKeys("ListingCategory", "LoanStatus", data);
+    function loadCSVData(cerr, pData) {
+      if (cerr) throw cerr;
 
-      // calcuate a total for each category
+      d3.json("./data/us-states.json", function(jerr, usData) {
+        if (jerr) throw jerr;
+
+        var max = 0;
+        for (var i = 0; i < usData.features.length; i++) {
+          // convert state to 2-letter abbrev
+          var state = usData.features[i].properties.name;
+          usData.features[i].properties.name = stateCodes[state];
+
+          usData.features[i].properties.values = [];
+          for (var j = 0; j < pData.length; j++) {
+            if (pData[j].BorrowerState == stateCodes[state]) {
+              usData.features[i].properties.values.push(pData[j]);
+            }
+          }
+          if (usData.features[i].properties.values.length > max) {
+            max = usData.features[i].properties.values.length;
+          }
+        }
+        color.domain([0, max]);
+
+        onYearSelected(pData);
+
+        geoChart(usData);
+        categoryChart(pData);
+        occupationChart(pData);
+      });
+    }
+
+    function geoChart(usData) {
+      var margin = {
+        top: 20,
+        right: 10,
+        bottom: 20,
+        left: 10
+      };
+      var width = 960 - margin.left - margin.right;
+      var height = 500 - margin.top - margin.bottom;
+      var svgGeo = d3.select("body").append("svg")
+        .attr("class", "geo")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+      var proj = d3.geoAlbersUsa()
+        .translate([width / 2, height / 2]).scale([900]);
+      var path = d3.geoPath()
+        .projection(proj);
+
+      svgGeo.selectAll("path")
+        .data(usData.features)
+        .enter()
+        .append("path")
+        .attr("d", path)
+        .style("fill", function(d) {
+          return color(d.properties.values.length);
+        })
+    }
+
+    function categoryChart(pData) {
+      d3.select("body").selectAll("#category").remove();
+      var svgCategory = d3.select("body").append("svg")
+        .attr("id", "category")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      var g = svgCategory.append("g")
+        .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+      var filtered = filterDataByYear(pData);
+
+      var categoryStatus = groupByKeys("ListingCategory", "LoanStatus", filtered);
+
       calculateTotalCategory(categoryStatus, loanStatus);
 
       categoryStatus.sort(function(a, b) {
         return (b.Completed + b.Current) / b.Total - (a.Completed + a.Current) / a.Total;
-      });
+      })
 
       y.domain(categoryStatus.map(function(d) {
         return d.Category;
       }));
+
       z.domain(loanStatus);
+
+      svgCategory.selectAll(".series").remove();
 
       var series = g.selectAll(".series")
         .data(stack.keys(loanStatus)(categoryStatus))
@@ -137,7 +209,7 @@
         .duration(200)
         .call(d3.axisLeft(y));
 
-      var legend = svg.append("g")
+      var legend = svgCategory.append("g")
         .attr("font-family", "sans-serif")
         .attr("font-size", 10)
         .attr("text-anchor", "end")
@@ -163,35 +235,147 @@
           return d;
         });
     }
+
+    function occupationChart(pData) {
+      d3.select("body").selectAll("#occupation").remove();
+      var svgOccupation = d3.select("body").append("svg")
+        .attr("id", "occupation")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom);
+      var g = svgOccupation
+        .append("g")
+        .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+      var filtered = filterDataByYear(pData);
+
+      var occupationStatus = groupByKeys("Occupation", "LoanStatus", filtered);
+
+      calculateTotalOccupation(occupationStatus, loanStatus);
+
+      occupationStatus.sort(function(a, b) {
+        return (b.Completed + b.Current) / b.Total - (a.Completed + a.Current) / a.Total;
+      });
+
+      y.domain(occupationStatus.map(function(d) {
+        return d.Occupation;
+      }));
+      z.domain(loanStatus);
+
+      svgOccupation.selectAll(".series").remove();
+
+      var series = g.selectAll(".series")
+        .data(stack.keys(loanStatus)(occupationStatus))
+        .enter().append("g")
+        .attr("class", "series")
+        .attr("fill", function(d) {
+          return z(d.key);
+        });
+
+      series.selectAll("rect")
+        .data(function(d) {
+          return d;
+        })
+        .enter().append("rect")
+        .transition()
+        .duration(1000)
+        .attr("x", function(d) {
+          return x(d[0]);
+        })
+        .transition()
+        .duration(1000)
+        .attr("y", function(d) {
+          return y(d.data.Occupation);
+        })
+        .transition()
+        .duration(1000)
+        .attr("height", function(d) {
+          return y.bandwidth();
+        })
+        .transition()
+        .duration(1000)
+        .attr("width", function(d) {
+          return x(d[1]) - x(d[0]);
+        });
+
+      g.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + height + ")")
+        .transition()
+        .duration(1000)
+        .call(d3.axisBottom(x));
+
+      g.append("g")
+        .attr("class", "axis axis--y")
+        .transition()
+        .duration(1000)
+        .call(d3.axisLeft(y).ticks(10, "%"));
+
+      var legend = svgOccupation.append("g")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", 10)
+        .attr("text-anchor", "end")
+        .selectAll("g")
+        .data(loanStatus.reverse())
+        .enter()
+        .append("g")
+        .attr("transform", function(d, i) {
+          return "translate(" + (width - margin.right * 1.5) + ", " + (i + 1) * 20 + ")";
+        });
+
+      legend.append("rect")
+        .attr("x", width - 19)
+        .attr("width", 19)
+        .attr("height", 19)
+        .attr("fill", z);
+
+      legend.append("text")
+        .attr("x", width - 24)
+        .attr("y", 9.5)
+        .attr("dy", "0.32em")
+        .text(function(d) {
+          return d;
+        });
+    }
+
+    function onYearSelected(pData) {
+      var selections = ["年份", 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016];
+      var buttons = d3.select("#navbarDropDownMenu")
+        .append("div")
+        .selectAll("a")
+        .data(selections)
+        .enter()
+        .append("a")
+        .attr("class", "dropdown-item")
+        .text(function(d) {
+          return d;
+        });
+
+      buttons.on("click", function(d) {
+        year = this.text;
+        d3.select("#navbarDropdownMenuLink")
+          .text(year);
+
+        console.log("call chart functions");
+        categoryChart(pData);
+        occupationChart(pData);
+        console.log("call chart functions over");
+      })
+    }
+
+    function filterDataByYear(data) {
+      if (year == "年份") {
+        return data;
+      }
+
+      var filtered = [];
+      for (var i = 0; i < data.length; i++) {
+        if (+data[i].LoanOriginationDate.getFullYear() == year) {
+          filtered.push(data[i]);
+        }
+      }
+      return filtered;
+    }
   </script>
-
-  <div class="row">
-    <div class="col-sm-9 comment">
-      <p>Notes: </p>
-      <ul style="list-style-type:disc">
-        <li>
-          Prosper贷款平台上总共有21种贷款用途，涵盖了社会生活的方方面面；
-        </li>
-
-        <li>
-          处于“正在进行”和“已完成”状态的P2P贷款所占的比例较高，至少60%以上，Prosper平台运行的借贷状况良好；
-        </li>
-
-        <li>
-          坏账率较低贷款前10名如下，投资者可以重点关注：<br> 旅行房车（RV）
-          <br> 摩托车（Motorcycle）
-          <br> 船（Boat）
-          <br> 订婚戒指（Engagement Ring）
-          <br> 举办婚礼（Wedding Loans）
-          <br> 养育后代（Baby and Adoption）
-          <br> 纳税（Taxes）
-          <br> 大额购买（Large Purchases）
-          <br> 债务合并（Debt Consolidation）
-          <br> 度假（Vacation）
-        </li>
-      </ul>
-    </div>
-  </div>
 </body>
 
 </html>
