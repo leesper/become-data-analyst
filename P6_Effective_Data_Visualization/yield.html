@@ -2,119 +2,126 @@
 <html lang="en">
 
 <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.bootcss.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
-    <title>Prosper DataVis</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.bootcss.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+  <title>Prosper DataVis</title>
 </head>
 
 <body>
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js"></script>
-    <script src="https://cdn.bootcss.com/popper.js/1.11.0/umd/popper.min.js"></script>
-    <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
-    <script src="https://cdn.bootcss.com/d3/4.10.0/d3.min.js"></script>
-    <script src="./js/common.js"></script>
-    <script src="./js/d3-scale-chromatic.v1.min.js"></script>
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js"></script>
+  <script src="https://cdn.bootcss.com/popper.js/1.11.0/umd/popper.min.js"></script>
+  <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+  <script src="https://cdn.bootcss.com/d3/4.10.0/d3.min.js"></script>
+  <script src="./js/common.js"></script>
+  <script src="./js/d3-scale-chromatic.v1.min.js"></script>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <p class="navbar-brand">Prosper DataVis</p>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <p class="navbar-brand">Prosper DataVis</p>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="index.html">贷款用途</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="occupation.html">职业分布</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="yield.html">收益指数</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="explore.html">自由探索</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">贷款用途</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="occupation.html">职业分布</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="yield.html">收益指数</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="explore.html">自由探索</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
 
-    <div id="dashboard"></div>
+  <div id="dashboard"></div>
 
-    <script>
-        var margin = {
-            top: 20,
-            right: 10,
-            bottom: 20,
-            left: 10
-        };
-        var width = 1500 - margin.left - margin.right;
-        var height = 500 - margin.top - margin.bottom;
-        var svgGeo = d3.select("#dashboard").append("svg")
-            .attr("class", "geo")
-            .attr("width", (width + margin.left + margin.right) / 2)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+  <script>
+    var margin = {
+      top: 20,
+      right: 10,
+      bottom: 20,
+      left: 10
+    };
+    var width = 1500 - margin.left - margin.right;
+    var height = 500 - margin.top - margin.bottom;
+    var svgGeo = d3.select("#dashboard").append("svg")
+      .attr("class", "geo")
+      .attr("width", (width + margin.left + margin.right) / 2)
+      .attr("height", height + margin.top + margin.bottom)
+      .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-        var svgLine = d3.select("#dashboard").append("svg")
-            .attr("class", "line")
-            .attr("width", (width + margin.left + margin.right) / 2)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+    var svgLine = d3.select("#dashboard").append("svg")
+      .attr("class", "line")
+      .attr("width", (width + margin.left + margin.right) / 2)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-        var color = d3.scaleThreshold()
-            .range(d3.schemeBlues[9]);
+    var color = d3.scaleLinear()
+    .range(["#98abc5", "#8a89a6"]);
+    //
 
-        d3.csv("./data/prosperSubData.csv", preprocess, loadCSVData);
+    var proj = d3.geoAlbersUsa().translate([width / 4, height / 2]).scale([750]);
 
-        function loadCSVData(cerr, pData) {
-            if (cerr) throw cerr;
+    var path = d3.geoPath().projection(proj);
 
-            
-            d3.json("./data/us-states.json", function(jerr, usData) {
-                if (jerr) throw jerr;
+    d3.csv("./data/prosperSubData.csv", preprocess, loadCSVData);
 
-                for (var i = 0; i < usData.features.length; i++) {
-                    // convert state to 2-letter abbrev
-                    var state = usData.features[i].properties.name;
-                    usData.features[i].properties.name = stateCodes[state];
+    function loadCSVData(cerr, pData) {
+      if (cerr) throw cerr;
 
-                    usData.features[i].properties.values = [];
-                    for (var j = 0; j < pData.length; j++) {
-                        if (pData[j].BorrowerState == stateCodes[state]) {
-                            usData.features[i].properties.values.push(pData[j]);
-                        }
-                    }
-                }
-                geoChart(usData);
-                lineChart(pData);
-            });
+      d3.json("./data/us-states.json", function(jerr, usData) {
+        if (jerr) throw jerr;
+
+        var max = 0;
+        for (var i = 0; i < usData.features.length; i++) {
+          // convert state to 2-letter abbrev
+          var state = usData.features[i].properties.name;
+          usData.features[i].properties.name = stateCodes[state];
+
+          usData.features[i].properties.values = [];
+          for (var j = 0; j < pData.length; j++) {
+            if (pData[j].BorrowerState == stateCodes[state]) {
+              usData.features[i].properties.values.push(pData[j]);
+            }
+          }
+          if (usData.features[i].properties.values.length > max) {
+            max = usData.features[i].properties.values.length;
+          }
         }
 
-        function geoChart(usData) {
+        color.domain([0, max]);
 
-            var proj = d3.geoAlbersUsa()
-                .translate([(width + margin.left + margin.right) / 2,
-                    (height + margin.top + margin.bottom) / 2
-                ]).scale([500]);
+        geoChart(usData);
+        lineChart(pData);
+      });
+    }
 
-            var path = d3.geoPath().projection(proj);
+    function geoChart(usData) {
+      svgGeo.selectAll("path")
+        .data(usData.features)
+        .enter()
+        .append("path")
+        .attr("d", path)
+        .style("fill", function(d) {
+          return color(d.properties.values.length);
+        })
+      console.log(usData);
+    }
 
-            // color.domain([
-            //   d3.min(usData, function(d) {})
-            // ])
-            console.log(usData);
-        }
-
-        function lineChart(pData) {
-            // console.log(pData);
-        }
-    </script>
+    function lineChart(pData) {
+      // console.log(pData);
+    }
+  </script>
 </body>
 
 </html>
