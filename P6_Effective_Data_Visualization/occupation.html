@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.bootcss.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+  <title>Prosper DataVis</title>
+</head>
+
+<body>
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js"></script>
+  <script src="https://cdn.bootcss.com/popper.js/1.11.0/umd/popper.min.js"></script>
+  <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+  <script src="https://cdn.bootcss.com/d3/4.10.0/d3.min.js"></script>
+  <script src="./js/common.js"></script>
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <p class="navbar-brand">Prosper DataVis</p>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">贷款用途</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="occupation.html">职业分布</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="yield.html">收益指数</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="explore.html">自由探索</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <script>
+    var margin = {
+      top: 20,
+      right: 200,
+      bottom: 20,
+      left: 150
+    };
+    var width = 960 - margin.left - margin.right;
+    var height = 700 - margin.top - margin.bottom;
+    var svg = d3.select("body").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+
+    var g = svg.append("g")
+      .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+    var x = d3.scaleLinear()
+      .rangeRound([0, width]);
+    var y = d3.scaleBand()
+      .rangeRound([height, 0])
+      .padding(0.1)
+      .align(0.1);
+    var z = d3.scaleOrdinal()
+      .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+    var stack = d3.stack()
+      .offset(d3.stackOffsetExpand);
+
+    d3.csv("./data/prosperSubData.csv", preprocess, draw);
+
+    function draw(error, data) {
+      if (error) throw error;
+
+      var occupationStatus = groupByKeys("Occupation", "LoanStatus", data);
+
+      calculateTotalOccupation(occupationStatus, loanStatus);
+
+      occupationStatus.sort(function(a, b) {
+        return (b.Completed + b.Current) / b.Total - (a.Completed + a.Current) / a.Total;
+      });
+
+      y.domain(occupationStatus.map(function(d) {
+        return d.Occupation;
+      }));
+      z.domain(loanStatus);
+
+      var series = g.selectAll(".series")
+        .data(stack.keys(loanStatus)(occupationStatus))
+        .enter().append("g")
+        .attr("class", "series")
+        .attr("fill", function(d) {
+          return z(d.key);
+        });
+
+      series.selectAll("rect")
+        .data(function(d) {
+          return d;
+        })
+        .enter().append("rect")
+        .transition()
+        .duration(1000)
+        .attr("x", function(d) {
+          return x(d[0]);
+        })
+        .transition()
+        .duration(1000)
+        .attr("y", function(d) {
+          return y(d.data.Occupation);
+        })
+        .transition()
+        .duration(1000)
+        .attr("height", function(d) {
+          return y.bandwidth();
+        })
+        .transition()
+        .duration(1000)
+        .attr("width", function(d) {
+          return x(d[1]) - x(d[0]);
+        });
+
+      g.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + height + ")")
+        .transition()
+        .duration(1000)
+        .call(d3.axisBottom(x));
+
+      g.append("g")
+        .attr("class", "axis axis--y")
+        .transition()
+        .duration(1000)
+        .call(d3.axisLeft(y).ticks(10, "%"));
+
+      var legend = svg.append("g")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", 10)
+        .attr("text-anchor", "end")
+        .selectAll("g")
+        .data(loanStatus.reverse())
+        .enter()
+        .append("g")
+        .attr("transform", function(d, i) {
+          return "translate(" + (width - margin.right * 1.5) + ", " + (i + 1) * 20 + ")";
+        });
+
+      legend.append("rect")
+        .attr("x", width - 19)
+        .attr("width", 19)
+        .attr("height", 19)
+        .attr("fill", z);
+
+      legend.append("text")
+        .attr("x", width - 24)
+        .attr("y", 9.5)
+        .attr("dy", "0.32em")
+        .text(function(d) {
+          return d;
+        });
+    }
+  </script>
+
+  <div class="row">
+    <div class="col-sm-9 comment">
+      <p>Notes: </p>
+      <ul style="list-style-type:disc">
+        <li>
+          Prosper平台上贷款者主要的职业身份有54种，我对“学生”和“工程师”等相同领域不同类别的贷款进行了合并，以方便观察同一职业身份下的普遍情况；
+        </li>
+
+        <li>
+          职业身份对贷款坏账率的高低具有显著的影响，受教育程度和收入高的“金领”职业，如法官，律师，飞行员，医生，军官，分析师和程序员等发生贷款逾期的可能性较低；
+        </li>
+
+        <li>
+          坏账率较低的前十大职业如下，投资者可重点关注：<br> 法官
+          <br> 律师
+          <br> 心理学家
+          <br> 飞行员
+          <br> 科学家
+          <br> 牙医
+          <br> 军官
+          <br> 医生
+          <br> 药剂师
+          <br> 教授
+          <br>
+        </li>
+      </ul>
+    </div>
+  </div>
+</body>
+
+</html>
