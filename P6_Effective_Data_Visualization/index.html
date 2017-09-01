@@ -76,19 +76,7 @@
     function draw(error, data) {
       if (error) throw error;
 
-      categoryStatus = d3.nest()
-        .key(function(d) {
-          return d.ListingCategory;
-        })
-        .key(function(d) {
-          return d.LoanStatus;
-        })
-        .rollup(function(v) {
-          return v.length;
-        })
-        .entries(data);
-
-      var loanStatus = ["Completed", "Current", "FinalPaymentInProgress", "Chargedoff", "Defaulted", "Past Due", "Cancelled"];
+      var categoryStatus = groupByKeys("ListingCategory", "LoanStatus", data);
 
       // calcuate a total for each category
       calculateTotalCategory(categoryStatus, loanStatus);

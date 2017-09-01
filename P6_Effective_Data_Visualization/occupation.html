@@ -74,19 +74,8 @@
     function draw(error, data) {
       if (error) throw error;
 
-      occupationStatus = d3.nest()
-        .key(function(d) {
-          return d.Occupation;
-        })
-        .key(function(d) {
-          return d.LoanStatus;
-        })
-        .rollup(function(v) {
-          return v.length;
-        })
-        .entries(data);
+      var occupationStatus = groupByKeys("Occupation", "LoanStatus", data);
 
-      var loanStatus = ["Completed", "Current", "FinalPaymentInProgress", "Chargedoff", "Defaulted", "Past Due", "Cancelled"];
       calculateTotalOccupation(occupationStatus, loanStatus);
 
       occupationStatus.sort(function(a, b) {

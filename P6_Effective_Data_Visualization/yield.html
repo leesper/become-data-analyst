@@ -104,7 +104,7 @@
 
     d3.csv("./data/prosperSubData.csv", preprocess, loadCSVData);
 
-    var year = null;
+    var year = "年份";
 
     function loadCSVData(cerr, pData) {
       if (cerr) throw cerr;
@@ -150,11 +150,12 @@
     }
 
     function categoryChart(pData) {
-      console.log(pData);
+      var filtered = filterDataByYear(pData);
+
+      
     }
 
     function occupationChart(pData) {
-      console.log(pData);
     }
 
     function onYearSelected(pData) {
@@ -178,6 +179,20 @@
         categoryChart(pData);
         occupationChart(pData);
       })
+    }
+
+    function filterDataByYear(data) {
+      if (year == "年份") {
+        return data;
+      }
+
+      var filtered = [];
+      for (var i = 0; i < data.length; i++) {
+        if (+data[i].LoanOriginationDate.getFullYear() == year) {
+          filtered.push(data[i]);
+        }
+      }
+      return filtered;
     }
   </script>
 </body>
