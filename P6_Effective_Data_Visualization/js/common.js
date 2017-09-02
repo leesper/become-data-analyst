@@ -1,5 +1,6 @@
 var timeParser = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
+// convert strings of number into numeric, combining some kinds of occupations
 function preprocess(d) {
   d.CreditScore = +d.CreditScore;
   d.DebtToIncomeRatio = +d.DebtToIncomeRatio;
@@ -28,6 +29,7 @@ function preprocess(d) {
   return d;
 }
 
+// calculate total count, reshaping data object for easy manipulating
 function calculateTotalCategory(data, loanStatus) {
   for (var i = 0; i < data.length; i++) {
     var total = 0;
@@ -79,6 +81,7 @@ function calculateTotalOccupation(data, status) {
   }
 }
 
+// group data by key1 and key2
 function groupByKeys(key1, key2, data) {
   groupByResult = d3.nest()
     .key(function(d) {

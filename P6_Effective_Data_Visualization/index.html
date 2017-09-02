@@ -94,9 +94,11 @@
             d3.json("./data/us-states.json", function(jerr, usData) {
                 if (jerr) throw jerr;
 
+                // merge prosper data into U.S states respectively,
+                // convert state names to 2-letter abbreviations
+                // find the maximum for domain setting
                 var max = 0;
                 for (var i = 0; i < usData.features.length; i++) {
-                    // convert state to 2-letter abbrev
                     var state = usData.features[i].properties.name;
                     usData.features[i].properties.name = stateCodes[state];
 
@@ -112,8 +114,10 @@
                 }
                 color.domain([0, max]);
 
+                // set event handlers for user selecting year
                 onYearSelected(pData);
 
+                // plot map and stacked bar charts
                 geoChart(usData, pData);
                 occupationChart(pData);
             });
@@ -153,6 +157,7 @@
                     return color(d.properties.values.length);
                 })
                 .on("mouseover", function(d) {
+                  // display tooltip and rerender stacked bar chart
                     tooltip.html("<strong>" + d.properties.name + ":</strong> <span style='color:red'>" + d.properties.values.length + "</span>")
                         .style("opacity", 1.0)
                         .style("color", "black")
@@ -177,12 +182,16 @@
                 .append("g")
                 .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
+            // get only prosper data in some year
             var filtered = filterDataByYear(pData);
 
+            // group prosper data by occupation and loan status
             var occupationStatus = groupByKeys("Occupation", "LoanStatus", filtered);
 
+            // calculate total count
             calculateTotalOccupation(occupationStatus, loanStatus);
 
+            // sort data, put data which has the biggest "Completed + Current" ratio first
             occupationStatus.sort(function(a, b) {
                 return (b.Completed + b.Current) / b.Total - (a.Completed + a.Current) / a.Total;
             });
@@ -194,6 +203,7 @@
 
             svgOccupation.selectAll(".series").remove();
 
+            // render series for loan status
             var series = g.selectAll(".series")
                 .data(stack.keys(loanStatus)(occupationStatus))
                 .enter().append("g")
@@ -202,6 +212,7 @@
                     return z(d.key);
                 });
 
+            // add rects in different color with animations
             series.selectAll("rect")
                 .data(function(d) {
                     return d;
@@ -228,6 +239,7 @@
                     return x(d[1]) - x(d[0]);
                 });
 
+            // rendering x and y axises
             g.append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", "translate(0," + height + ")")
@@ -241,6 +253,7 @@
                 .duration(1000)
                 .call(d3.axisLeft(y).ticks(10, "%"));
 
+            // rendering legend
             var legend = svgOccupation.append("g")
                 .attr("font-family", "sans-serif")
                 .attr("font-size", 10)
@@ -281,6 +294,7 @@
                     return d;
                 });
 
+            // on year selected, re-rendering stacked bar chart
             buttons.on("click", function(d) {
                 year = this.text;
                 d3.select("#navbarDropdownMenuLink")
