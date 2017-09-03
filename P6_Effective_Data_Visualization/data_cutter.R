@@ -38,13 +38,6 @@ subData <- select(originalData,
                   LoanOriginationDate,
                   LoanStatus,
                   BorrowerState,
-                  ListingCategory,
-                  Occupation,
-                  EmploymentStatus,
-                  EmploymentStatusDuration,
-                  StatedMonthlyIncome,
-                  DebtToIncomeRatio,
-                  CreditScore,
-                  YieldIndex)
+                  Occupation)
 
 write.table(subData, sep=',', file='prosperSubData.csv', col.names = TRUE, row.names = FALSE)
