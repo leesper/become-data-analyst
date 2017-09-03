@@ -91,6 +91,51 @@
         function loadCSVData(cerr, pData) {
             if (cerr) throw cerr;
 
+            var statesData = d3.nest()
+                .key(function(d) {
+                    return d.BorrowerState;
+                })
+                .key(function(d) {
+                    return d.LoanOriginationDate.getFullYear();
+                })
+                .key(function(d) {
+                    return d.Occupation;
+                })
+                .key(function(d) {
+                    return d.LoanStatus;
+                })
+                .entries(pData);
+
+            for (var si = 0; si < statesData.length; si++) {
+                var totalCount = 0;
+                var stateValues = statesData[si].values;
+                for (var yi = 0; yi < stateValues.length; yi++) {
+                    var yearCount = 0;
+                    var occuValues = stateValues[yi].values;
+                    for (var oi = 0; oi < occuValues.length; oi++) {
+                        var statusValues = occuValues[oi].values;
+                        for (var sti = 0; sti < statusValues.length; sti++) {
+                            totalCount += statusValues[sti].values.length;
+                            yearCount += statusValues[sti].values.length;
+                        }
+                    }
+                    stateValues[yi].total = yearCount;
+                }
+                statesData[si].total = totalCount;
+            }
+
+            var nationData = d3.nest()
+                .key(function(d) {
+                    return d.LoanOriginationDate.getFullYear();
+                })
+                .key(function(d) {
+                    return d.Occupation;
+                })
+                .key(function(d) {
+                    return d.LoanStatus;
+                })
+                .entries(pData);
+
             d3.json("./data/us-states.json", function(jerr, usData) {
                 if (jerr) throw jerr;
 
@@ -101,29 +146,28 @@
                 for (var i = 0; i < usData.features.length; i++) {
                     var state = usData.features[i].properties.name;
                     usData.features[i].properties.name = stateCodes[state];
-
                     usData.features[i].properties.values = [];
-                    for (var j = 0; j < pData.length; j++) {
-                        if (pData[j].BorrowerState == stateCodes[state]) {
-                            usData.features[i].properties.values.push(pData[j]);
+                    for (var j = 0; j < statesData.length; j++) {
+                        if (statesData[j].key == stateCodes[state]) {
+                            usData.features[i].properties.values = statesData[j];
                         }
                     }
-                    if (usData.features[i].properties.values.length > max) {
-                        max = usData.features[i].properties.values.length;
+                    if (usData.features[i].properties.values.total > max) {
+                        max = usData.features[i].properties.values.total;
                     }
                 }
                 color.domain([0, max]);
 
                 // set event handlers for user selecting year
-                onYearSelected(pData);
+                onYearSelected(nationData);
 
                 // plot map and stacked bar charts
-                geoChart(usData, pData);
-                occupationChart(pData);
+                geoChart(usData, nationData);
+                occupationChart(nationData);
             });
         }
 
-        function geoChart(usData, pData) {
+        function geoChart(usData, aggreData) {
             var margin = {
                 top: 20,
                 right: 10,
@@ -154,25 +198,35 @@
                 .append("path")
                 .attr("d", path)
                 .style("fill", function(d) {
-                    return color(d.properties.values.length);
+                    return color(d.properties.values.total);
                 })
                 .on("mouseover", function(d) {
                     // display tooltip and rerender stacked bar chart
-                    tooltip.html("<strong>" + d.properties.name + ":</strong> <span style='color:red'>" + d.properties.values.length + "</span>")
+                    var length = 0;
+                    if (year == "年份") {
+                        length = d.properties.values.total;
+                    } else {
+                        for (var i = 0; i < d.properties.values.values.length; i++) {
+                            if (year == d.properties.values.values[i].key) {
+                                length = d.properties.values.values[i].total;
+                            }
+                        }
+                    }
+                    tooltip.html("<strong>" + d.properties.name + ":</strong> <span style='color:red'>" + length + "</span>")
                         .style("opacity", 1.0)
                         .style("color", "black")
                         .style("left", (d3.event.pageX) + "px")
                         .style("top", (d3.event.pageY + 20) + "px");
 
-                    occupationChart(d.properties.values);
+                    occupationChart(d.properties.values.values);
                 })
                 .on("mouseout", function(d) {
                     tooltip.style("opacity", 0.0);
-                    occupationChart(pData);
+                    occupationChart(aggreData);
                 })
         }
 
-        function occupationChart(pData) {
+        function occupationChart(aggreData) {
             d3.select("body").selectAll("#occupation").remove();
             var svgOccupation = d3.select("body").append("svg")
                 .attr("id", "occupation")
@@ -182,21 +236,15 @@
                 .append("g")
                 .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-            // get only prosper data in some year
-            var filtered = filterDataByYear(pData);
-
-            // group prosper data by occupation and loan status
-            var occupationStatus = groupByKeys("Occupation", "LoanStatus", filtered);
-
-            // calculate total count
-            calculateTotalOccupation(occupationStatus, loanStatus);
+            // get only prosper data by state and year
+            var filtered = mergeDataByYear(aggreData);
 
             // sort data, put data which has the biggest "Completed + Current" ratio first
-            occupationStatus.sort(function(a, b) {
+            filtered.sort(function(a, b) {
                 return (b.Completed + b.Current) / b.Total - (a.Completed + a.Current) / a.Total;
             });
 
-            y.domain(occupationStatus.map(function(d) {
+            y.domain(filtered.map(function(d) {
                 return d.Occupation;
             }));
             z.domain(loanStatus);
@@ -205,7 +253,7 @@
 
             // render series for loan status
             var series = g.selectAll(".series")
-                .data(stack.keys(loanStatus)(occupationStatus))
+                .data(stack.keys(loanStatus)(filtered))
                 .enter().append("g")
                 .attr("class", "series")
                 .attr("fill", function(d) {
@@ -281,8 +329,8 @@
                 });
         }
 
-        function onYearSelected(pData) {
-            var selections = ["年份", 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014];
+        function onYearSelected(aggreData) {
+            var selections = ["年份", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014"];
             var buttons = d3.select("#navbarDropDownMenu")
                 .append("div")
                 .selectAll("a")
@@ -301,20 +349,47 @@
                 d3.select("#navbarDropdownMenuLink")
                     .text(year);
 
-                occupationChart(pData);
+                occupationChart(aggreData);
             })
         }
 
-        function filterDataByYear(data) {
-            if (year == "年份") {
-                return data;
+        function mergeDataByYear(data) {
+            var values = []
+            for (var i = 0; i < data.length; i++) {
+              if (year == "年份") {
+          //TODO
+                for (var j = 0; j < data[i].values.length; j++) {
+                  values.push(data[i].values[j]);
+                }
+              } else {
+                if (year == data[i].key) {
+                  for (var j = 0; j < data[i].values.length; j++) {
+                    values.push(data[i].values[j]);
+                  }
+                }
+              }
             }
 
             var filtered = [];
-            for (var i = 0; i < data.length; i++) {
-                if (+data[i].LoanOriginationDate.getFullYear() == year) {
-                    filtered.push(data[i]);
+            debugger;
+            for (var k = 0; k < values.length; k++) {
+              var occupation = values[k].key;
+              var total = 0;
+              var info = {}
+              for (var m = 0; m < values[k].values.length; m++) {
+                var status = values[k].values[m].key;
+                var count = values[k].values[m].values.length;
+                total += count;
+                info[status] = count;
+              }
+              for (var n = 0; n < loanStatus.length; n++) {
+                if (!(loanStatus[n] in info)) {
+                    info[loanStatus[n]] = 0;
                 }
+              }
+              info.Occupation = occupation;
+              info.Total = total;
+              filtered.push(info);
             }
             return filtered;
         }
