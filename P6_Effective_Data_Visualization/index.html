@@ -91,7 +91,46 @@
         function loadCSVData(cerr, pData) {
             if (cerr) throw cerr;
 
+            // create statesData, statesAnnualData, nationData, nationAnnualData
+            // do all data reshaping here before visualization
             var statesData = d3.nest()
+                .key(function(d) {
+                    return d.BorrowerState;
+                })
+                .key(function(d) {
+                    return d.Occupation;
+                })
+                .key(function(d) {
+                    return d.LoanStatus;
+                })
+                .rollup(function(v) {
+                    return v.length;
+                })
+                .entries(pData);
+
+            for (var si = 0; si < statesData.length; si++) {
+                var occuValues = statesData[si].values;
+                for (var oi = 0; oi < occuValues.length; oi++) {
+                    occuValues[oi].Occupation = occuValues[oi].key;
+                    delete occuValues[oi].key;
+                    var total = 0;
+                    for (var sti = 0; sti < occuValues[oi].values.length; sti++) {
+                        var key = occuValues[oi].values[sti].key;
+                        var val = occuValues[oi].values[sti].value;
+                        occuValues[oi][key] = val;
+                        total += val;
+                    }
+                    delete occuValues[oi].values;
+                    occuValues[oi].Total = total;
+                    for (var ls = 0; ls < loanStatus.length; ls++) {
+                        if (!(loanStatus[ls] in occuValues[oi])) {
+                            occuValues[oi][loanStatus[ls]] = 0;
+                        }
+                    }
+                }
+            }
+
+            var statesAnnualData = d3.nest()
                 .key(function(d) {
                     return d.BorrowerState;
                 })
@@ -104,27 +143,77 @@
                 .key(function(d) {
                     return d.LoanStatus;
                 })
+                .rollup(function(v) {
+                    return v.length;
+                })
                 .entries(pData);
 
-            for (var si = 0; si < statesData.length; si++) {
+            for (var si = 0; si < statesAnnualData.length; si++) {
                 var totalCount = 0;
-                var stateValues = statesData[si].values;
+                var stateValues = statesAnnualData[si].values;
                 for (var yi = 0; yi < stateValues.length; yi++) {
                     var yearCount = 0;
                     var occuValues = stateValues[yi].values;
                     for (var oi = 0; oi < occuValues.length; oi++) {
+                        occuValues[oi].Occupation = occuValues[oi].key;
+                        delete occuValues[oi].key;
                         var statusValues = occuValues[oi].values;
+                        var total = 0;
                         for (var sti = 0; sti < statusValues.length; sti++) {
-                            totalCount += statusValues[sti].values.length;
-                            yearCount += statusValues[sti].values.length;
+                            var key = statusValues[sti].key;
+                            var val = statusValues[sti].value;
+                            occuValues[oi][key] = val;
+                            totalCount += val;
+                            yearCount += val;
+                            total += val;
+                        }
+                        delete occuValues[oi].values;
+                        occuValues[oi].Total = total;
+                        for (var ls = 0; ls < loanStatus.length; ls++) {
+                            if (!(loanStatus[ls] in occuValues[oi])) {
+                                occuValues[oi][loanStatus[ls]] = 0;
+                            }
                         }
                     }
-                    stateValues[yi].total = yearCount;
+                    stateValues[yi].Total = yearCount;
                 }
-                statesData[si].total = totalCount;
+                statesAnnualData[si].Total = totalCount;
             }
+            // console.log(d3.sum(statesAnnualData, function(d) { return d.Total; }));
 
             var nationData = d3.nest()
+                .key(function(d) {
+                    return d.Occupation;
+                })
+                .key(function(d) {
+                    return d.LoanStatus;
+                })
+                .rollup(function(v) {
+                    return v.length;
+                })
+                .entries(pData);
+
+            for (var i = 0; i < nationData.length; i++) {
+                nationData[i].Occupation = nationData[i].key;
+                delete nationData[i].key;
+                var total = 0;
+                for (var j = 0; j < nationData[i].values.length; j++) {
+                    var key = nationData[i].values[j].key;
+                    var val = nationData[i].values[j].value;
+                    nationData[i][key] = val;
+                    total += val;
+                }
+                nationData[i].Total = total;
+                delete nationData[i].values;
+                for (var ls = 0; ls < loanStatus.length; ls++) {
+                    if (!(loanStatus[ls] in nationData[i])) {
+                        nationData[i][loanStatus[ls]] = 0;
+                    }
+                }
+            }
+            // console.log(d3.sum(nationData, function(d) { return d.Total; }));
+
+            var nationAnnualData = d3.nest()
                 .key(function(d) {
                     return d.LoanOriginationDate.getFullYear();
                 })
@@ -134,7 +223,36 @@
                 .key(function(d) {
                     return d.LoanStatus;
                 })
+                .rollup(function(v) {
+                    return v.length;
+                })
                 .entries(pData);
+
+            for (var yi = 0; yi < nationAnnualData.length; yi++) {
+                var occuValues = nationAnnualData[yi].values;
+                var yearTotal = 0;
+                for (var oi = 0; oi < occuValues.length; oi++) {
+                    occuValues[oi].Occupation = occuValues[oi].key;
+                    delete occuValues[oi].key;
+                    var total = 0;
+                    for (var sti = 0; sti < occuValues[oi].values.length; sti++) {
+                        var key = occuValues[oi].values[sti].key;
+                        var val = occuValues[oi].values[sti].value;
+                        occuValues[oi][key] = val;
+                        total += val;
+                        yearTotal += val;
+                    }
+                    occuValues[oi].Total = total;
+                    delete occuValues[oi].values;
+                    for (var ls = 0; ls < loanStatus.length; ls++) {
+                        if (!(loanStatus[ls] in occuValues[oi])) {
+                            occuValues[oi][loanStatus[ls]] = 0;
+                        }
+                    }
+                }
+                nationAnnualData[yi].Total = yearTotal;
+            }
+            // console.log(d3.sum(nationAnnualData, function(d) { return d.Total; }));
 
             d3.json("./data/us-states.json", function(jerr, usData) {
                 if (jerr) throw jerr;
@@ -147,27 +265,32 @@
                     var state = usData.features[i].properties.name;
                     usData.features[i].properties.name = stateCodes[state];
                     usData.features[i].properties.values = [];
-                    for (var j = 0; j < statesData.length; j++) {
-                        if (statesData[j].key == stateCodes[state]) {
-                            usData.features[i].properties.values = statesData[j];
+                    for (var j = 0; j < statesAnnualData.length; j++) {
+                        if (statesAnnualData[j].key == stateCodes[state]) {
+                            usData.features[i].properties.annualData = statesAnnualData[j];
                         }
                     }
-                    if (usData.features[i].properties.values.total > max) {
-                        max = usData.features[i].properties.values.total;
+                    for (var k = 0; k < statesData.length; k++) {
+                        if (statesData[k].key == stateCodes[state]) {
+                            usData.features[i].properties.data = statesData[k];
+                        }
+                    }
+                    if (usData.features[i].properties.annualData.Total > max) {
+                        max = usData.features[i].properties.annualData.Total;
                     }
                 }
                 color.domain([0, max]);
 
                 // set event handlers for user selecting year
-                onYearSelected(nationData);
+                onYearSelected(nationData, nationAnnualData);
 
                 // plot map and stacked bar charts
-                geoChart(usData, nationData);
-                occupationChart(nationData);
+                geoChart(usData, nationData, nationAnnualData);
+                occupationChart(nationData, nationAnnualData);
             });
         }
 
-        function geoChart(usData, aggreData) {
+        function geoChart(usData, data, annualData) {
             var margin = {
                 top: 20,
                 right: 10,
@@ -192,23 +315,24 @@
                 .attr("class", "tooltip")
                 .attr("opacity", 0.0);
 
+            svgGeo.selectAll("path").remove();
             svgGeo.selectAll("path")
                 .data(usData.features)
                 .enter()
                 .append("path")
                 .attr("d", path)
                 .style("fill", function(d) {
-                    return color(d.properties.values.total);
+                    return color(d.properties.annualData.Total);
                 })
                 .on("mouseover", function(d) {
                     // display tooltip and rerender stacked bar chart
                     var length = 0;
                     if (year == "年份") {
-                        length = d.properties.values.total;
+                        length = d.properties.annualData.Total;
                     } else {
-                        for (var i = 0; i < d.properties.values.values.length; i++) {
-                            if (year == d.properties.values.values[i].key) {
-                                length = d.properties.values.values[i].total;
+                        for (var i = 0; i < d.properties.annualData.values.length; i++) {
+                            if (year == d.properties.annualData.values[i].key) {
+                                length = d.properties.annualData.values[i].Total;
                             }
                         }
                     }
@@ -218,15 +342,15 @@
                         .style("left", (d3.event.pageX) + "px")
                         .style("top", (d3.event.pageY + 20) + "px");
 
-                    occupationChart(d.properties.values.values);
+                    occupationChart(d.properties.data.values, d.properties.annualData.values);
                 })
                 .on("mouseout", function(d) {
                     tooltip.style("opacity", 0.0);
-                    occupationChart(aggreData);
+                    occupationChart(data, annualData);
                 })
         }
 
-        function occupationChart(aggreData) {
+        function occupationChart(data, annualData) {
             d3.select("body").selectAll("#occupation").remove();
             var svgOccupation = d3.select("body").append("svg")
                 .attr("id", "occupation")
@@ -237,7 +361,7 @@
                 .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
             // get only prosper data by state and year
-            var filtered = mergeDataByYear(aggreData);
+            var filtered = mergeDataByYear(data, annualData);
 
             // sort data, put data which has the biggest "Completed + Current" ratio first
             filtered.sort(function(a, b) {
@@ -329,7 +453,7 @@
                 });
         }
 
-        function onYearSelected(aggreData) {
+        function onYearSelected(data, annualData) {
             var selections = ["年份", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014"];
             var buttons = d3.select("#navbarDropDownMenu")
                 .append("div")
@@ -349,48 +473,24 @@
                 d3.select("#navbarDropdownMenuLink")
                     .text(year);
 
-                occupationChart(aggreData);
+                occupationChart(data, annualData);
             })
         }
 
-        function mergeDataByYear(data) {
+        function mergeDataByYear(data, annualData) {
             var values = []
-            for (var i = 0; i < data.length; i++) {
-              if (year == "年份") {
-          //TODO
-                for (var j = 0; j < data[i].values.length; j++) {
-                  values.push(data[i].values[j]);
-                }
-              } else {
-                if (year == data[i].key) {
-                  for (var j = 0; j < data[i].values.length; j++) {
-                    values.push(data[i].values[j]);
+            if (year == "年份") {
+              return data;
+            } else {
+              for (var i = 0; i < annualData.length; i++) {
+                if (year == annualData[i].key) {
+                  for (var j = 0; j < annualData[i].values.length; j++) {
+                    values.push(annualData[i].values[j]);
                   }
                 }
               }
             }
-
-            var filtered = [];
-            for (var k = 0; k < values.length; k++) {
-              var occupation = values[k].key;
-              var total = 0;
-              var info = {}
-              for (var m = 0; m < values[k].values.length; m++) {
-                var status = values[k].values[m].key;
-                var count = values[k].values[m].values.length;
-                total += count;
-                info[status] = count;
-              }
-              for (var n = 0; n < loanStatus.length; n++) {
-                if (!(loanStatus[n] in info)) {
-                    info[loanStatus[n]] = 0;
-                }
-              }
-              info.Occupation = occupation;
-              info.Total = total;
-              filtered.push(info);
-            }
-            return filtered;
+            return values;
         }
     </script>
 </body>
