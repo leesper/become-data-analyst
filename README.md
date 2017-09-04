@@ -9,3 +9,4 @@
 5. [贵阳市地图数据清洗与分析报告（OpenStreetMap）](https://nbviewer.jupyter.org/github/leesper/become-data-analyst/blob/master/P3_OpenStreetMap/P3_open_street_map.ipynb)
 6. [探索性数据分析：白葡萄酒口感与化学成分](https://github.com/leesper/become-data-analyst/blob/master/P4_Explore_Summarize_Data/winesEDA.md)
 7. [机器学习项目：从安然公司邮件中识别欺诈嫌疑人](https://github.com/leesper/become-data-analyst/blob/master/P5_Enron_MachineLearning/P5_Enron_Machine_Learning.ipynb)
+8. [数据可视化项目：Prosper贷款人职业分布与贷款状态所占比例](https://leesper.github.io/prosper_datavis/index.html)
