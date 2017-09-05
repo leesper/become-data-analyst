@@ -1,6 +1,6 @@
-# 优达学城“数据分析入门”纳米学位项目
+# Udacity“数据分析”纳米学位项目
 
-## 数据分析报告
+## 完成的数据分析项目
 
 1. [湾区共享单车分析报告](https://nbviewer.jupyter.org/github/leesper/become-data-analyst/blob/master/P0_BayAreaBikeShareAnalysis/Bay_Area_Bike_Share_Analysis.ipynb)
 2. [斯特鲁普效应分析报告](https://nbviewer.jupyter.org/github/leesper/become-data-analyst/blob/master/P1_StroopEffectAnalysis/P1_StroopEffectAnalysis.ipynb)
