@@ -2,6 +2,12 @@
 
 [Udacity数据分析纳米学位项目：数据分析入门、数据分析进阶](https://cn.udacity.com/dand)
 
+## 所获荣誉
+
+！[](https://github.com/leesper/become-data-analyst/blob/master/dand1.jpg)
+
+！[](https://github.com/leesper/become-data-analyst/blob/master/dand2.jpg)
+
 ## 完成的数据分析项目
 
 ### 1. [湾区共享单车分析报告](https://nbviewer.jupyter.org/github/leesper/become-data-analyst/blob/master/P0_BayAreaBikeShareAnalysis/Bay_Area_Bike_Share_Analysis.ipynb)
