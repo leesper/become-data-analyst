@@ -4,9 +4,9 @@
 
 ## 所获荣誉
 
-！[](https://github.com/leesper/become-data-analyst/blob/master/dand1.jpg)
+![](https://github.com/leesper/become-data-analyst/blob/master/dand1.jpg)
 
-！[](https://github.com/leesper/become-data-analyst/blob/master/dand2.jpg)
+![](https://github.com/leesper/become-data-analyst/blob/master/dand2.jpg)
 
 ## 完成的数据分析项目
 
