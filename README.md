@@ -2,12 +2,6 @@
 
 [Udacity数据分析纳米学位项目：数据分析入门、数据分析进阶](https://cn.udacity.com/dand)
 
-## 所获荣誉
-
-![](https://github.com/leesper/become-data-analyst/blob/master/dand1.jpg)
-
-![](https://github.com/leesper/become-data-analyst/blob/master/dand2.jpg)
-
 ## 完成的数据分析项目
 
 ### 1. [湾区共享单车分析报告](https://nbviewer.jupyter.org/github/leesper/become-data-analyst/blob/master/P0_BayAreaBikeShareAnalysis/Bay_Area_Bike_Share_Analysis.ipynb)
@@ -41,3 +35,9 @@
 ### 8. [数据可视化项目：Prosper贷款人职业分布与贷款状态所占比例](https://leesper.github.io/prosper_datavis/index.html)
 
 “创建有效的数据可视化”是“数据分析进阶”纳米学位的第四个项目，数据来自于美国P2P平台Prosper.com，有81个变量，113937项贷款数据。本人负责从数据集中提取出贷款人职业与贷款状态信息，研究贷款人职业与不良贷款之间是否存在某种关联关系。为了完成该任务，我首先使用R语言将我需要的数据从原始数据中抽取出来，将多余的数据去掉，将80M的数据精简为6M。接着我使用Bootstrap模板做了一个带导航菜单的界面，提供下拉菜单选择年份。然后我开始运用D3.js做数据可视化，先是将美国地图的地理数据和我之前整理的贷款数据读入内存，并在此基础上对贷款数据进行聚合运算，并清洗，加工和整理，形成了两类数据：以国家为单位的贷款数据（含按年分组的信息）和以各州为单位的贷款数据（同样含按年分组的信息），然后我利用地理信息数据绘制了美国地图，利用贷款数据绘制了正则化的堆叠柱状图，用于以国家为单位或者以州为单位显示贷款人职业分布和不良贷款比例之间的信息。在此基础上我增加了动画和互动效果，旨在提高阅读者对可视化的理解能力，当用户操作鼠标移动到地图上某个位置时，地图能动态显示该地区简称和贷款数量，并能通过柱状图看到该地区的具体情况。最后数据可视化得出的结论是：“职业身份对贷款不良率具有显著的影响，受教育程度较高，收入颇为丰厚的“脑力劳动”职业者，如法官，律师，飞行员，医生，军官，分析师和程序员等不良贷款所占比例较低；而不需要接受太高教育的“体力劳动”职业者，不良贷款所占比例有所增加，且内陆或不发达州的贷款率偏少。”
+
+## 所获荣誉
+
+![](https://github.com/leesper/become-data-analyst/blob/master/dand1.jpg)
+
+![](https://github.com/leesper/become-data-analyst/blob/master/dand2.jpg)
