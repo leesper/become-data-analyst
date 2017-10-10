@@ -1,6 +1,6 @@
 # Udacity Data Analyst Nanodegree (DAND)
 
-[Udacity数据分析纳米学位项目：数据分析入门、数据分析进阶](https://cn.udacity.com/dand)
+[Udacity数据分析师纳米学位](https://cn.udacity.com/dand)
 
 ## 完成的数据分析项目
 
